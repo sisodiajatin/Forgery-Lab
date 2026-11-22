@@ -73,54 +73,73 @@ const tick=async()=>{const s=await (await fetch('/status/'+j.id)).json();const s
  st.innerHTML=(s.log||[]).map(x=>'— '+x.replace(/…$/,'')).join('<br>')+`<br><span style="color:var(--mute)">${secs}s</span>`;setTimeout(tick,700)};tick()};</script>"""
 
 
-@app.function(image=image, secrets=[modal.Secret.from_name("forgery-lab-keys")], volumes={"/data": vol},
-              timeout=900, min_containers=1, max_containers=1, scaledown_window=900)  # always warm: no cold start
-@modal.concurrent(max_inputs=100)
-@modal.asgi_app()
-def web():
-    import json, sys, tempfile, time, uuid
+state = modal.Dict.from_name("forgery-lab-state", create_if_missing=True)  # shared by every container: job progress, uploaded boards, human results
+SECRETS = [modal.Secret.from_name("forgery-lab-keys")]
+
+
+@app.function(image=image, secrets=SECRETS, timeout=600, max_containers=30, retries=0)
+def build_job(cid: str, name: str, data: bytes):
+    """One upload = one container, so uploads never slow each other or the website down."""
+    import sys, tempfile
     from pathlib import Path
-    from fastapi import FastAPI, File, HTTPException, Request, UploadFile
-    from fastapi.concurrency import run_in_threadpool
-    from fastapi.responses import HTMLResponse, JSONResponse
     sys.path.insert(0, "/app")
     import build_case as bc
+    log = []
+    def step(msg):
+        log.append(msg); state[f"job:{cid}"] = {"state": "running", "log": log}
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            pth = Path(d) / name
+            pth.write_bytes(data)
+            case = bc.build_case(pth, 3, 6, None, "normal", 0, progress=step)
+        state[f"case:{cid}"] = bc.render(case)
+        state[f"job:{cid}"] = {"state": "done", "log": log}
+    except ValueError as e:
+        state[f"job:{cid}"] = {"state": "error", "msg": str(e), "log": log}
+    except Exception as e:
+        state[f"job:{cid}"] = {"state": "error", "msg": f"{type(e).__name__}: {str(e)[:200]}", "log": log}
+
+
+@app.function(image=image, secrets=SECRETS, volumes={"/data": vol}, timeout=900,
+              min_containers=2, max_containers=10, buffer_containers=1, scaledown_window=1200)  # always warm, scales out under load
+@modal.concurrent(max_inputs=50)
+@modal.asgi_app()
+def web():
+    import json, time, uuid
+    from pathlib import Path
+    from fastapi import FastAPI, File, HTTPException, UploadFile
+    from fastapi.responses import HTMLResponse, JSONResponse
 
     api = FastAPI()
     site = Path("/data/site")
+    # Published files only change on redeploy (publish.py), which starts fresh containers, so load them once.
+    pages = {f.name: f.read_text(encoding="utf-8") for f in site.glob("*.html")} if site.exists() else {}
+    stats_cache = {"t": 0.0, "v": None}
 
     def page(body):
         return HTMLResponse("<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
-                            f"<title>FORGERY LAB</title>{STYLE}</head><body>{body}</body></html>")
-
-    # Single always-on container that is the only writer, so the volume never needs reloading per request.
-    # Published files only change on redeploy (publish.py), which starts a fresh container, so cache them in memory.
-    _cache = {}
-    def cached(f):
-        if f not in _cache:
-            _cache[f] = f.read_text(encoding="utf-8") if f.exists() else None
-        return _cache[f]
+                            f"<title>Forgery Lab</title>{STYLE}</head><body>{body}</body></html>")
 
     def human_stats():
-        f = Path("/data/human.jsonl")
-        rows = [json.loads(l) for l in f.read_text().splitlines() if l.strip()] if f.exists() else []
+        if time.time() - stats_cache["t"] < 2 and stats_cache["v"]:
+            return stats_cache["v"]
+        rows = [v for k, v in state.items() if k.startswith("human:")]
         forged = [x for r in rows for x in (r.get("forged") or []) if x.get("forged")]
         lab = [r for r in rows if r.get("lab_correct") is not None]
-        return {"players": len(rows),
-                "human_caught_pct": round(100 * sum(bool(x.get("accused")) for x in forged) / len(forged), 1) if forged else None,
-                "human_accuracy_pct": round(100 * sum(r.get("correct") or 0 for r in rows) / max(sum(r.get("total") or 0 for r in rows), 1), 1) if rows else None,
-                "lab_accuracy_pct": round(100 * sum(r["lab_correct"] for r in lab) / max(sum(r.get("total") or 0 for r in lab), 1), 1) if lab else None}
+        v = {"players": len(rows),
+             "human_caught_pct": round(100 * sum(bool(x.get("accused")) for x in forged) / len(forged), 1) if forged else None,
+             "human_accuracy_pct": round(100 * sum(r.get("correct") or 0 for r in rows) / max(sum(r.get("total") or 0 for r in rows), 1), 1) if rows else None,
+             "lab_accuracy_pct": round(100 * sum(r["lab_correct"] for r in lab) / max(sum(r.get("total") or 0 for r in lab), 1), 1) if lab else None}
+        stats_cache.update(t=time.time(), v=v)
+        return v
 
     @api.get("/", response_class=HTMLResponse)
     def home():
-        html = cached(site / "report.html")
-        if html is None:
-            return page(NAV("r") + "<main><h1>Forgery Lab</h1><p class=lede>The report hasn't been published yet.</p></main>")
-        return html
+        return pages.get("report.html") or page(NAV("r") + "<main><h1>Forgery Lab</h1><p class=lede>The report hasn't been published yet.</p></main>")
 
     @api.get("/play", response_class=HTMLResponse)
     def play():
-        boards = sorted(p.stem.removeprefix("human_") for p in site.glob("human_*.html")) if site.exists() else []
+        boards = sorted(n[len("human_"):-len(".html")] for n in pages if n.startswith("human_"))
         links = "".join(f"<a class=case href='/play/{b}'><span>Case {i+1:02d}</span><b>{LABELS.get(b, (b, ''))[0]}</b><small>{LABELS.get(b, ('', ''))[1]}</small></a>"
                         for i, b in enumerate(boards))
         return page(NAV("p") + "<main><div class=eyebrow>Human round</div><h1>Spot the forgeries that fooled the detector</h1>"
@@ -130,17 +149,17 @@ def web():
 
     @api.get("/play/{doc}", response_class=HTMLResponse)
     def play_doc(doc: str):
-        if not doc.replace("_", "").replace(".", "").isalnum() or (html := cached(site / f"human_{doc}.html")) is None:
+        html = pages.get(f"human_{doc}.html")
+        if html is None:
             raise HTTPException(404)
         return html
 
     @api.post("/human")
-    def human(rec: dict):  # sync: runs in a worker thread, so the blocking volume commit can't freeze other requests
+    def human(rec: dict):
         rec = {k: rec.get(k) for k in ("source", "total", "correct", "lab_correct", "forged")}
         rec["at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
-        with open("/data/human.jsonl", "a") as fh:
-            fh.write(json.dumps(rec) + "\n")
-        vol.commit()
+        state[f"human:{uuid.uuid4().hex}"] = rec
+        stats_cache["t"] = 0
         return {"ok": True}
 
     @api.get("/human/stats")
@@ -151,46 +170,25 @@ def web():
     def try_page():
         return page(NAV() + TRY)
 
-    import threading
-    jobs = {}  # in-memory job status; one container (max_containers=1) serves all requests concurrently
-
-    def run_job(cid, name, data):
-        log = []
-        def step(msg):
-            log.append(msg); jobs[cid] = {"state": "running", "log": log}
-        try:
-            with tempfile.TemporaryDirectory() as d:
-                p = Path(d) / name
-                p.write_bytes(data)
-                case = bc.build_case(p, 3, 6, None, "normal", 0, progress=step)
-            Path("/data/cases").mkdir(parents=True, exist_ok=True)
-            Path(f"/data/cases/{cid}.html").write_text(bc.render(case), encoding="utf-8")
-            vol.commit()
-            jobs[cid] = {"state": "done", "log": log}
-        except ValueError as e:
-            jobs[cid] = {"state": "error", "msg": str(e), "log": log}
-        except Exception as e:
-            jobs[cid] = {"state": "error", "msg": f"{type(e).__name__}: {str(e)[:200]}", "log": log}
-
     @api.post("/build")
     def build(pdf: UploadFile = File(...)):
         data = pdf.file.read()
         if len(data) > 25_000_000 or not data.startswith(b"%PDF"):
             raise HTTPException(400, "Please upload a PDF under 25 MB.")
         cid = uuid.uuid4().hex[:10]
-        jobs[cid] = {"state": "running", "log": ["Upload received"]}
-        threading.Thread(target=run_job, args=(cid, Path(pdf.filename or "document.pdf").name, data), daemon=True).start()
+        state[f"job:{cid}"] = {"state": "running", "log": ["Upload received"]}
+        build_job.spawn(cid, Path(pdf.filename or "document.pdf").name, data)
         return {"id": cid}
 
     @api.get("/status/{cid}")
     def status(cid: str):
-        return JSONResponse(jobs.get(cid, {"state": "unknown"}))
+        return JSONResponse(state.get(f"job:{cid}", {"state": "unknown"}))
 
     @api.get("/case/{cid}", response_class=HTMLResponse)
     def show(cid: str):
-        f = Path(f"/data/cases/{cid}.html")
-        if not cid.isalnum() or not f.exists():
+        html = state.get(f"case:{cid}") if cid.isalnum() else None
+        if html is None:
             raise HTTPException(404, "Case not found")
-        return f.read_text(encoding="utf-8")
+        return html
 
     return api
