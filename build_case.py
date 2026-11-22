@@ -87,6 +87,9 @@ def hermes(prompt: str, timeout=300) -> str:
     """Hermes Agent CLI locally; in the cloud (no CLI) fall back to Hermes-3 on Modal."""
     import shutil
     if not shutil.which("hermes") or os.environ.get("FL_LLM") == "modal":
+        if os.environ.get("DEEPSEEK_BASE_URL"):           # cloud: fast Modal Model API instead of a cold GPU
+            import forgers
+            return forgers.forge("DEEPSEEK", "Follow the instructions exactly.", prompt)
         import modal
         return modal.Cls.from_name("forgery-lab-forger", "Forger")().chat.remote([prompt])[0]
     qf = ROOT / ".hermes_prompt.txt"
@@ -125,6 +128,21 @@ Document file: {title_hint}
 
 
 # ---------------------------------------------------------------- 3. forge
+def forge_api(context, topics, words):
+    """One forgery per topic, rotating across the Modal Model API forgers (fast, no cold start)."""
+    import forgers
+    from concurrent.futures import ThreadPoolExecutor
+    names = [n for n in ("GLMFLASH", "KIMI", "DEEPSEEK") if n in forgers.configured()]
+    excerpt = "\n\n".join(context[:5])
+    system = ("You are a master literary forger. Write a NEW paragraph that could be slipped into this document unnoticed: "
+              "same voice, terminology, rhythm, citation habits. Never copy or paraphrase its sentences. Plain text only. "
+              "Output only the paragraph.")
+    jobs = [(names[i % len(names)], t) for i, t in enumerate(topics)]
+    with ThreadPoolExecutor(len(jobs)) as ex:
+        outs = list(ex.map(lambda j: forgers.forge(j[0], system, f"Real paragraphs:\n\n{excerpt}\n\nWrite one new paragraph (~{words} words) about: {j[1]}"), jobs))
+    return outs, [forgers.FORGERS[n][0] for n, _ in jobs]
+
+
 def forge_modal(context, topics, words):
     import modal
     Forger = modal.Cls.from_name("forgery-lab-forger", "Forger")
@@ -226,13 +244,19 @@ def build_case(pdf: Path, fakes=3, n_real=6, seed=None, difficulty="normal", rou
     # 2 direct
     import shutil
     case = direct_case(pdf.stem, paras, fakes, n_real + fakes)
-    provenance["director"] = "Hermes Agent (hermes chat -Q)" if shutil.which("hermes") and os.environ.get("FL_LLM") != "modal" else "Hermes-3 on Modal"
+    provenance["director"] = ("Hermes Agent (hermes chat -Q)" if shutil.which("hermes") and os.environ.get("FL_LLM") != "modal"
+                              else "DeepSeek V4.1 Flash on Modal" if os.environ.get("DEEPSEEK_BASE_URL") else "Hermes-3 on Modal")
     log("hermes", f"case: {case['case_title']} | topics: {case['topics'][:fakes]}")
     # 3 forge
     words = int(sum(len(p.split()) for p in real) / len(real))
     topics = case["topics"][:fakes]
+    forger_names = None
     try:
-        forged = forge_modal(real, topics, words); provenance["forger"] = "Hermes-3-Llama-3.1-8B on Modal L40S (vLLM)"
+        if os.environ.get("FL_FORGER") == "api":
+            forged, forger_names = forge_api(real, topics, words)
+            provenance["forger"] = "Modal Model APIs: " + ", ".join(sorted(set(forger_names)))
+        else:
+            forged = forge_modal(real, topics, words); provenance["forger"] = "Hermes-3-Llama-3.1-8B on Modal L40S (vLLM)"
     except Exception as e:
         log("modal", f"unavailable ({type(e).__name__}: {str(e)[:120]}); Hermes Agent forges instead")
         forged = forge_hermes(real, topics, words); provenance["forger"] = "Hermes Agent (Modal app not deployed)"
@@ -242,6 +266,7 @@ def build_case(pdf: Path, fakes=3, n_real=6, seed=None, difficulty="normal", rou
     # A forgery that copies the original isn't a forgery: re-forge on spare topics, then drop it.
     spare = list(case["topics"][fakes:])
     kept = []
+    who = dict(zip(topics, forger_names or []))
     for f, tp in zip(forged, topics):
         for attempt in range(3):
             ov = overlap(f, source)
@@ -258,7 +283,7 @@ def build_case(pdf: Path, fakes=3, n_real=6, seed=None, difficulty="normal", rou
     forged, topics = [k[0] for k in kept], [k[1] for k in kept]
     log("forge", "verbatim overlap: " + ", ".join(f"{overlap(f, source):.0%}" for f in forged))
     log("forge", f"{len(forged)} forgeries via {provenance['forger']}")
-    exhibits = [{"text": t, "forged": False} for t in real] + [{"text": t, "forged": True, "topic": tp} for t, tp in zip(forged, topics)]
+    exhibits = [{"text": t, "forged": False} for t in real] + [{"text": t, "forged": True, "topic": (f"{who[tp]} — {tp}" if tp in who else tp)} for t, tp in zip(forged, topics)]
     rng.shuffle(exhibits)
     # 4 forensics (parallel)
     if os.environ.get("PANGRAM_API_KEY"):

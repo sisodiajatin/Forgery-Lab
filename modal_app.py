@@ -14,8 +14,9 @@ app = modal.App("forgery-lab")
 image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("fastapi[standard]", "python-multipart", "pypdf", "requests", "modal")
-    .env({"FL_LLM": "modal"})
+    .env({"FL_LLM": "modal", "FL_FORGER": "api"})
     .add_local_file("build_case.py", "/app/build_case.py")
+    .add_local_file("forgers.py", "/app/forgers.py")
     .add_local_dir("game", "/app/game")
 )
 vol = modal.Volume.from_name("forgery-lab-cases", create_if_missing=True)
@@ -27,7 +28,7 @@ a.case{display:block;margin:16px 0;padding:20px 22px;background:#efe6d2;color:#1
 a.case small{display:block;font-size:13px;color:#6b5c40;margin-top:4px}a{color:#c9a24f}.nav{margin-bottom:20px;font-size:14px}
 .drop{margin:22px 0;border:2px dashed #c9a24f;padding:36px;text-align:center;cursor:pointer;display:block}
 button{font-family:inherit;font-size:16px;background:#c9a24f;color:#14110d;border:0;padding:12px 22px;cursor:pointer}#st{margin-top:16px;color:#a89a7d}</style>"""
-NAV = '<div class=nav><a href="/">Report</a> · <a href="/play">Play the human round</a> · <a href="/try">Try your own PDF</a></div>'
+NAV = '<div class=nav><a href="/">Report</a> · <a href="/play">Play the human round</a> · <a href="/try">📄 Upload your own PDF</a></div>'
 LABELS = {"1709.02445v2": ("Science paper", "Wu, Wang & Evans (2017) — team size & disruption"),
           "court_romanko_2014": ("Court opinion", "State of Connecticut v. Romanko (2014)"),
           "gov_report": ("Government report", "GAO-14-344, information security at small agencies (2014)")}
@@ -44,7 +45,7 @@ if(!r.ok)return st.textContent='Case failed: '+(j.detail||r.status);location.hre
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("forgery-lab-keys")], volumes={"/data": vol},
-              timeout=900, max_containers=10)
+              timeout=900, max_containers=10, scaledown_window=600)
 @modal.asgi_app()
 def web():
     import json, sys, tempfile, time, uuid
@@ -81,6 +82,9 @@ def web():
             return page("<main>" + NAV + "<h1>FORGERY <em>LAB</em></h1><p>Report not published yet.</p></main>")
         banner = ("<div id=hv style='position:sticky;top:0;z-index:9;background:#c9a24f;color:#14110d;padding:10px 18px;"
                   "font-family:Special Elite,monospace;text-align:center'>Loading humans vs detector…</div>"
+                  "<a href=/try style='position:fixed;right:22px;bottom:22px;z-index:10;background:#efe6d2;color:#14110d;border:3px solid #c9a24f;"
+                  "padding:14px 20px;font-family:Special Elite,monospace;font-size:17px;text-decoration:none;box-shadow:0 10px 26px rgba(0,0,0,.6)'>"
+                  "📄 Upload your own PDF ▸</a>"
                   "<script>fetch('/human/stats').then(r=>r.json()).then(s=>{document.getElementById('hv').innerHTML=s.players?"
                   "`<b>HUMANS vs DETECTOR</b> (live): ${s.players} rounds played · humans caught ${s.human_caught_pct}% of forgeries · accuracy humans ${s.human_accuracy_pct}% vs Pangram ${s.lab_accuracy_pct}% · <a href=/play style='color:#14110d'>play ▸</a>`"
                   ":`<b>HUMANS vs DETECTOR</b> — no human players yet. Can you beat Pangram? <a href=/play style='color:#14110d'>Play the human round ▸</a>`})</script>")
