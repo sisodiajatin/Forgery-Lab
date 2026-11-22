@@ -130,7 +130,7 @@ def web():
 
     @api.get("/play/{doc}", response_class=HTMLResponse)
     def play_doc(doc: str):
-        if not doc.replace("_", "").isalnum() or (html := cached(site / f"human_{doc}.html")) is None:
+        if not doc.replace("_", "").replace(".", "").isalnum() or (html := cached(site / f"human_{doc}.html")) is None:
             raise HTTPException(404)
         return html
 
