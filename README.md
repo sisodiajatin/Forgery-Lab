@@ -1,17 +1,42 @@
-# FORGERY LAB 🕵️ — a stress test for AI detectors
+# Forgery Lab — a stress test for AI detectors
 
 **Can an AI detector be trusted on *your* kind of documents?**
-Schools, hiring teams and publishers make real decisions with AI detectors: failing a student, rejecting an
-applicant, pulling an article. Forgery Lab finds out how well a detector holds up. AI forgers attack it using
-real human documents, rewrite their fakes when they get caught, and the results go into a plain-English trust report.
 
-**Live demo:** https://jatinsisodiausa--forgery-lab-web.us-east.modal.run
-(report · `/play` human round · `/try` your own PDF)
+Schools, hiring teams and publishers already use AI detectors to make real decisions: failing a student, rejecting an
+applicant, pulling an article. Almost nobody checks how well the detector works on their own kind of writing.
+Forgery Lab does. AI forgers attack the detector with fake paragraphs written in the voice of real human documents,
+and they rewrite every time they get caught. The results become a plain-English trust report.
 
-## Headline results (`runs/combined` = `full` + `big` + `speech`, false alarms from `genuine_all`)
-**427 valid attacks** (440 attempted, 13 errors) · **4 human-written documents** (science paper, court opinion,
-government report, policy speech) · 4 forger models · up to 3 rewrite rounds. False alarms were measured on
-**every** usable real paragraph (156), not a sample. All intervals are 95% Wilson intervals.
+**Live site:** https://jatinsisodiausa--forgery-lab-web.us-east.modal.run
+
+| Page | What it does |
+|---|---|
+| `/` | The stress-test report: verdict, forger leaderboard, round-by-round chart, what fooled the detector |
+| `/play` | The human round: spot the forgeries yourself, then compare your calls with the detector's |
+| `/try` | Test your own PDF: three AI forgers plant paragraphs in it, and you get a playable board in about 15 seconds |
+
+## What it solves
+A wrong AI-detector verdict can hurt someone either way:
+- **A false accusation:** an honest student or applicant is flagged as AI and punished.
+- **False confidence:** someone who rewrites AI text slips through, while the institution thinks it's protected.
+
+Forgery Lab measures both risks before you rely on the tool:
+
+| Question | What we measure |
+|---|---|
+| Will it wrongly accuse honest people? | The false-alarm rate on real human writing |
+| Can a determined cheater beat it? | The evasion rate after rewrites |
+| Which AI tools get past it? | A forger leaderboard |
+| Is it reliable for *our* documents? | Results broken down by document type |
+| What does AI text that slips through look like? | An analysis of what fooled the detector |
+| Can people spot it themselves? | The human round, comparing people with the detector |
+
+It doesn't decide whether a particular person cheated. It tells you how much weight a detector's verdict deserves.
+
+## Headline results
+**427 valid attacks** (440 attempted, 13 errors) on **4 human-written documents** (a science paper, a court opinion,
+a government report and a policy speech), by **4 forger models**, each allowed up to 3 rewrites. False alarms were
+measured on **every** usable real paragraph (156), not a sample. All intervals are 95% Wilson intervals.
 
 | | Rate | 95% CI |
 |---|---|---|
@@ -19,12 +44,12 @@ government report, policy speech) · 4 forger models · up to 3 rewrite rounds. 
 | Evaded the detector after rewrites | **32.6%** (139/427) | 28.3–37.1% |
 | Real human paragraphs wrongly flagged | **0.0%** (0/156) | 0.0–2.4% |
 
-| Forger | Evaded after rewrites | 95% CI | Avg AI score, first → best |
+| Forger | Evaded after rewrites | 95% CI | Avg AI score, first try → best |
 |---|---|---|---|
 | GLM 5.3 Flash | **70.1%** (68/97) | 60.4–78.3% | 55% → 34% |
 | Kimi K3.1 Pro | **47.3%** (52/110) | 38.2–56.5% | 85% → 54% |
 | DeepSeek V4.1 Flash 1017 | 14.5% (16/110) | 9.2–22.3% | 93% → 82% |
-| Hermes-3 8B (self-hosted on Modal GPU) | 2.7% (3/110) | 0.9–7.7% | 98% → 94% |
+| Hermes-3 8B (self-hosted on a Modal GPU) | 2.7% (3/110) | 0.9–7.7% | 98% → 94% |
 
 | Document | Evaded | 95% CI | False alarms |
 |---|---|---|---|
@@ -35,45 +60,57 @@ government report, policy speech) · 4 forger models · up to 3 rewrite rounds. 
 
 **Main findings:**
 - **Pangram never wrongly accused a human.** 0 of 156 real paragraphs were flagged.
-- **But it can be beaten by rewriting.** A third of forgeries got through after up to 3 rewrites, and how often depends heavily on the forger model and the document type.
-- **It held completely on the policy speech:** 227 rewrite attempts were all caught. It was weakest on dense institutional prose (government and legal writing).
+- **But it can be beaten by rewriting.** About a third of forgeries got through after up to 3 rewrites. How often depends heavily on the forger model, and the differences between forgers are statistically clear (the intervals don't overlap).
+- **The document type matters too.** The detector was weakest on dense institutional prose (government and legal writing). On the policy speech it caught everything, including all 227 rewrite attempts.
+- **What fooled it:** Hermes Agent compared the forgeries that got through with the ones that were caught, using style features measured by code. The ones that got through were shorter and had more numbers and citations, and their sentence lengths varied more.
 
-**A methodology catch worth knowing.** Reducto's `summarize_figures` option is on by default and inserts
-**AI-written figure descriptions** into the parsed text. In our first runs these were counted as "human" paragraphs,
-so Pangram's correct AI flags on them looked like false alarms (3/58). We now turn the option off, drop figure blocks,
-and keep a regression test for it. If you build human-vs-AI datasets from parsed PDFs, check for this.
+**Verdict: use with caution.** Pangram is a strong first filter and fair to humans, but it isn't proof on its own.
+
+## The human round
+Each board on `/play` shows **9 paragraphs, labelled Exhibit A to I**:
+- **6 are real paragraphs** taken word for word from the original document.
+- **3 are AI forgeries**, chosen from the hardest ones in the benchmark, mostly forgeries that already fooled Pangram.
+
+The exhibits are shuffled, so the letter means nothing. You mark the 3 you suspect and press **Reveal and score**.
+Each exhibit then shows:
+- whether it was forged or genuine, and whether you called it right
+- Pangram's AI score
+- for forgeries, which model wrote it and how its AI score fell with each rewrite
+
+Your score is compared with Pangram's on the same 9 exhibits and added to a live "humans vs the detector" count in the report.
 
 ## How it works
 | Stage | Tool | Role |
 |---|---|---|
 | Read | **Reducto** | Parses real human PDFs into clean paragraphs (pypdf fallback) |
-| Plan | **Hermes Agent** | Proposes topics that fit the document but aren't in it. Writes the final verdict from the measured numbers |
-| Judge | DeepSeek V4.1 Flash | Rejects topics the document already covers. Rejects forgeries that paraphrase the source |
-| Attack | **Modal** | Hermes-3 8B on our own L40S GPU (vLLM), plus Kimi K3.1 Pro, GLM 5.3 Flash and DeepSeek V4.1 Flash on Modal Model APIs, all attacking in parallel |
-| Detect | **Pangram** | Scores every forgery and every genuine paragraph. Caught forgeries get the flagged passages back and rewrite |
-| Play | Case-board game | The forgeries that fooled the detector, mixed with real paragraphs, so humans can take on the same test |
+| Plan | **Hermes Agent** | Picks topics that fit the document but aren't in it. Analyses what fooled the detector and writes the verdict |
+| Judge | DeepSeek V4.1 Flash | Rejects topics the document already covers, and forgeries that paraphrase the source |
+| Attack | **Modal** | Hermes-3 8B on our own L40S GPU (vLLM), plus Kimi K3.1 Pro, GLM 5.3 Flash and DeepSeek V4.1 Flash on Modal Model APIs, attacking in parallel. Modal also hosts the web app |
+| Detect | **Pangram** | Scores every forgery and every real paragraph. A caught forgery gets the flagged passages back and is rewritten |
+| Play | Case-board game | The forgeries that fooled the detector, mixed with real paragraphs, so people can take the same test |
 
-**Integrity checks (validated by `check.py`):**
+## Integrity checks
 - **Copying:** forgeries that copy more than 10% of the source verbatim (8-word sequences) are discarded.
-- **Paraphrasing:** forgeries a judge model finds restating the source are discarded too.
+- **Paraphrasing:** forgeries a judge model finds restating the source are discarded too. The judge is calibrated: it flags 4 of 4 real paragraphs and passes 4 of 4 genuinely new forgeries.
 - **Topics:** topics the document already covers are thrown out before any forging.
-- **Human baseline:** genuine paragraphs are scored as well, to measure false alarms, with duplicates removed across runs.
-- **Calibrated paraphrase judge:** it flags 4/4 real paragraphs as restating the source and passes 4/4 novel forgeries.
-- **Agent output is fact-checked by code:** every number Hermes Agent writes in the verdict and analysis is matched against
-  the measured data, and anything unmatched is flagged in the report.
-- **Famous-document trap:** we learned this the hard way. Models have memorised famous papers ("Attention Is All You Need"), so forgeries of them are recall rather than forgery. Use obscure documents written before 2022.
+- **False alarms:** every usable real paragraph is scored, with duplicates removed across runs.
+- **Agent output is fact-checked by code:** every number Hermes Agent writes is matched against the measured data, and anything unmatched is flagged in the report.
+- **The famous-document trap:** models have memorised famous papers like "Attention Is All You Need", so forgeries of them are recall rather than forgery. Use obscure documents written before 2022.
+- **The figure-caption trap:** Reducto's `summarize_figures` option is on by default and inserts **AI-written figure descriptions** into the parsed text. In our first runs these were counted as "human" paragraphs, so Pangram's correct flags on them looked like false alarms (3/58). We now turn the option off, drop figure blocks and keep a regression test for it. If you build human-vs-AI datasets from parsed PDFs, check for this.
+
+## Testing
+- `python -m pytest -q tests`: 12 offline tests covering the statistics, the integrity checks, the number fact-checker, report consistency and the figure-caption regression. They run in GitHub Actions on every push.
+- `python check.py`: 13 live checks covering every forger endpoint, every page of the site, a real PDF upload and the paraphrase-judge calibration.
 
 ## Run it
 ```bash
-uv venv .venv -p 3.13 && uv pip install -p .venv modal pypdf requests
+uv venv .venv -p 3.13 && uv pip install -p .venv modal pypdf requests pytest
 cp .env.example .env            # fill in Reducto, Pangram and the Modal Model API endpoints
 .venv/Scripts/modal token new
 .venv/Scripts/modal secret create forgery-lab-keys REDUCTO_API_KEY=... PANGRAM_API_KEY=...
 .venv/Scripts/modal deploy modal_forger.py                      # Hermes-3 GPU forger
 python forgers.py                                               # smoke-test every forger endpoint
 python attack.py samples/*.pdf --per-model 10 --rounds 3 --genuine 10 --out runs/full
-python report.py runs/full                                      # -> runs/full/report.html (Hermes Agent verdict)
-python case_from_run.py runs/full                               # -> human-round boards
 python genuine_all.py samples/*.pdf --out runs/genuine_all     # score EVERY real paragraph (false alarms)
 python report.py runs/full runs/big runs/speech --genuine runs/genuine_all --out runs/combined
 python case_from_run.py runs/full runs/big runs/speech --genuine runs/genuine_all --out runs/combined
@@ -86,11 +123,22 @@ python check.py                                                 # live smoke tes
 - `attack.py`: the parallel attack runner (forge → integrity checks → Pangram → rewrite loop)
 - `forgers.py`: OpenAI-compatible client for Modal Model APIs
 - `modal_forger.py`: Hermes-3 8B on a Modal GPU (vLLM)
+- `genuine_all.py`: scores every real paragraph to measure false alarms
 - `report.py` + `game/report_template.html`: the trust-report dashboard
 - `case_from_run.py` + `game/template.html`: the human-round case boards
-- `modal_app.py` + `publish.py`: the public web app on Modal
-- `fl_stats.py`: Wilson intervals, integrity checks, style features, number fact-checker (pure, tested)
-- `tests/test_offline.py` + `check.py`: offline tests (CI) and live smoke test
-- `build_case.py`: single-PDF pipeline (Reducto parse, Hermes director, Pangram), also behind `/try`
+- `modal_app.py` + `publish.py`: the public web app on Modal, with live upload progress
+- `fl_stats.py`: Wilson intervals, integrity checks, style features and the number fact-checker (pure, tested)
+- `build_case.py`: the single-PDF pipeline (Reducto parse, Hermes director, Pangram) behind `/try`
+- `tests/` + `check.py`: offline tests and the live smoke test
 
-Sample documents (all public, written by humans before 2018): Wu, Wang & Evans (2017), arXiv:1709.02445; *State v. Romanko* (Conn. 2014); GAO-14-344 (2014); Lael Brainard, "The Federal Reserve's Financial Stability Agenda" (Dec 2014).
+## Sources and credits
+**Sample documents** (all public, written by people before 2018):
+- Wu, Wang & Evans (2017), arXiv:1709.02445
+- *State v. Romanko* (Connecticut, 2014)
+- GAO-14-344 (2014)
+- Lael Brainard, "The Federal Reserve's Financial Stability Agenda" (December 2014)
+
+**Design:** the site's design pass used [unslop](https://github.com/heydamir/unslop) by Damir Sokolovsky
+([@heydamir](https://x.com/heydamir)), CC BY 4.0.
+
+**Built with:** Hermes Agent (Nous Research), Reducto, Pangram and Modal.
