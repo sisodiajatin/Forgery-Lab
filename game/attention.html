@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FORGERY LAB</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1b1712; --paper:#efe6d2; --paper2:#e5d8bb; --red:#a3271c; --green:#2f6b3a; --brass:#b08a3e; --desk:#16130f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(ellipse at 50% -10%, #3a2f22 0%, var(--desk) 60%) fixed; color:var(--paper); font-family:'IBM Plex Mono', monospace; min-height:100vh; }
+  body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px); mix-blend-mode:multiply; }
+  header { max-width:1100px; margin:0 auto; padding:40px 24px 10px; }
+  .stamp { display:inline-block; border:3px solid var(--red); color:var(--red); padding:4px 12px; font-family:'Special Elite'; letter-spacing:3px; transform:rotate(-3deg); font-size:13px; }
+  h1 { font-family:'Playfair Display'; font-size:clamp(34px,6vw,64px); margin:12px 0 4px; letter-spacing:1px; }
+  h1 em { color:var(--brass); font-weight:400; }
+  .sub { color:#b9ab8e; font-size:13px; }
+  .brief { max-width:1100px; margin:18px auto 0; padding:0 24px; }
+  .brief p { font-family:'Special Elite'; font-size:17px; line-height:1.55; background:var(--paper); color:var(--ink); padding:20px 24px; box-shadow:0 12px 30px rgba(0,0,0,.5); transform:rotate(-.4deg); border-left:6px solid var(--brass); }
+  .hud { position:sticky; top:0; z-index:5; background:rgba(22,19,15,.92); backdrop-filter:blur(6px); border-bottom:1px solid #3a3226; }
+  .hud .in { max-width:1100px; margin:0 auto; padding:12px 24px; display:flex; gap:22px; align-items:center; flex-wrap:wrap; font-size:13px; }
+  .hud b { color:var(--brass); font-size:16px; }
+  button { font-family:'Special Elite'; font-size:15px; letter-spacing:1px; cursor:pointer; border:2px solid var(--brass); background:transparent; color:var(--paper); padding:9px 18px; }
+  button.primary { background:var(--brass); color:var(--desk); }
+  button:disabled { opacity:.35; cursor:not-allowed; }
+  .board { max-width:1100px; margin:26px auto 80px; padding:0 24px; display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:26px; }
+  .card { position:relative; background:linear-gradient(var(--paper),var(--paper2)); color:var(--ink); padding:34px 22px 18px; box-shadow:0 14px 28px rgba(0,0,0,.55); cursor:pointer; transition:transform .2s, box-shadow .2s; font-family:'Playfair Display'; font-size:15.5px; line-height:1.55; }
+  .card:nth-child(3n+1){transform:rotate(-.8deg)} .card:nth-child(3n+2){transform:rotate(.6deg)} .card:nth-child(3n){transform:rotate(-.3deg)}
+  .card:hover { transform:translateY(-4px) rotate(0); box-shadow:0 20px 40px rgba(0,0,0,.7); }
+  .card .no { position:absolute; top:10px; left:22px; font-family:'Special Elite'; font-size:12px; letter-spacing:2px; color:#7a6a4c; }
+  .card .pin { position:absolute; top:-9px; left:50%; width:18px; height:18px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #e05a4a, #6b120b); box-shadow:0 3px 4px rgba(0,0,0,.5); }
+  .card.accused { outline:3px solid var(--red); outline-offset:4px; }
+  .card.accused::after { content:"ACCUSED"; position:absolute; right:14px; top:8px; font-family:'Special Elite'; color:var(--red); border:2px solid var(--red); padding:1px 8px; transform:rotate(6deg); font-size:12px; letter-spacing:2px; }
+  .verdict { margin-top:14px; border-top:1px dashed #9a8a6a; padding-top:10px; font-family:'IBM Plex Mono'; font-size:12px; display:none; }
+  .revealed .verdict { display:block; }
+  .revealed { cursor:default; }
+  .tag { display:inline-block; padding:2px 8px; font-weight:600; letter-spacing:1px; color:#fff; }
+  .tag.f { background:var(--red); } .tag.r { background:var(--green); }
+  .meter { height:8px; background:#cfc2a3; margin:8px 0 4px; position:relative; }
+  .meter i { position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,var(--brass),var(--red)); }
+    mark.ai { background:rgba(163,39,28,.22); border-bottom:2px solid var(--red); color:inherit; }
+  mark.mid { background:rgba(176,138,62,.28); border-bottom:2px solid var(--brass); color:inherit; }
+  .card .sub { color:#5a4c33; font-style:italic; }
+  .result { max-width:1100px; margin:10px auto; padding:0 24px; display:none; }
+  .result .box { border:2px solid var(--brass); padding:22px 26px; background:rgba(0,0,0,.35); }
+  .result h2 { font-family:'Playfair Display'; margin:0 0 6px; font-size:30px; }
+  .result table { border-collapse:collapse; width:100%; font-size:13px; margin-top:12px; }
+  .result td, .result th { border-bottom:1px solid #3a3226; padding:6px 8px; text-align:left; }
+  footer { max-width:1100px; margin:0 auto 40px; padding:0 24px; font-size:11.5px; color:#8f826a; line-height:1.7; }
+  .empty { max-width:700px; margin:80px auto; padding:24px; font-family:'Special Elite'; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CASE = {"case_title": "The Eight-Day Translation", "document_name": "Attention Is All You Need", "briefing": "A manuscript on sequence transduction landed on my desk clean as a new suit, but something's off in the stitching. Nine exhibits, nine paragraphs of dense technical prose \u2014 and somewhere in there, a forger with a thesaurus and no real math slipped in some counterfeit pages. Find the fakes before they get cited.", "topics": ["the computational cost or carbon footprint of training large transformer models", "an anecdote about the paper's internal naming debates or team disagreements during development", "a related-work comparison to earlier attention mechanisms used in image captioning", "a future-work idea about extending the architecture to audio or video modalities", "a practical note on hyperparameter tuning difficulties encountered during experimentation"], "exhibits": [{"text": "For the base models, we used a single model obtained by averaging the last 5 checkpoints, which were written at 10-minute intervals. For the big models, we averaged the last 20 checkpoints. We used beam search with a beam size of 4 and length penalty \\(\\alpha = 0.6\\) [34]. These hyperparameters were chosen after experimentation on the development set. We set the maximum output length during inference to input length + 50, but terminate early when possible [34].", "forged": false, "lab": {"headline": "Human Written", "prediction_short": "Human", "fraction_ai": 2.528661015494476e-38, "fraction_ai_assisted": 2.01771254329944e-31, "fraction_human": 1.0, "windows": [{"start": 0, "end": 465, "label": "Human Written", "score": 1.0088565067485902e-31}]}}, {"text": "Prior work on visual attention for caption generation, such as the mechanism proposed by Xu et al. [37], computes alignment scores between a recurrent decoder state and spatially pooled convolutional features extracted from a fixed grid over the image. These models typically rely on a soft alignment produced by a small feed-forward scoring network, which must be recomputed at every decoding step. Our formulation instead treats the visual regions as a sequence of positions attended to directly, avoiding the recurrent bottleneck entirely.", "forged": true, "topic": "a related-work comparison to earlier attention mechanisms used in image captioning", "lab": {"headline": "AI Generated", "prediction_short": "AI", "fraction_ai": 1.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.3162634696141942e-39, "windows": [{"start": 0, "end": 542, "label": "AI-Generated", "score": 1.0}]}}, {"text": "Training on larger clusters further illustrates the scaling trade-off: several groups have reported runs spanning 256 or more accelerators, where communication overhead between devices becomes the dominant cost rather than the matrix multiplications themselves. Estimates of the energy consumed by such training runs vary widely depending on data center efficiency and local electricity sources, making direct comparisons across studies difficult. We did not measure power draw directly in our experiments, and leave a systematic accounting of hardware utilization and energy cost to future work.", "forged": true, "topic": "the computational cost or carbon footprint of training large transformer models", "lab": {"headline": "AI Generated", "prediction_short": "AI", "fraction_ai": 1.0, "fraction_ai_assisted": 0.0, "fraction_human": 2.971635562401137e-40, "windows": [{"start": 0, "end": 596, "label": "AI-Generated", "score": 1.0}]}}, {"text": "The two most commonly used attention functions are additive attention [2], and dot-product (multiplicative) attention. Dot-product attention is identical to our algorithm, except for the scaling factor of \\(\\sqrt{d_k}\\). Additive attention computes the compatibility function using a feed-forward network with a single hidden layer. While the two are similar in theoretical complexity, dot-product attention is much faster and more space-efficient in practice, since it can be implemented using highly optimized matrix multiplication code.", "forged": false, "lab": {"headline": "Human Written", "prediction_short": "Human", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": [{"start": 0, "end": 539, "label": "Human Written", "score": 0.0}]}}, {"text": "A single convolutional layer with kernel width \\(k < n\\) does not connect all pairs of input and output positions. Doing so requires a stack of \\(O(n/k)\\) convolutional layers in the case of contiguous kernels, or \\(O(\\log_k(n))\\) in the case of dilated convolutions [16], increasing the length of the longest paths between any two positions in the network. Convolutional layers are generally more expensive than recurrent layers, by a factor of \\(k\\). Separable convolutions [6], however, decrease the complexity considerably, to \\(O(k \\cdot n \\cdot d + n \\cdot d^2)\\). Even with \\(k = n\\), however, the complexity of a separable convolution is equal to the combination of a self-attention layer and a point-wise feed-forward layer, the approach we take in our model.", "forged": false, "lab": {"headline": "Human Written", "prediction_short": "Human", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": [{"start": 0, "end": 768, "label": "Human Written", "score": 0.0}]}}, {"text": "We performed only a small number of experiments to select the dropout, both attention and residual (section 5.4), learning rates and beam size on the Section 22 development set, all other parameters remained unchanged from the English-to-German base translation model. During inference, we increased the maximum output length to input length + 300. We used a beam size of 21 and \\(\\alpha = 0.3\\) for both WSJ only and the semi-supervised setting.", "forged": false, "lab": {"headline": "Human Written", "prediction_short": "Human", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": [{"start": 0, "end": 446, "label": "Human Written", "score": 0.0}]}}, {"text": "We are excited about the future of attention-based models and plan to apply them to other tasks. We plan to extend the Transformer to problems involving input and output modalities other than text and to investigate local, restricted attention mechanisms to efficiently handle large inputs and outputs such as images, audio and video. Making generation less sequential is another research goals of ours.", "forged": false, "lab": {"headline": "Human Written", "prediction_short": "Human", "fraction_ai": 2.942726775082116e-44, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": [{"start": 0, "end": 403, "label": "Human Written", "score": 2.942726775082116e-44}]}}, {"text": "Early drafts of the model briefly carried the name \"Simple Net,\" a label the authors dropped after an informal poll suggested it undersold the architecture's departure from recurrence. \"Transformer\" won out in a hallway discussion, chosen for suggesting transformation of representations rather than any relation to the unrelated use of the term elsewhere in machine learning. One co-author reportedly favored \"AllAttention,\" but colleagues judged it awkward to say aloud in talks and difficult to abbreviate consistently across later papers.", "forged": true, "topic": "an anecdote about the paper's internal naming debates or team disagreements during development", "lab": {"headline": "AI Generated", "prediction_short": "AI", "fraction_ai": 1.0, "fraction_ai_assisted": 0.0, "fraction_human": 0.0, "windows": [{"start": 0, "end": 542, "label": "AI-Generated", "score": 1.0}]}}, {"text": "On the WMT 2014 English-to-German translation task, Our big transformer model (Transformer (big) in Table 2) outperforms the best previously reported models (including ensembles) by more than 2.0 BLEU, establishing a new state-of-the-art BLEU score of 28.4. The configuration of this model is listed in the bottom line of Table 3. Training took 3.5 days on 8 P100 GPUs. Even our base model surpasses all previously published models and ensembles, at a fraction of the training cost of any of the previous best models.", "forged": false, "lab": {"headline": "Human Written", "prediction_short": "Human", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": [{"start": 0, "end": 517, "label": "Human Written", "score": 0.0}]}}], "provenance": {"parser": "Reducto /parse", "director": "Hermes Agent (hermes chat -Q)", "forger": "Hermes Agent (Modal app not deployed)", "lab": "Pangram /task"}, "source": "attention.pdf", "built": "2026-11-22 10:42"};
+const app = document.getElementById('app');
+if (!CASE) { app.innerHTML = '<div class="empty">No case loaded. Run <code>python build_case.py your.pdf</code>.</div>'; }
+else {
+  const nF = CASE.exhibits.filter(e => e.forged).length;
+  const accused = new Set(); let solved = false;
+  const hl = (text, wins) => {
+    if (!wins || !wins.length) return null;
+    let out = '', pos = 0;
+    [...wins].filter(w => w.start != null && (w.score||0) > 0.35).sort((a,b)=>a.start-b.start).forEach(w => {
+      if (w.start < pos) return;
+      out += esc(text.slice(pos, w.start)) + `<mark class="${w.score>0.7?'ai':'mid'}" title="${esc(w.label||'')} ${Math.round(100*w.score)}%">${esc(text.slice(w.start, w.end))}</mark>`;
+      pos = w.end; });
+    return out + esc(text.slice(pos));
+  };
+  const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  app.innerHTML = `
+    <header><span class="stamp">CASE FILE · CONFIDENTIAL</span>
+      <h1>FORGERY <em>LAB</em></h1>
+      <div class="sub">${esc(CASE.case_title)} — re: <i>${esc(CASE.document_name)}</i></div></header>
+    <div class="brief"><p>${esc(CASE.briefing)}<br><br>
+      <b>${CASE.exhibits.length} exhibits are pinned to the board. ${nF} of them were written by a machine.</b>
+      Accuse exactly ${nF}. Then send the lot to the forensics lab and see if your gut beats the instruments.</p></div>
+    <div class="hud"><div class="in">
+      <span>Accused: <b id="cnt">0</b> / ${nF}</span>
+      <button class="primary" id="go" disabled>SEND TO THE LAB ▸</button>
+      <span id="hint" class="sub">Click an exhibit to accuse it.</span></div></div>
+    <div class="result" id="result"></div>
+    <div class="board" id="board"></div>
+    <footer>Evidence chain — parser: ${esc(CASE.provenance.parser)} · case director: ${esc(CASE.provenance.director)} ·
+      forger: ${esc(CASE.provenance.forger)} · forensics: ${esc(CASE.provenance.lab)} · ${CASE.provenance.mode?esc(CASE.provenance.mode)+' ·':''} source: ${esc(CASE.source)} · built ${esc(CASE.built)}</footer>`;
+  const board = document.getElementById('board');
+  CASE.exhibits.forEach((ex, i) => {
+    const c = document.createElement('div'); c.className = 'card';
+    c.innerHTML = `<span class="pin"></span><span class="no">EXHIBIT ${String.fromCharCode(65+i)}</span><span class="body">${esc(ex.text)}</span><div class="verdict"></div>`;
+    c.onclick = () => {
+      if (solved) return;
+      if (accused.has(i)) accused.delete(i); else if (accused.size < nF) accused.add(i);
+      c.classList.toggle('accused', accused.has(i));
+      document.getElementById('cnt').textContent = accused.size;
+      document.getElementById('go').disabled = accused.size !== nF;
+    };
+    board.appendChild(c);
+  });
+  document.getElementById('go').onclick = () => {
+    solved = true;
+    let you = 0, lab = 0, labAvail = 0;
+    const rows = [];
+    const ranked = CASE.exhibits.map((e,i)=>[i, e.lab ? e.lab.fraction_ai + 0.5*e.lab.fraction_ai_assisted : null]).filter(x=>x[1]!==null).sort((a,b)=>b[1]-a[1]);
+    const labPicks = new Set(ranked.slice(0, nF).map(x=>x[0]));
+    [...board.children].forEach((c, i) => {
+      const ex = CASE.exhibits[i]; c.classList.add('revealed');
+      const hit = accused.has(i) === ex.forged; if (hit) you++;
+      let labHtml = '<span class="sub">Lab offline</span>';
+      if (ex.lab) { labAvail++; const hitL = labPicks.has(i) === ex.forged; if (hitL) lab++;
+        const p = Math.round(100*(ex.lab.fraction_ai + ex.lab.fraction_ai_assisted));
+        labHtml = `Pangram: <b>${esc(ex.lab.headline||ex.lab.prediction_short||'')}</b> — ${p}% AI<div class="meter"><i style="width:${p}%"></i></div>`; }
+      c.querySelector('.verdict').innerHTML =
+        `<span class="tag ${ex.forged?'f':'r'}">${ex.forged?'FORGED':'GENUINE'}</span> &nbsp;${hit?'✔ you called it':'✘ you missed'}<br>${labHtml}
+         ${ex.forged ? `<div class="sub">Forger's brief: ${esc(ex.topic||'')}</div>` : ''}
+         ${ex.evasion ? `<div class="sub">Forger vs detector: ${ex.evasion.map(s=>Math.round(100*s)+'%').join(' → ')} AI</div>` : ''}`;
+      const h = ex.lab && hl(ex.text, ex.lab.windows); if (h) c.querySelector('.body').innerHTML = h;
+      rows.push(`<tr><td>Exhibit ${String.fromCharCode(65+i)}</td><td>${ex.forged?'Forged':'Genuine'}</td><td>${accused.has(i)?'Accused':'—'}</td><td>${ex.lab?Math.round(100*ex.lab.fraction_ai)+'%':'n/a'}</td></tr>`);
+    });
+    const N = CASE.exhibits.length;
+    const rank = you===N ? 'CHIEF INSPECTOR' : you>=N-2 ? 'DETECTIVE' : you>=N-4 ? 'BEAT COP' : 'MARK — the forger played you';
+    const r = document.getElementById('result');
+    r.innerHTML = `<div class="box"><h2>${rank}</h2>
+      You: <b>${you}/${N}</b> exhibits classified correctly.
+      ${labAvail ? ` &nbsp;·&nbsp; The lab (Pangram, top-${nF} by AI score): <b>${lab}/${N}</b>. ${you>lab?'You beat the machine.':you===lab?'Dead heat with the machine.':'The machine wins this one.'}` : ' Lab offline — add PANGRAM_API_KEY and rebuild for the forensic showdown.'}
+      <table><tr><th>Exhibit</th><th>Truth</th><th>You</th><th>Pangram AI</th></tr>${rows.join('')}</table>
+      <p><button onclick="location.reload()">REOPEN THE CASE</button></p></div>`;
+    r.style.display = 'block'; r.scrollIntoView({behavior:'smooth'});
+    document.getElementById('go').disabled = true;
+  };
+}
+</script>
+</body>
+</html>

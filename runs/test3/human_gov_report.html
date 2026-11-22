@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FORGERY LAB</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1b1712; --paper:#efe6d2; --paper2:#e5d8bb; --red:#a3271c; --green:#2f6b3a; --brass:#b08a3e; --desk:#16130f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(ellipse at 50% -10%, #3a2f22 0%, var(--desk) 60%) fixed; color:var(--paper); font-family:'IBM Plex Mono', monospace; min-height:100vh; }
+  body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px); mix-blend-mode:multiply; }
+  header { max-width:1100px; margin:0 auto; padding:40px 24px 10px; }
+  .stamp { display:inline-block; border:3px solid var(--red); color:var(--red); padding:4px 12px; font-family:'Special Elite'; letter-spacing:3px; transform:rotate(-3deg); font-size:13px; }
+  h1 { font-family:'Playfair Display'; font-size:clamp(34px,6vw,64px); margin:12px 0 4px; letter-spacing:1px; }
+  h1 em { color:var(--brass); font-weight:400; }
+  .sub { color:#b9ab8e; font-size:13px; }
+  .brief { max-width:1100px; margin:18px auto 0; padding:0 24px; }
+  .brief p { font-family:'Special Elite'; font-size:17px; line-height:1.55; background:var(--paper); color:var(--ink); padding:20px 24px; box-shadow:0 12px 30px rgba(0,0,0,.5); transform:rotate(-.4deg); border-left:6px solid var(--brass); }
+  .hud { position:sticky; top:0; z-index:5; background:rgba(22,19,15,.92); backdrop-filter:blur(6px); border-bottom:1px solid #3a3226; }
+  .hud .in { max-width:1100px; margin:0 auto; padding:12px 24px; display:flex; gap:22px; align-items:center; flex-wrap:wrap; font-size:13px; }
+  .hud b { color:var(--brass); font-size:16px; }
+  button { font-family:'Special Elite'; font-size:15px; letter-spacing:1px; cursor:pointer; border:2px solid var(--brass); background:transparent; color:var(--paper); padding:9px 18px; }
+  button.primary { background:var(--brass); color:var(--desk); }
+  button:disabled { opacity:.35; cursor:not-allowed; }
+  .board { max-width:1100px; margin:26px auto 80px; padding:0 24px; display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:26px; }
+  .card { position:relative; background:linear-gradient(var(--paper),var(--paper2)); color:var(--ink); padding:34px 22px 18px; box-shadow:0 14px 28px rgba(0,0,0,.55); cursor:pointer; transition:transform .2s, box-shadow .2s; font-family:'Playfair Display'; font-size:15.5px; line-height:1.55; }
+  .card:nth-child(3n+1){transform:rotate(-.8deg)} .card:nth-child(3n+2){transform:rotate(.6deg)} .card:nth-child(3n){transform:rotate(-.3deg)}
+  .card:hover { transform:translateY(-4px) rotate(0); box-shadow:0 20px 40px rgba(0,0,0,.7); }
+  .card .no { position:absolute; top:10px; left:22px; font-family:'Special Elite'; font-size:12px; letter-spacing:2px; color:#7a6a4c; }
+  .card .pin { position:absolute; top:-9px; left:50%; width:18px; height:18px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #e05a4a, #6b120b); box-shadow:0 3px 4px rgba(0,0,0,.5); }
+  .card.accused { outline:3px solid var(--red); outline-offset:4px; }
+  .card.accused::after { content:"ACCUSED"; position:absolute; right:14px; top:8px; font-family:'Special Elite'; color:var(--red); border:2px solid var(--red); padding:1px 8px; transform:rotate(6deg); font-size:12px; letter-spacing:2px; }
+  .verdict { margin-top:14px; border-top:1px dashed #9a8a6a; padding-top:10px; font-family:'IBM Plex Mono'; font-size:12px; display:none; }
+  .revealed .verdict { display:block; }
+  .revealed { cursor:default; }
+  .tag { display:inline-block; padding:2px 8px; font-weight:600; letter-spacing:1px; color:#fff; }
+  .tag.f { background:var(--red); } .tag.r { background:var(--green); }
+  .meter { height:8px; background:#cfc2a3; margin:8px 0 4px; position:relative; }
+  .meter i { position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,var(--brass),var(--red)); }
+    mark.ai { background:rgba(163,39,28,.22); border-bottom:2px solid var(--red); color:inherit; }
+  mark.mid { background:rgba(176,138,62,.28); border-bottom:2px solid var(--brass); color:inherit; }
+  .card .sub { color:#5a4c33; font-style:italic; }
+  .result { max-width:1100px; margin:10px auto; padding:0 24px; display:none; }
+  .result .box { border:2px solid var(--brass); padding:22px 26px; background:rgba(0,0,0,.35); }
+  .result h2 { font-family:'Playfair Display'; margin:0 0 6px; font-size:30px; }
+  .result table { border-collapse:collapse; width:100%; font-size:13px; margin-top:12px; }
+  .result td, .result th { border-bottom:1px solid #3a3226; padding:6px 8px; text-align:left; }
+  footer { max-width:1100px; margin:0 auto 40px; padding:0 24px; font-size:11.5px; color:#8f826a; line-height:1.7; }
+  .empty { max-width:700px; margin:80px auto; padding:24px; font-family:'Special Elite'; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CASE = {"case_title": "The Government report Job", "document_name": "Government report", "briefing": "These paragraphs come from a real government report, written by people years before AI writing tools. 3 of them were planted by AI forgers who rewrote their work until a professional detector stopped catching them. The detector got fooled. Will you?", "exhibits": [{"text": "Small federal agencies have reported a number of incidents that have placed sensitive information at risk, with potentially serious impacts on federal operations, assets, and people. According to DHS, the number of reported security incidents for small agencies from fiscal year 2009 to fiscal year 2013 ranged from 2,168 to 3,144. Incidents involving PII at small agencies increased from 258 in fiscal year 2009 to 664 in fiscal year 2013. In addition, in fiscal year 2013, small agencies reported 2,653 incidents to US-CERT. Table 2 describes the incident categories as defined by US-CERT.", "forged": false, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}}, {"text": "This is a work of the U.S. government and is not subject to copyright protection in the United States. The published product may be reproduced and distributed in its entirety without further permission from GAO. However, because this work may contain copyrighted images or other material, permission from the copyright holder may be necessary if you wish to reproduce this material separately.", "forged": false, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}}, {"text": "\u2022 A third agency hired an independent contractor in fiscal year 2012 to test or review management, operational, and technical controls for its general support system. However, the contractor did not test all controls for the system. According to an agency official, controls not tested were not within the contracted scope of the assessment. The agency plans to conduct a security assessment and authorization for its new system in fiscal year 2014.", "forged": false, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}}, {"text": "The E-Government Act requires that agencies conduct privacy impact assessments (PIA) for systems or collections containing personal information. In addition, agencies must ensure the review of the PIA and, if practicable, make the PIA publicly available through the agency\u2019s website, publication in the <i>Federal Register<\/i>, or other means. OMB guidance elaborates on the PIA process by stating, for example, that agencies are required to conduct PIAs when a system change creates new privacy risks (e.g., changing the way in which personal information is being used). According to OMB, the PIA requirement does not apply to all systems. For example, no assessment is required when the information collected relates to internal government operations, the information has been previously assessed under an evaluation similar to a PIA, or when privacy issues are unchanged.", "forged": false, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}}, {"text": "Budget constraints, according to officials from four of the six agencies we reviewed, limited their ability to implement information security controls. Two of these agencies\u2014each with fewer than 300 employees\u2014said their security budgets had remained essentially flat since fiscal year 2010, and one reported that a hiring freeze had left a security specialist position vacant for more than a year. At another agency, enhancements to continuous monitoring that had been planned for fiscal year 2014 were postponed.", "forged": true, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}, "topic": "GLM 5.3 Flash \u2014 Budget or funding constraints that limit small agencies' ability to implement security controls", "evasion": [0.768, 0.0]}, {"text": "For fiscal years 2011 through 2013, US-CERT incident reports from the six agencies we reviewed were sparse; one agency logged a single event. We did not treat those counts as a basis for comparing breach rates with larger agencies. Reporting thresholds vary by agency, and US-CERT records lack the completeness needed for a rate calculation. Limited reporting histories and small user populations at the six agencies further complicate any comparison with larger agencies' totals.", "forged": true, "lab": {"headline": "AI Detected", "fraction_ai": 0.852, "fraction_ai_assisted": 0.0, "fraction_human": 0.14800000000000002, "windows": []}, "topic": "DeepSeek V4.1 Flash 1017 \u2014 Comparison of small agency breach rates to those of large federal agencies", "evasion": [1.0, 1.0, 0.852]}, {"text": "Officials at four agencies identified funding as a challenge to implementing their information security programs. According to officials at one agency, its security budget had remained essentially unchanged since fiscal year 2010, leaving little for training or contractor support after routine system maintenance. Another agency used staff with responsibilities outside security to perform control assessments and did not complete all planned testing. Officials said they addressed higher-risk weaknesses first and deferred other corrective actions until funding became available.", "forged": true, "lab": {"headline": "Human Written", "fraction_ai": 0.46, "fraction_ai_assisted": 0.0, "fraction_human": 0.54, "windows": []}, "topic": "Kimi K3.1 Pro \u2014 Budget or funding constraints that limit small agencies' ability to implement security controls", "evasion": [1.0, 0.46]}], "source": "gov_report", "built": "2026-11-22 12:31", "provenance": {"parser": "Reducto", "director": "Hermes Agent", "forger": "DeepSeek V4.1 Flash 1017, GLM 5.3 Flash, Kimi K3.1 Pro", "lab": "Pangram (best score after rewrites)", "mode": "human round from benchmark 'test3'"}};
+const app = document.getElementById('app');
+if (!CASE) { app.innerHTML = '<div class="empty">No case loaded. Run <code>python build_case.py your.pdf</code>.</div>'; }
+else {
+  const nF = CASE.exhibits.filter(e => e.forged).length;
+  const accused = new Set(); let solved = false;
+  const hl = (text, wins) => {
+    if (!wins || !wins.length) return null;
+    let out = '', pos = 0;
+    [...wins].filter(w => w.start != null && (w.score||0) > 0.35).sort((a,b)=>a.start-b.start).forEach(w => {
+      if (w.start < pos) return;
+      out += esc(text.slice(pos, w.start)) + `<mark class="${w.score>0.7?'ai':'mid'}" title="${esc(w.label||'')} ${Math.round(100*w.score)}%">${esc(text.slice(w.start, w.end))}</mark>`;
+      pos = w.end; });
+    return out + esc(text.slice(pos));
+  };
+  const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  app.innerHTML = `
+    <header><span class="stamp">CASE FILE · CONFIDENTIAL</span>
+      <h1>FORGERY <em>LAB</em></h1>
+      <div class="sub">${esc(CASE.case_title)} — re: <i>${esc(CASE.document_name)}</i></div></header>
+    <div class="brief"><p>${esc(CASE.briefing)}<br><br>
+      <b>${CASE.exhibits.length} exhibits are pinned to the board. ${nF} of them were written by a machine.</b>
+      Accuse exactly ${nF}. Then send the lot to the forensics lab and see if your gut beats the instruments.</p></div>
+    <div class="hud"><div class="in">
+      <span>Accused: <b id="cnt">0</b> / ${nF}</span>
+      <button class="primary" id="go" disabled>SEND TO THE LAB ▸</button>
+      <span id="hint" class="sub">Click an exhibit to accuse it.</span></div></div>
+    <div class="result" id="result"></div>
+    <div class="board" id="board"></div>
+    <footer>Evidence chain — parser: ${esc(CASE.provenance.parser)} · case director: ${esc(CASE.provenance.director)} ·
+      forger: ${esc(CASE.provenance.forger)} · forensics: ${esc(CASE.provenance.lab)} · ${CASE.provenance.mode?esc(CASE.provenance.mode)+' ·':''} source: ${esc(CASE.source)} · built ${esc(CASE.built)}</footer>`;
+  const board = document.getElementById('board');
+  CASE.exhibits.forEach((ex, i) => {
+    const c = document.createElement('div'); c.className = 'card';
+    c.innerHTML = `<span class="pin"></span><span class="no">EXHIBIT ${String.fromCharCode(65+i)}</span><span class="body">${esc(ex.text)}</span><div class="verdict"></div>`;
+    c.onclick = () => {
+      if (solved) return;
+      if (accused.has(i)) accused.delete(i); else if (accused.size < nF) accused.add(i);
+      c.classList.toggle('accused', accused.has(i));
+      document.getElementById('cnt').textContent = accused.size;
+      document.getElementById('go').disabled = accused.size !== nF;
+    };
+    board.appendChild(c);
+  });
+  document.getElementById('go').onclick = () => {
+    solved = true;
+    let you = 0, lab = 0, labAvail = 0;
+    const rows = [];
+    // the lab flags what a real user of the detector would: anything scored >= 50% AI
+    const labPicks = new Set(CASE.exhibits.map((e,i)=>[i, e.lab ? e.lab.fraction_ai + 0.5*e.lab.fraction_ai_assisted : -1]).filter(x=>x[1]>=0.5).map(x=>x[0]));
+    [...board.children].forEach((c, i) => {
+      const ex = CASE.exhibits[i]; c.classList.add('revealed');
+      const hit = accused.has(i) === ex.forged; if (hit) you++;
+      let labHtml = '<span class="sub">Lab offline</span>';
+      if (ex.lab) { labAvail++; const hitL = labPicks.has(i) === ex.forged; if (hitL) lab++;
+        const p = Math.round(100*(ex.lab.fraction_ai + ex.lab.fraction_ai_assisted));
+        labHtml = `Pangram: <b>${esc(ex.lab.headline||ex.lab.prediction_short||'')}</b> — ${p}% AI<div class="meter"><i style="width:${p}%"></i></div>`; }
+      c.querySelector('.verdict').innerHTML =
+        `<span class="tag ${ex.forged?'f':'r'}">${ex.forged?'FORGED':'GENUINE'}</span> &nbsp;${hit?'✔ you called it':'✘ you missed'}<br>${labHtml}
+         ${ex.forged ? `<div class="sub">Forger's brief: ${esc(ex.topic||'')}</div>` : ''}
+         ${ex.evasion ? `<div class="sub">Forger vs detector: ${ex.evasion.map(s=>Math.round(100*s)+'%').join(' → ')} AI</div>` : ''}`;
+      const h = ex.lab && hl(ex.text, ex.lab.windows); if (h) c.querySelector('.body').innerHTML = h;
+      rows.push(`<tr><td>Exhibit ${String.fromCharCode(65+i)}</td><td>${ex.forged?'Forged':'Genuine'}</td><td>${accused.has(i)?'Accused':'—'}</td><td>${ex.lab?Math.round(100*ex.lab.fraction_ai)+'%':'n/a'}</td></tr>`);
+    });
+    const N = CASE.exhibits.length;
+    const rank = you===N ? 'CHIEF INSPECTOR' : you>=N-2 ? 'DETECTIVE' : you>=N-4 ? 'BEAT COP' : 'MARK — the forger played you';
+    const r = document.getElementById('result');
+    r.innerHTML = `<div class="box"><h2>${rank}</h2>
+      You: <b>${you}/${N}</b> exhibits classified correctly.
+      ${labAvail ? ` &nbsp;·&nbsp; The lab (Pangram, flags ≥50% AI): <b>${lab}/${N}</b>. ${you>lab?'You beat the machine.':you===lab?'Dead heat with the machine.':'The machine wins this one.'}` : ' Lab offline — add PANGRAM_API_KEY and rebuild for the forensic showdown.'}
+      <table><tr><th>Exhibit</th><th>Truth</th><th>You</th><th>Pangram AI</th></tr>${rows.join('')}</table>
+      <p><button onclick="location.reload()">REOPEN THE CASE</button></p></div>`;
+    r.style.display = 'block'; r.scrollIntoView({behavior:'smooth'});
+    // record the human round (local history + server, if served by the Modal app)
+    const rec = {source: CASE.source, at: new Date().toISOString(), total: N, correct: you, lab_correct: labAvail ? lab : null,
+                 forged: CASE.exhibits.map((e,i)=>({forged: e.forged, accused: accused.has(i)}))};
+    try { const h = JSON.parse(localStorage.getItem('fl_human')||'[]'); h.push(rec); localStorage.setItem('fl_human', JSON.stringify(h)); } catch(e) {}
+    if (location.protocol.startsWith('http')) fetch('/human', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(rec)}).catch(()=>{});
+    const caughtF = rec.forged.filter(x=>x.forged && x.accused).length, nf = rec.forged.filter(x=>x.forged).length;
+    r.querySelector('.box').insertAdjacentHTML('beforeend', `<p class="sub">You caught ${caughtF} of ${nf} forgeries. Result saved for the stress-test report.</p>`);
+    document.getElementById('go').disabled = true;
+  };
+}
+</script>
+</body>
+</html>

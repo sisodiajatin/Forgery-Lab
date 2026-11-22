@@ -1,0 +1,102 @@
+{
+  "verdict": {
+    "headline": "Pangram catches most first-try AI fakes but one in four get through on a retry, and it flagged a real human paper as fake.",
+    "verdict": "USE WITH CAUTION",
+    "findings": [
+      "Caught 91.7% of forged paragraphs on the first attempt (22/24), but after rewrites the evasion rate rose to 25.0% (n=24 attacks)",
+      "False alarm rate on genuine human text was 8.3% (1 of 12 flagged), with the single false alarm landing on the science paper (1709.02445v2, 4/4 genuine samples from that doc)",
+      "Performance varied sharply by model: Hermes-3 8B was caught 100% of the time with 0.0% evasion, while GLM 5.3 Flash evaded 50.0% of the time (n=6 attempts each)",
+      "Document type mattered too: the court opinion and government report each saw 37.5% evasion after rewrite, versus 0.0% for the science paper"
+    ],
+    "advice": [
+      "Never treat a single detector score as a verdict - use it as one signal among several (process, interview, metadata)",
+      "Expect roughly 1 in 12 genuine human documents to get falsely flagged based on this sample, so always allow an appeal or human review path",
+      "Assume a determined adversary who rewrites after detection can evade roughly 1 in 4 times - don't rely on detectors alone for high-stakes decisions"
+    ]
+  },
+  "source": "Hermes Agent",
+  "overall": {
+    "attacks": 24,
+    "rejected": 0,
+    "errors": 0,
+    "caught_first": 91.7,
+    "evaded": 25.0,
+    "genuine": 12,
+    "false_alarms": 1,
+    "by_doc": {
+      "1709.02445v2": {
+        "evaded": 0.0,
+        "caught_first": 100.0,
+        "false_alarms": 1,
+        "genuine": 4
+      },
+      "court_romanko_2014": {
+        "evaded": 37.5,
+        "caught_first": 75.0,
+        "false_alarms": 0,
+        "genuine": 4
+      },
+      "gov_report": {
+        "evaded": 37.5,
+        "caught_first": 100.0,
+        "false_alarms": 0,
+        "genuine": 4
+      }
+    },
+    "false_alarm_pct": 8.3
+  },
+  "board": [
+    {
+      "model": "GLM 5.3 Flash",
+      "n": 6,
+      "caught_first": 66.7,
+      "evaded": 50.0,
+      "first": 0.547,
+      "best": 0.343,
+      "by_doc": {
+        "1709.02445v2": 0.0,
+        "court_romanko_2014": 100.0,
+        "gov_report": 50.0
+      }
+    },
+    {
+      "model": "Kimi K3.1 Pro",
+      "n": 6,
+      "caught_first": 100.0,
+      "evaded": 33.3,
+      "first": 0.972,
+      "best": 0.653,
+      "by_doc": {
+        "1709.02445v2": 0.0,
+        "court_romanko_2014": 0.0,
+        "gov_report": 100.0
+      }
+    },
+    {
+      "model": "DeepSeek V4.1 Flash 1017",
+      "n": 6,
+      "caught_first": 100.0,
+      "evaded": 16.7,
+      "first": 1.0,
+      "best": 0.886,
+      "by_doc": {
+        "1709.02445v2": 0.0,
+        "court_romanko_2014": 50.0,
+        "gov_report": 0.0
+      }
+    },
+    {
+      "model": "Hermes-3 8B (own Modal GPU)",
+      "n": 6,
+      "caught_first": 100.0,
+      "evaded": 0.0,
+      "first": 0.992,
+      "best": 0.976,
+      "by_doc": {
+        "1709.02445v2": 0.0,
+        "court_romanko_2014": 0.0,
+        "gov_report": 0.0
+      }
+    }
+  ]
+}

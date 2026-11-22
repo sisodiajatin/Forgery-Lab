@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FORGERY LAB</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1b1712; --paper:#efe6d2; --paper2:#e5d8bb; --red:#a3271c; --green:#2f6b3a; --brass:#b08a3e; --desk:#16130f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(ellipse at 50% -10%, #3a2f22 0%, var(--desk) 60%) fixed; color:var(--paper); font-family:'IBM Plex Mono', monospace; min-height:100vh; }
+  body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px); mix-blend-mode:multiply; }
+  header { max-width:1100px; margin:0 auto; padding:40px 24px 10px; }
+  .stamp { display:inline-block; border:3px solid var(--red); color:var(--red); padding:4px 12px; font-family:'Special Elite'; letter-spacing:3px; transform:rotate(-3deg); font-size:13px; }
+  h1 { font-family:'Playfair Display'; font-size:clamp(34px,6vw,64px); margin:12px 0 4px; letter-spacing:1px; }
+  h1 em { color:var(--brass); font-weight:400; }
+  .sub { color:#b9ab8e; font-size:13px; }
+  .brief { max-width:1100px; margin:18px auto 0; padding:0 24px; }
+  .brief p { font-family:'Special Elite'; font-size:17px; line-height:1.55; background:var(--paper); color:var(--ink); padding:20px 24px; box-shadow:0 12px 30px rgba(0,0,0,.5); transform:rotate(-.4deg); border-left:6px solid var(--brass); }
+  .hud { position:sticky; top:0; z-index:5; background:rgba(22,19,15,.92); backdrop-filter:blur(6px); border-bottom:1px solid #3a3226; }
+  .hud .in { max-width:1100px; margin:0 auto; padding:12px 24px; display:flex; gap:22px; align-items:center; flex-wrap:wrap; font-size:13px; }
+  .hud b { color:var(--brass); font-size:16px; }
+  button { font-family:'Special Elite'; font-size:15px; letter-spacing:1px; cursor:pointer; border:2px solid var(--brass); background:transparent; color:var(--paper); padding:9px 18px; }
+  button.primary { background:var(--brass); color:var(--desk); }
+  button:disabled { opacity:.35; cursor:not-allowed; }
+  .board { max-width:1100px; margin:26px auto 80px; padding:0 24px; display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:26px; }
+  .card { position:relative; background:linear-gradient(var(--paper),var(--paper2)); color:var(--ink); padding:34px 22px 18px; box-shadow:0 14px 28px rgba(0,0,0,.55); cursor:pointer; transition:transform .2s, box-shadow .2s; font-family:'Playfair Display'; font-size:15.5px; line-height:1.55; }
+  .card:nth-child(3n+1){transform:rotate(-.8deg)} .card:nth-child(3n+2){transform:rotate(.6deg)} .card:nth-child(3n){transform:rotate(-.3deg)}
+  .card:hover { transform:translateY(-4px) rotate(0); box-shadow:0 20px 40px rgba(0,0,0,.7); }
+  .card .no { position:absolute; top:10px; left:22px; font-family:'Special Elite'; font-size:12px; letter-spacing:2px; color:#7a6a4c; }
+  .card .pin { position:absolute; top:-9px; left:50%; width:18px; height:18px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #e05a4a, #6b120b); box-shadow:0 3px 4px rgba(0,0,0,.5); }
+  .card.accused { outline:3px solid var(--red); outline-offset:4px; }
+  .card.accused::after { content:"ACCUSED"; position:absolute; right:14px; top:8px; font-family:'Special Elite'; color:var(--red); border:2px solid var(--red); padding:1px 8px; transform:rotate(6deg); font-size:12px; letter-spacing:2px; }
+  .verdict { margin-top:14px; border-top:1px dashed #9a8a6a; padding-top:10px; font-family:'IBM Plex Mono'; font-size:12px; display:none; }
+  .revealed .verdict { display:block; }
+  .revealed { cursor:default; }
+  .tag { display:inline-block; padding:2px 8px; font-weight:600; letter-spacing:1px; color:#fff; }
+  .tag.f { background:var(--red); } .tag.r { background:var(--green); }
+  .meter { height:8px; background:#cfc2a3; margin:8px 0 4px; position:relative; }
+  .meter i { position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,var(--brass),var(--red)); }
+    mark.ai { background:rgba(163,39,28,.22); border-bottom:2px solid var(--red); color:inherit; }
+  mark.mid { background:rgba(176,138,62,.28); border-bottom:2px solid var(--brass); color:inherit; }
+  .card .sub { color:#5a4c33; font-style:italic; }
+  .result { max-width:1100px; margin:10px auto; padding:0 24px; display:none; }
+  .result .box { border:2px solid var(--brass); padding:22px 26px; background:rgba(0,0,0,.35); }
+  .result h2 { font-family:'Playfair Display'; margin:0 0 6px; font-size:30px; }
+  .result table { border-collapse:collapse; width:100%; font-size:13px; margin-top:12px; }
+  .result td, .result th { border-bottom:1px solid #3a3226; padding:6px 8px; text-align:left; }
+  footer { max-width:1100px; margin:0 auto 40px; padding:0 24px; font-size:11.5px; color:#8f826a; line-height:1.7; }
+  .empty { max-width:700px; margin:80px auto; padding:24px; font-family:'Special Elite'; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CASE = {"case_title": "The Court opinion Job", "document_name": "Court opinion", "briefing": "These paragraphs come from a real court opinion, written by people years before AI writing tools. 3 of them were planted by AI forgers who rewrote their work until a professional detector stopped catching them. The detector got fooled. Will you?", "exhibits": [{"text": "The principles governing reasonable suspicion are well settled. An officer may stop a vehicle when specific, articulable facts, together with the rational inferences to be drawn from them, suggest that criminal activity may be afoot. <i>State<\/i> v. <i>Clark<\/i>, 255 Conn. 268, 283, 761 A.2d 768 (2000). That determination is made objectively, on the basis of what the officer knew at the time, and not by tallying each observation as though it stood alone. <i>State v. Donahue<\/i>, 251 Conn. 636, 643, 742 A.2d 775 (1999). Facts equally compatible with lawful conduct may still contribute to the assessment. <i>State v. Oquendo<\/i>, 223 Conn. 635, 654, 613 A.2d 1300 (1992). Probable cause is not required. A hunch will not do.", "forged": true, "lab": {"headline": "AI Detected", "fraction_ai": 0.723, "fraction_ai_assisted": 0.0, "fraction_human": 0.277, "windows": []}, "topic": "Kimi K3.1 Pro \u2014 Legal standard or case law defining reasonable suspicion for traffic stops", "evasion": [1.0, 0.723, 0.843]}, {"text": "Before administering the breath tests, Murak transported the defendant to the state police barracks in Litchfield, where he performed two tests on an Intoxilyzer 5000, yielding results of .104 and .098, respectively. Murak testified that, prior to each test, he verified the device's accuracy using a simulator solution in accordance with the regulations of the Department of Transportation. The state also called Denise Gardner, a forensic toxicologist with the Department of Public Safety's Division of Scientific Services, who explained that the Intoxilyzer 5000 determines blood alcohol content by measuring the absorption of infrared light in a sample of expired breath. She testified that the device carries a margin of error of plus or minus .003 and that its reliability rate at a .10 reading approximates 99.4 percent.", "forged": true, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}, "topic": "GLM 5.3 Flash \u2014 Explanation of margin of error or reliability rates for the Intoxilyzer 5000 device", "evasion": [0.0]}, {"text": "* This case originally was scheduled to be argued before a panel of this court consisting of Chief Justice Rogers and Justices Palmer, Zarella, Eveleigh, McDonald, Espinosa and Robinson. Although Justice Palmer was not present when the case was argued before the court, he has read the record and briefs, and listened to a recording of the oral argument prior to participating in this decision.", "forged": false, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}}, {"text": "The fourth amendment does not require probable cause before an officer may detain a motorist for an investigatory stop. State v. Lamme, 216 Conn. 172, 184, 579 A.2d 484 (1990). The officer must have a reasonable suspicion, grounded in specific and articulable facts, that the driver has committed a traffic violation or is engaged in criminal activity. State v. Donahue, 251 Conn. 636, 644, 742 A.2d 775 (1999). A minor infraction will do. Nor must the suspicion arise from the officer\u2019s own observations, since reliable information from another source may supply the necessary facts. The inquiry is objective: we consider the facts known to the officer at the time, with the inferences a reasonable officer might draw, and ask whether they warranted the detention.", "forged": true, "lab": {"headline": "Human Written", "fraction_ai": 0.463, "fraction_ai_assisted": 0.0, "fraction_human": 0.5369999999999999, "windows": []}, "topic": "DeepSeek V4.1 Flash 1017 \u2014 Legal standard or case law defining reasonable suspicion for traffic stops", "evasion": [1.0, 1.0, 0.463]}, {"text": "It would be inappropriate to have the defendant demonstrate what he thinks occurred on that night.\u201d The defendant did not make any statement suggesting that he disagreed with the court\u2019s interpretation of his proffer, nor did he later file a motion for reconsideration or articulation that would have suggested he disagreed with the court\u2019s understanding of the basis for his proffer.", "forged": false, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}}, {"text": "defense by other means did not render the court\u2019s ruling constitutionally valid. Even taking the defendant\u2019s claim that the demonstration was somehow superior to other methods of proof, the defendant\u2019s argument fails, because it ignores the fact that the evidence was inadmissible because the court found that the conditions were not substantially similar. Therefore, the demonstration would not have been reliable.", "forged": false, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}}, {"text": "The \u201cofficially released\u201d date that appears near the beginning of each opinion is the date the opinion will be published in the <u>Connecticut Law Journal<\/u> or the date it was released as a slip opinion. The operative date for the beginning of all time periods for filing postopinion motions and petitions for certification is the \u201cofficially released\u201d date appearing in the opinion.", "forged": false, "lab": {"headline": "Human Written", "fraction_ai": 0.0, "fraction_ai_assisted": 0.0, "fraction_human": 1.0, "windows": []}}], "source": "court_romanko_2014", "built": "2026-11-22 12:31", "provenance": {"parser": "Reducto", "director": "Hermes Agent", "forger": "DeepSeek V4.1 Flash 1017, GLM 5.3 Flash, Kimi K3.1 Pro", "lab": "Pangram (best score after rewrites)", "mode": "human round from benchmark 'test3'"}};
+const app = document.getElementById('app');
+if (!CASE) { app.innerHTML = '<div class="empty">No case loaded. Run <code>python build_case.py your.pdf</code>.</div>'; }
+else {
+  const nF = CASE.exhibits.filter(e => e.forged).length;
+  const accused = new Set(); let solved = false;
+  const hl = (text, wins) => {
+    if (!wins || !wins.length) return null;
+    let out = '', pos = 0;
+    [...wins].filter(w => w.start != null && (w.score||0) > 0.35).sort((a,b)=>a.start-b.start).forEach(w => {
+      if (w.start < pos) return;
+      out += esc(text.slice(pos, w.start)) + `<mark class="${w.score>0.7?'ai':'mid'}" title="${esc(w.label||'')} ${Math.round(100*w.score)}%">${esc(text.slice(w.start, w.end))}</mark>`;
+      pos = w.end; });
+    return out + esc(text.slice(pos));
+  };
+  const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  app.innerHTML = `
+    <header><span class="stamp">CASE FILE · CONFIDENTIAL</span>
+      <h1>FORGERY <em>LAB</em></h1>
+      <div class="sub">${esc(CASE.case_title)} — re: <i>${esc(CASE.document_name)}</i></div></header>
+    <div class="brief"><p>${esc(CASE.briefing)}<br><br>
+      <b>${CASE.exhibits.length} exhibits are pinned to the board. ${nF} of them were written by a machine.</b>
+      Accuse exactly ${nF}. Then send the lot to the forensics lab and see if your gut beats the instruments.</p></div>
+    <div class="hud"><div class="in">
+      <span>Accused: <b id="cnt">0</b> / ${nF}</span>
+      <button class="primary" id="go" disabled>SEND TO THE LAB ▸</button>
+      <span id="hint" class="sub">Click an exhibit to accuse it.</span></div></div>
+    <div class="result" id="result"></div>
+    <div class="board" id="board"></div>
+    <footer>Evidence chain — parser: ${esc(CASE.provenance.parser)} · case director: ${esc(CASE.provenance.director)} ·
+      forger: ${esc(CASE.provenance.forger)} · forensics: ${esc(CASE.provenance.lab)} · ${CASE.provenance.mode?esc(CASE.provenance.mode)+' ·':''} source: ${esc(CASE.source)} · built ${esc(CASE.built)}</footer>`;
+  const board = document.getElementById('board');
+  CASE.exhibits.forEach((ex, i) => {
+    const c = document.createElement('div'); c.className = 'card';
+    c.innerHTML = `<span class="pin"></span><span class="no">EXHIBIT ${String.fromCharCode(65+i)}</span><span class="body">${esc(ex.text)}</span><div class="verdict"></div>`;
+    c.onclick = () => {
+      if (solved) return;
+      if (accused.has(i)) accused.delete(i); else if (accused.size < nF) accused.add(i);
+      c.classList.toggle('accused', accused.has(i));
+      document.getElementById('cnt').textContent = accused.size;
+      document.getElementById('go').disabled = accused.size !== nF;
+    };
+    board.appendChild(c);
+  });
+  document.getElementById('go').onclick = () => {
+    solved = true;
+    let you = 0, lab = 0, labAvail = 0;
+    const rows = [];
+    // the lab flags what a real user of the detector would: anything scored >= 50% AI
+    const labPicks = new Set(CASE.exhibits.map((e,i)=>[i, e.lab ? e.lab.fraction_ai + 0.5*e.lab.fraction_ai_assisted : -1]).filter(x=>x[1]>=0.5).map(x=>x[0]));
+    [...board.children].forEach((c, i) => {
+      const ex = CASE.exhibits[i]; c.classList.add('revealed');
+      const hit = accused.has(i) === ex.forged; if (hit) you++;
+      let labHtml = '<span class="sub">Lab offline</span>';
+      if (ex.lab) { labAvail++; const hitL = labPicks.has(i) === ex.forged; if (hitL) lab++;
+        const p = Math.round(100*(ex.lab.fraction_ai + ex.lab.fraction_ai_assisted));
+        labHtml = `Pangram: <b>${esc(ex.lab.headline||ex.lab.prediction_short||'')}</b> — ${p}% AI<div class="meter"><i style="width:${p}%"></i></div>`; }
+      c.querySelector('.verdict').innerHTML =
+        `<span class="tag ${ex.forged?'f':'r'}">${ex.forged?'FORGED':'GENUINE'}</span> &nbsp;${hit?'✔ you called it':'✘ you missed'}<br>${labHtml}
+         ${ex.forged ? `<div class="sub">Forger's brief: ${esc(ex.topic||'')}</div>` : ''}
+         ${ex.evasion ? `<div class="sub">Forger vs detector: ${ex.evasion.map(s=>Math.round(100*s)+'%').join(' → ')} AI</div>` : ''}`;
+      const h = ex.lab && hl(ex.text, ex.lab.windows); if (h) c.querySelector('.body').innerHTML = h;
+      rows.push(`<tr><td>Exhibit ${String.fromCharCode(65+i)}</td><td>${ex.forged?'Forged':'Genuine'}</td><td>${accused.has(i)?'Accused':'—'}</td><td>${ex.lab?Math.round(100*ex.lab.fraction_ai)+'%':'n/a'}</td></tr>`);
+    });
+    const N = CASE.exhibits.length;
+    const rank = you===N ? 'CHIEF INSPECTOR' : you>=N-2 ? 'DETECTIVE' : you>=N-4 ? 'BEAT COP' : 'MARK — the forger played you';
+    const r = document.getElementById('result');
+    r.innerHTML = `<div class="box"><h2>${rank}</h2>
+      You: <b>${you}/${N}</b> exhibits classified correctly.
+      ${labAvail ? ` &nbsp;·&nbsp; The lab (Pangram, flags ≥50% AI): <b>${lab}/${N}</b>. ${you>lab?'You beat the machine.':you===lab?'Dead heat with the machine.':'The machine wins this one.'}` : ' Lab offline — add PANGRAM_API_KEY and rebuild for the forensic showdown.'}
+      <table><tr><th>Exhibit</th><th>Truth</th><th>You</th><th>Pangram AI</th></tr>${rows.join('')}</table>
+      <p><button onclick="location.reload()">REOPEN THE CASE</button></p></div>`;
+    r.style.display = 'block'; r.scrollIntoView({behavior:'smooth'});
+    // record the human round (local history + server, if served by the Modal app)
+    const rec = {source: CASE.source, at: new Date().toISOString(), total: N, correct: you, lab_correct: labAvail ? lab : null,
+                 forged: CASE.exhibits.map((e,i)=>({forged: e.forged, accused: accused.has(i)}))};
+    try { const h = JSON.parse(localStorage.getItem('fl_human')||'[]'); h.push(rec); localStorage.setItem('fl_human', JSON.stringify(h)); } catch(e) {}
+    if (location.protocol.startsWith('http')) fetch('/human', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(rec)}).catch(()=>{});
+    const caughtF = rec.forged.filter(x=>x.forged && x.accused).length, nf = rec.forged.filter(x=>x.forged).length;
+    r.querySelector('.box').insertAdjacentHTML('beforeend', `<p class="sub">You caught ${caughtF} of ${nf} forgeries. Result saved for the stress-test report.</p>`);
+    document.getElementById('go').disabled = true;
+  };
+}
+</script>
+</body>
+</html>

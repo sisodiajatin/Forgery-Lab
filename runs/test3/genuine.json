@@ -1,0 +1,62 @@
+[
+  {
+    "doc": "court_romanko_2014",
+    "score": 0.0,
+    "text": "It would be inappropriate to have the defendant demonstrate what he thinks occurred on that night.\u201d The defendant did not make any statement suggesting that he disagreed with the court\u2019s interpretation of his proffer, nor did he later file a motion for reconsideration or articulation that would have suggested he disagreed with the court\u2019s understanding of the basis for his proffer."
+  },
+  {
+    "doc": "gov_report",
+    "score": 0.0,
+    "text": "The E-Government Act requires that agencies conduct privacy impact assessments (PIA) for systems or collections containing personal information. In addition, agencies must ensure the review of the PIA and, if practicable, make the PIA publicly available through the agency\u2019s website, publication in the <i>Federal Register</i>, or other means. OMB guidance elaborates on the PIA process by stating, for example, that agencies are required to conduct PIAs when a system change creates new privacy risks (e.g., changing the way in which personal information is being used). According to OMB, the PIA requirement does not apply to all systems. For example, no assessment is required when the information collected relates to internal government operations, the information has been previously assessed under an evaluation similar to a PIA, or when privacy issues are unchanged."
+  },
+  {
+    "doc": "court_romanko_2014",
+    "score": 0.0,
+    "text": "defense by other means did not render the court\u2019s ruling constitutionally valid. Even taking the defendant\u2019s claim that the demonstration was somehow superior to other methods of proof, the defendant\u2019s argument fails, because it ignores the fact that the evidence was inadmissible because the court found that the conditions were not substantially similar. Therefore, the demonstration would not have been reliable."
+  },
+  {
+    "doc": "1709.02445v2",
+    "score": 0.592,
+    "text": "Small-multiple line chart of disruption percentile DP versus team size m for 52 medicine journal subfields, with m ranging from 2 to 10 and DP from 20 to 100. Each panel shows smoothed journal curves, with darker curves indicating larger sample sizes and stronger absolute regression coefficients. Many curves decline as team size increases, while others remain nearly flat or fluctuate."
+  },
+  {
+    "doc": "gov_report",
+    "score": 0.0,
+    "text": "Small federal agencies have reported a number of incidents that have placed sensitive information at risk, with potentially serious impacts on federal operations, assets, and people. According to DHS, the number of reported security incidents for small agencies from fiscal year 2009 to fiscal year 2013 ranged from 2,168 to 3,144. Incidents involving PII at small agencies increased from 258 in fiscal year 2009 to 664 in fiscal year 2013. In addition, in fiscal year 2013, small agencies reported 2,653 incidents to US-CERT. Table 2 describes the incident categories as defined by US-CERT."
+  },
+  {
+    "doc": "court_romanko_2014",
+    "score": 0.0,
+    "text": "* This case originally was scheduled to be argued before a panel of this court consisting of Chief Justice Rogers and Justices Palmer, Zarella, Eveleigh, McDonald, Espinosa and Robinson. Although Justice Palmer was not present when the case was argued before the court, he has read the record and briefs, and listened to a recording of the oral argument prior to participating in this decision."
+  },
+  {
+    "doc": "1709.02445v2",
+    "score": 0.0,
+    "text": "Specifically, as teams enlarge from one to fifty team members, their papers, patents and products drop in disruption by 70%, 30% and 50%, respectively. In every case, this highlights a dramatic transition from disruption to development as disruption curves drop below the dashed line marking the zero point. These results support the hypothesis that large teams may be better designed or incentivized to develop current science and technology, while small teams disrupt it with new problems and opportunities."
+  },
+  {
+    "doc": "1709.02445v2",
+    "score": 0.0,
+    "text": "We investigate the relationship of four variables with team size as in Figure 2, including disruption percentile, number of citations, average age of reference, and median popularity of references. We observe that non-review and review articles show the same dynamics in all variables investigated. Note that as there are almost always less authors in review articles than non-review articles, for reviews we only display team size from one to four as shown in Panels E-H, which covers 97% of the population, and for the nonreviews we display team size from one to ten as shown in Panels A-D, which covers 98% of the population. The range of team size in the two subsets graphed in E and G are naturally smaller than the subsets in A and C."
+  },
+  {
+    "doc": "gov_report",
+    "score": 0.0,
+    "text": "This is a work of the U.S. government and is not subject to copyright protection in the United States. The published product may be reproduced and distributed in its entirety without further permission from GAO. However, because this work may contain copyrighted images or other material, permission from the copyright holder may be necessary if you wish to reproduce this material separately."
+  },
+  {
+    "doc": "1709.02445v2",
+    "score": 0.0,
+    "text": "<b>Figure S8. Weighted moving average technique for data smoothing.</b> The relationship between team size and disruption may be noisy due to a lack of data when we analyze articles from the same journal or field. For example, less than 1% of articles in \u201cArtificial Intelligence\u201d (a subfield of \u201cComputer and Information Technology\u201d) have more than 6 authors, but these articles contribute to substantial variance in the data (A). We use the moving average technique to limit noise in the data. More specifically, we define parameter \\(k\\), which provides threshold value \\(m_k\\) for team size \\(m\\) such that \\(P(m>m_k) < k\\)."
+  },
+  {
+    "doc": "court_romanko_2014",
+    "score": 0.0,
+    "text": "The \u201cofficially released\u201d date that appears near the beginning of each opinion is the date the opinion will be published in the <u>Connecticut Law Journal</u> or the date it was released as a slip opinion. The operative date for the beginning of all time periods for filing postopinion motions and petitions for certification is the \u201cofficially released\u201d date appearing in the opinion."
+  },
+  {
+    "doc": "gov_report",
+    "score": 0.0,
+    "text": "\u2022 A third agency hired an independent contractor in fiscal year 2012 to test or review management, operational, and technical controls for its general support system. However, the contractor did not test all controls for the system. According to an agency official, controls not tested were not within the contracted scope of the assessment. The agency plans to conduct a security assessment and authorization for its new system in fiscal year 2014."
+  }
+]

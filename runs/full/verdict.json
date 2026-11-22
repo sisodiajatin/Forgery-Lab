@@ -1,0 +1,103 @@
+{
+  "verdict": {
+    "headline": "Pangram caught most fakes overall, but one forger model slipped past it 4 times out of 5, and government-report rewrites fooled it half the time.",
+    "verdict": "USE WITH CAUTION",
+    "findings": [
+      "Across all 112 attack attempts, Pangram caught 86.6% on the first pass, but 33.9% eventually evaded detection.",
+      "GLM 5.3 Flash (n=22) evaded detection 81.8% of the time overall, and evaded on 100.0% of its gov_report attempts.",
+      "Hermes-3 8B (n=30) was caught_first 100.0% of the time, with 0.0% evaded across all three document types.",
+      "DeepSeek V4.1 Flash 1017 (n=30) evaded only 13.3% overall, but by-document results varied: 0.0% on 1709.02445v2 vs 20.0% on both court_romanko_2014 and gov_report.",
+      "False alarms on real human text were rare (1 of 30 genuine documents flagged, 3.3% false_alarm_pct overall), but evasion itself varied sharply by document: 11.8% for the science paper (1709.02445v2) vs 50.0% for the government report."
+    ],
+    "advice": [
+      "Don't treat one detector's score as proof either way: GLM 5.3 Flash (n=22) evaded Pangram 81.8% of the time, while Hermes-3 8B (n=30) evaded it 0.0% of the time -- results depend heavily on which model wrote the text.",
+      "Weigh results by document type, not just an average: evaded ranged from 11.8% on the science paper to 50.0% on the government report in this test.",
+      "Note sample sizes before trusting a leaderboard row: GLM 5.3 Flash's figures come from only 22 attempts versus 30 for the other three models, so its numbers are less stable."
+    ]
+  },
+  "source": "Hermes Agent",
+  "overall": {
+    "attacks": 112,
+    "rejected": 0,
+    "errors": 8,
+    "caught_first": 86.6,
+    "evaded": 33.9,
+    "genuine": 30,
+    "false_alarms": 1,
+    "by_doc": {
+      "1709.02445v2": {
+        "evaded": 11.8,
+        "caught_first": 97.1,
+        "false_alarms": 1,
+        "genuine": 10
+      },
+      "court_romanko_2014": {
+        "evaded": 36.8,
+        "caught_first": 81.6,
+        "false_alarms": 0,
+        "genuine": 10
+      },
+      "gov_report": {
+        "evaded": 50.0,
+        "caught_first": 82.5,
+        "false_alarms": 0,
+        "genuine": 10
+      }
+    },
+    "false_alarm_pct": 3.3
+  },
+  "board": [
+    {
+      "model": "GLM 5.3 Flash",
+      "n": 22,
+      "caught_first": 54.5,
+      "evaded": 81.8,
+      "first": 0.538,
+      "best": 0.26,
+      "by_doc": {
+        "1709.02445v2": 25.0,
+        "court_romanko_2014": 87.5,
+        "gov_report": 100.0
+      }
+    },
+    {
+      "model": "Kimi K3.1 Pro",
+      "n": 30,
+      "caught_first": 86.7,
+      "evaded": 53.3,
+      "first": 0.849,
+      "best": 0.487,
+      "by_doc": {
+        "1709.02445v2": 30.0,
+        "court_romanko_2014": 50.0,
+        "gov_report": 80.0
+      }
+    },
+    {
+      "model": "DeepSeek V4.1 Flash 1017",
+      "n": 30,
+      "caught_first": 96.7,
+      "evaded": 13.3,
+      "first": 0.922,
+      "best": 0.762,
+      "by_doc": {
+        "1709.02445v2": 0.0,
+        "court_romanko_2014": 20.0,
+        "gov_report": 20.0
+      }
+    },
+    {
+      "model": "Hermes-3 8B (own Modal GPU)",
+      "n": 30,
+      "caught_first": 100.0,
+      "evaded": 0.0,
+      "first": 0.975,
+      "best": 0.914,
+      "by_doc": {
+        "1709.02445v2": 0.0,
+        "court_romanko_2014": 0.0,
+        "gov_report": 0.0
+      }
+    }
+  ]
+}
