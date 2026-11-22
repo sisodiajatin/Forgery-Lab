@@ -66,6 +66,26 @@ measured on **every** usable real paragraph (156), not a sample. All intervals a
 
 **Verdict: use with caution.** Pangram is a strong first filter and fair to humans, but it isn't proof on its own.
 
+## How an attack works
+One **attack** is one forgery's full journey through the loop:
+1. A forger writes a paragraph in the document's voice, on a topic Hermes Agent picked that the document doesn't cover.
+2. Pangram scores it. **50% AI or more counts as caught.**
+3. If caught, the forger is shown **the exact sentences Pangram flagged** and rewrites the paragraph, up to 3 times.
+4. If any version scores **under 50%**, the forgery **evaded** the detector.
+
+**Where the 427 come from:** three benchmark batches (`runs/full`, `runs/big`, `runs/speech`) across 4 documents and
+4 forgers. 440 attacks were attempted, and 13 failed on technical errors such as empty model replies or API errors.
+Forgeries that copied or paraphrased the source were rejected and replaced, so they aren't in the count.
+
+| Forger | Attacks | | Document | Attacks |
+|---|---|---|---|---|
+| GLM 5.3 Flash | 97 | | Science paper | 114 |
+| Kimi K3.1 Pro | 110 | | Court opinion | 116 |
+| DeepSeek V4.1 Flash | 110 | | Government report | 120 |
+| Hermes-3 8B | 110 | | Policy speech | 77 |
+
+The 156 real paragraphs used to measure false alarms are separate: every usable human paragraph from the 4 documents.
+
 ## The human round
 Each board on `/play` shows **9 paragraphs, labelled Exhibit A to I**:
 - **6 are real paragraphs** taken word for word from the original document.
@@ -78,6 +98,20 @@ Each exhibit then shows:
 - for forgeries, which model wrote it and how its AI score fell with each rewrite
 
 Your score is compared with Pangram's on the same 9 exhibits and added to a live "humans vs the detector" count in the report.
+
+## What happens when you upload a PDF (`/try`)
+Building a board takes about 17 seconds:
+1. **Upload:** any text PDF a person wrote, up to 25 MB.
+2. **Parse:** Reducto splits it into clean paragraphs and drops figures, captions and tables.
+3. **Plan:** Hermes Agent picks 3 topics that fit the document but aren't in it.
+4. **Forge:** three different AI forgers each write one paragraph in the author's voice. Copies are rejected.
+5. **Score:** Pangram scores all 9 exhibits (6 real, 3 forged), which are shuffled as A to I into a playable board.
+
+On reveal, the sentences Pangram found most AI-like are highlighted in red.
+
+Uploads use fast forgeries with no rewrite rounds, so Pangram catches them more easily than the benchmark forgeries.
+Use documents written before 2022. A recent paper may contain AI-polished "real" paragraphs, which then show up as
+false alarms. In our tests, a 2022 paper scored 9/9 for Pangram, and a 2026 paper scored 6/9.
 
 ## How it works
 | Stage | Tool | Role |
@@ -98,6 +132,14 @@ Your score is compared with Pangram's on the same 9 exhibits and added to a live
 - **The famous-document trap:** models have memorised famous papers like "Attention Is All You Need", so forgeries of them are recall rather than forgery. Use obscure documents written before 2022.
 - **The figure-caption trap:** Reducto's `summarize_figures` option is on by default and inserts **AI-written figure descriptions** into the parsed text. In our first runs these were counted as "human" paragraphs, so Pangram's correct flags on them looked like false alarms (3/58). We now turn the option off, drop figure blocks and keep a regression test for it. If you build human-vs-AI datasets from parsed PDFs, check for this.
 
+## Web app architecture (Modal)
+- **Web servers:** 2 always-warm containers that scale out to 10, plus 1 spare kept ready, so there are no cold starts. Each container handles up to 50 requests at once.
+- **Published pages:** the report and the boards are loaded into memory when a container starts. `publish.py` redeploys, so updates appear immediately.
+- **Uploads:** each upload runs in **its own container** (`build_job`, up to 30 at once), so uploads never slow the site or each other down.
+- **Shared state:** upload progress, uploaded boards and human-round results live in a shared `modal.Dict` (`forgery-lab-state`), so every container sees the same data.
+- **Load test on the live site:** 200 page requests, 40 at a time, all succeeded with a median of 0.5s and a maximum of 1.1s. Three uploads at the same time each finished in 17–19 seconds.
+- **After the event:** set `min_containers=0` in `modal_app.py` and redeploy so the app scales to zero.
+
 ## Testing
 - `python -m pytest -q tests`: 12 offline tests covering the statistics, the integrity checks, the number fact-checker, report consistency and the figure-caption regression. They run in GitHub Actions on every push.
 - `python check.py`: 13 live checks covering every forger endpoint, every page of the site, a real PDF upload and the paraphrase-judge calibration.
@@ -117,6 +159,7 @@ python case_from_run.py runs/full runs/big runs/speech --genuine runs/genuine_al
 python publish.py runs/combined                                 # upload + deploy the public site
 python -m pytest -q tests                                       # offline tests (also run in CI)
 python check.py                                                 # live smoke test + judge calibration
+python reset_counter.py                                         # clear the live humans-vs-detector count before a demo
 ```
 
 ## Files
@@ -126,7 +169,8 @@ python check.py                                                 # live smoke tes
 - `genuine_all.py`: scores every real paragraph to measure false alarms
 - `report.py` + `game/report_template.html`: the trust-report dashboard
 - `case_from_run.py` + `game/template.html`: the human-round case boards
-- `modal_app.py` + `publish.py`: the public web app on Modal, with live upload progress
+- `modal_app.py` + `publish.py`: the public web app on Modal (autoscaling web containers, one container per upload, live progress)
+- `reset_counter.py`: clears the live humans-vs-detector results
 - `fl_stats.py`: Wilson intervals, integrity checks, style features and the number fact-checker (pure, tested)
 - `build_case.py`: the single-PDF pipeline (Reducto parse, Hermes director, Pangram) behind `/try`
 - `tests/` + `check.py`: offline tests and the live smoke test
