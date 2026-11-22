@@ -17,7 +17,7 @@ import build_case as bc
 from fl_stats import THRESH, detag, mean_features, rate, unverified_numbers
 
 DOC_LABELS = {"1709.02445v2": "Science paper", "court_romanko_2014": "Court opinion", "gov_report": "Government report",
-              "attention": "Transformer paper"}
+              "speech_2015": "Policy speech", "attention": "Transformer paper"}
 
 
 def load(run: Path):
@@ -40,7 +40,7 @@ def load_many(runs):
         key = detag(g.get("text", ""))[:200]
         if "score" in g and key not in seen:
             seen.add(key); dedup.append(g)
-    return attacks, dedup, {"seconds": round(seconds, 1), "rounds": max(r for r in rounds if r), "runs": [r.name for r in runs]}
+    return attacks, dedup, {"seconds": round(seconds, 1), "rounds": max([r for r in rounds if r] or [0]), "runs": [r.name for r in runs]}
 
 
 def stats(attacks, genuine):
@@ -154,8 +154,11 @@ def html(board, overall, docs, done, genuine, v, v_src, an, an_src, checks, meta
     return tpl.replace("/*__DATA__*/null", json.dumps(data).replace("</", "<\\/"))
 
 
-def build(runs, out_dir: Path, use_agent=True):
+def build(runs, out_dir: Path, use_agent=True, genuine_run=None):
     attacks, genuine, meta = load_many(runs)
+    if genuine_run:                                   # exhaustive, clean false-alarm population replaces sampled genuine sets
+        _, genuine, gmeta = load_many([genuine_run])
+        meta["genuine_source"] = genuine_run.name
     board, overall, docs, done = stats(attacks, genuine)
     facts = facts_for_agent(board, overall, docs)
     v, vsrc = verdict(facts, use_agent)
@@ -178,10 +181,11 @@ def main():
     ap.add_argument("runs", nargs="+", type=Path)
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--no-agent", action="store_true")
+    ap.add_argument("--genuine", type=Path, default=None, help="run folder from genuine_all.py to use for false alarms")
     a = ap.parse_args()
     bc.load_env()
     out = a.out or a.runs[0]
-    res = build(a.runs, out, not a.no_agent)
+    res = build(a.runs, out, not a.no_agent, a.genuine)
     print(res["facts"])
     print("\nVERDICT:", res["verdict"].get("verdict"), "|", res["verdict"].get("headline"))
     print("checks:", json.dumps(res["checks"]))

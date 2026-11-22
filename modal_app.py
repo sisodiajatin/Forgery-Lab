@@ -31,7 +31,8 @@ button{font-family:inherit;font-size:16px;background:#c9a24f;color:#14110d;borde
 NAV = '<div class=nav><a href="/">Report</a> · <a href="/play">Play the human round</a> · <a href="/try">📄 Upload your own PDF</a></div>'
 LABELS = {"1709.02445v2": ("Science paper", "Wu, Wang & Evans (2017) — team size & disruption"),
           "court_romanko_2014": ("Court opinion", "State of Connecticut v. Romanko (2014)"),
-          "gov_report": ("Government report", "GAO-14-344, information security at small agencies (2014)")}
+          "gov_report": ("Government report", "GAO-14-344, information security at small agencies (2014)"),
+          "speech_2015": ("Policy speech", "Lael Brainard, Federal Reserve, financial stability (Dec 2014)")}
 
 TRY = """<main>""" + NAV + """<h1>TRY <em>YOUR PDF</em></h1>
 <p>Upload a document written by a human. A forger will slip AI paragraphs into it; you try to find them.</p>

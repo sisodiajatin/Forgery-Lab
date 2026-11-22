@@ -41,7 +41,11 @@ def parse_reducto(pdf: Path) -> str:
         up = requests.post("https://platform.reducto.ai/upload", headers=h, files={"file": (pdf.name, f)}, timeout=120)
     up.raise_for_status()
     file_id = up.json()["file_id"]
-    r = requests.post("https://platform.reducto.ai/parse", headers=h, json={"input": file_id}, timeout=600)
+    # summarize_figures defaults to True: Reducto inserts AI-written figure descriptions into the text. For a test of
+    # human vs AI writing those must never count as "human" paragraphs, so turn it off and drop figure blocks.
+    r = requests.post("https://platform.reducto.ai/parse", headers=h, timeout=600,
+                      json={"input": file_id, "enhance": {"summarize_figures": False},
+                            "retrieval": {"filter_blocks": ["Figure"]}})
     r.raise_for_status()
     res = r.json()["result"]
     if res.get("type") == "url":
@@ -211,11 +215,18 @@ no LaTeX or markdown. Output ONLY the paragraph, nothing else.
 # ---------------------------------------------------------------- 4. Pangram
 def pangram(text: str) -> dict:
     h = {"x-api-key": os.environ["PANGRAM_API_KEY"], "Content-Type": "application/json"}
-    tid = requests.post("https://text.external-api.pangram.com/task", headers=h, json={"text": text}, timeout=60)
+    for attempt in range(6):                      # back off on rate limits (429) and transient 5xx
+        tid = requests.post("https://text.external-api.pangram.com/task", headers=h, json={"text": text}, timeout=60)
+        if tid.status_code in (429, 500, 502, 503, 504) and attempt < 5:
+            time.sleep(min(30, 2 ** attempt + random.random())); continue
+        break
     tid.raise_for_status()
     tid = tid.json()["task_id"]
-    for _ in range(60):
-        r = requests.get(f"https://text.external-api.pangram.com/task/{tid}", headers=h, timeout=60).json()
+    for _ in range(240):
+        g = requests.get(f"https://text.external-api.pangram.com/task/{tid}", headers=h, timeout=60)
+        if g.status_code == 429:
+            time.sleep(2); continue
+        r = g.json()
         if r.get("stage") == "STAGE_SUCCESS":
             out = {k: r.get(k) for k in ("headline", "prediction_short", "fraction_ai", "fraction_ai_assisted", "fraction_human")}
             out["windows"] = [{"start": w.get("start_index"), "end": w.get("end_index"), "label": w.get("label"),

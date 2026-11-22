@@ -21,12 +21,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("runs", nargs="+", type=Path)
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--genuine", type=Path, default=None, help="clean genuine population (genuine_all.py run)")
     ap.add_argument("--fakes", type=int, default=3)
     ap.add_argument("--real", type=int, default=6)
     ap.add_argument("--seed", type=int, default=7)
     a = ap.parse_args()
     rng = random.Random(a.seed)
     attacks, genuine, _ = load_many(a.runs)
+    if a.genuine:
+        _, genuine, _ = load_many([a.genuine])
     out_dir = a.out or a.runs[0]
     run_name = "+".join(r.name for r in a.runs)
     done = [x for x in attacks if x.get("status") == "done"]

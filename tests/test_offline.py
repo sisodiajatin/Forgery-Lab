@@ -1,5 +1,6 @@
 """Offline unit tests — no network, no API keys.  Run:  python -m pytest -q"""
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -108,10 +109,34 @@ def test_report_renders_without_agent(tmp_path):
     assert res["checks"]["verdict_unverified"] == []
 
 
+def test_genuine_population_override(tmp_path):
+    """False alarms must come from the clean, exhaustive genuine set when one is given (not sampled per-run sets)."""
+    import report
+    _fake_run(tmp_path / "r1")
+    g = tmp_path / "g"; g.mkdir()
+    (g / "attacks.jsonl").write_text("", encoding="utf-8")
+    (g / "genuine.json").write_text(json.dumps([{"doc": "d1", "score": 0.0, "text": f"p{i}"} for i in range(10)]), encoding="utf-8")
+    (g / "summary.json").write_text(json.dumps({"seconds": 1, "rounds": None}), encoding="utf-8")
+    report.build([tmp_path / "r1"], tmp_path / "out", use_agent=False, genuine_run=g)
+    v = json.loads((tmp_path / "out" / "verdict.json").read_text(encoding="utf-8"))
+    assert v["overall"]["false_alarms"]["n"] == 10 and v["overall"]["false_alarms"]["k"] == 0
+
+
+def test_clean_genuine_set_has_no_figure_captions():
+    """Regression: Reducto's default summarize_figures inserted AI-written figure descriptions that were counted as
+    'human' paragraphs (and as false alarms). The published clean set must contain none."""
+    path = ROOT / "runs" / "genuine_all" / "genuine.json"
+    if not path.exists():
+        pytest.skip("no exhaustive genuine run")
+    g = json.loads(path.read_text(encoding="utf-8"))
+    captions = [x for x in g if re.match(r"(small-multiple|\w+ line[- ]chart|a \d+×\d+ grid|(two|four|six|ten) line)", x["text"].lower())]
+    assert captions == []
+
+
 def test_published_run_is_consistent():
     """The committed benchmark must add up: valid + errors + rejected == attempted, and the leaderboard sums to the total."""
     import report
-    run = ROOT / "runs" / "big"
+    run = ROOT / "runs" / "speech"
     if not run.exists():
         pytest.skip("no published run")
     attacks, genuine, _ = report.load_many([run])

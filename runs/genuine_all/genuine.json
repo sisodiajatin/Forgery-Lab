@@ -1,0 +1,782 @@
+[
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Analyzing teamwork from more than 50 million papers, patents, and software products, 1954-2014, we demonstrate across this period that larger teams developed recent, popular ideas, while small teams disrupted the system by drawing on older and less prevalent ideas. Attention to work from large teams came immediately, while advances by small teams succeeded further into the future. Differences between small and large teams magnify with impact\u2014small teams have become known for disruptive work and large teams for developing work. Differences in topic and research design account for part of the relationship between team size and disruption, but most of the effect occurs within people, controlling for detailed subject and article type. Our findings suggest the importance of supporting both small and large teams for the sustainable vitality of science and technology."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "One Sentence Summary: Data on more than 50 million teams in science and technology reveal systematic, fundamental differences between works produced by small and large teams: Across a wide variety of domains, small teams tend to disrupt science and technology with new ideas and opportunities, while large teams develop existing ones, suggesting the importance of both for continuing advance through discovery and invention."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "One of the most universal shifts in science and technology today is the flourishing of large teams in all areas of science, scholarship and invention as solitary researchers and small teams diminish (1\u20134). Increases in team size are attributed to the specialization of scientific activities (4), technological advances that lower communication costs (5, 6), and the emergence of large, highly connected knowledge communities (1, 5). The flourishing of large teams in an environment historically populated with small teams and solo investigators raises an important question: How do large and small teams differ in the character of the science and technology they produce? Here we test the hypothesis that small teams are more likely to disrupt science and technology with new problems and opportunities, while large teams tend to develop them with solutions and refinements, a dichotomy with many titles (7\u201311). To this end, we analyze teamwork and citation patterns from more than 50 million research articles, patents, and software to systematically explore the nature of collaborative activity across diverse domains."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "To systematically evaluate the role that scientific and technical work plays in unfolding advance, we collected large-scale datasets from three related but distinct domains (SOM Materials and Methods): (1) Web of Science database containing more than 43M articles published between 1900 and 2014 and 615M citations among them; (2) Patents granted by the U.S. Patent & Trademark Office (USPTO) from 2002 to 2014 and citations added by patent applicants; (3) Software projects on GitHub, a popular web platform that allows users to collaborate on the same code repository and also \u201ccite\u201d other repositories by forking and building on their code. We analyzed core memberships for each repository and forking patterns among them."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "For each dataset, we assess citation structure in three distinct ways. First, we measure the degree to which a work disrupts the field of science or technology by introducing a new idea that eclipses attention to the prior art it draws upon (16). The measure varies between -1 and 1, corresponding to work that develops or disrupts, respectively (Fig. 1BD). Second, we measure delay in attention to science and technology using the \u201csleeping beauty index\u201d (17, 18), which captures a delayed burst of attention by calculating convexity in a work\u2019s citation distribution over time. The index is highest when a paper is never cited for some period before receiving its maximum, corresponding to belated appreciation, 0 if cited linearly in the years following publication, and negative if citations chart a concave function with time tracing early fame, diminishing thereafter."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Finally, we examine impact by the number of citations the work received. If large team contributions develop existing ideas, scientists and engineers alongside them constitute a ready market for these developments. We predict that small team work will be more disruptive, receive citations after a longer delay, and collect less citations overall due to the rapid decay of collective attention (19, 20)."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "The three settings we studied differ clearly in their scope, domain, and typical time scales, but we consistently find that outputs by teams of different size have played distinctive roles in advance. Large teams have tended to produce articles, patents, and software that garner modestly higher impact, but the disruption of these products dramatically and monotonically declines with each additional team member (Fig. 2A-C)."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Specifically, as teams enlarge from one to fifty team members, their papers, patents and products drop in disruption by 70%, 30% and 50%, respectively. In every case, this highlights a dramatic transition from disruption to development as disruption curves drop below the dashed line marking the zero point. These results support the hypothesis that large teams may be better designed or incentivized to develop current science and technology, while small teams disrupt it with new problems and opportunities."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "We uncover the same conclusion when we focus on only the most disruptive and impactful works (Fig. 2D\u2014F). As shown in Fig. 2D, solo authors are just as likely to produce a hit paper (top 5% citations) as teams with five members, but their articles are 72% more likely to be highly disruptive (top 5% disruption). In contrast, ten-person teams are 50% more likely to score a hit paper, yet these contributions tend to develop existing ideas already prominent in the system, as reflected in the very low likelihood they are among the most disruptive. Repeating the same analyses for patents (Fig. 2E) and software development (Fig. 2F), we find that disruption and impact universally diverge as team size grows."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Small teams producing high-impact papers are most disruptive, and large teams producing high-impact papers most developmental. As article impact increases, the negative slope of disruption as a function of team size steepens sharply. Even within the pool of high impact articles and patents (Fig. 3A, top 5% citations), which are statistically more likely produced by large teams (Fig. 2D), small teams have disrupted the current system with substantially more new ideas. Beyond impact level, we further split papers by detailed scientific field (Fig. 3B and S9-S17) and time period (Fig. S4), finding that these patterns hold remarkably stable for all eras and 90% of the disciplines. The only consistent exceptions were observed for disciplines (e.g., Engineering and Computer and Information Technology) where conference proceedings rather than journal articles are the publishing norm (our WOS data only indexes journal articles)."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "The considerable difference in disruption between large and small teams raises questions regarding how these teams differ in searching the past to formulate their next paper, patent or product. When we dissect search behavior, we find that large and small teams engage in strikingly different practices that lead to divergent contributions in disruption and impact. Specifically, we measure search depth as the average relative age of references cited (32) and search popularity as the median citations to a focal work\u2019s references. We examine these search strategies and consequences across fields, time periods, and impact levels in science, technology and software. We find that solos and small teams are much more likely to build on older, less popular ideas (Fig. 2G-L)."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Larger teams, with more people spanning more dispersed areas, cannot be less aware of older, less popular work than small teams, but they have been systematically less likely to build on it. Indeed, larger teams have been much more likely to target recent, high-impact work as the primary source of their ideas, and this tendency increases monotonically with team size. It follows that large teams have received more of their citations rapidly, as their work is immediately relevant to more contemporaries whose ideas they develop."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "We find that this effect grows as a convex function of team size. The effect of broader teams on fusing surprising combinations from diverse journals saturates between eight and ten team members and then reverses with greater team size, dropping below solo authors and smaller teams (Fig. S4). These results suggest that combinations of distant ideas are benefited by broad teams, but that they are more likely to enter published research when they occur within a few team members\u2019 individual experiences than across the experiences of many team members."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "rather than average behavior. The probability of observing papers, patents and products of highest impact increases with team size, while probability of observing the most disruptive decreases with it. Relative ratio is the ratio of empirical percentages to those expected if teams were equally distributed in output qualities. In Software, 69% of the codebases have disruption values that equal 1, therefore we use this maximum value instead of the top 5%. (G - I) Influence on the future (A-C) relates to how teams search the past. Median popularity of references (in number of citations) increases with team size, while average age of references decreases with it. (J - L) Same as (G - I) but extreme cases. Software has very few high-citation codebases, and so we use top 25% rather than top 5% reference popularity."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "The U.S. Patent & Trademark Office patent data set (USPTO) contains 4,910,816 patents and 64,694,807 citations between 1976 \u2013 2014, the portion of the dataset with curated, digital patent application data. 60% of these patents were authored by more than one inventor. The citation links added by inventors and patent examiners represent very different dynamics (see Figure S8), with examiner citations not reflecting technology on which a proposed invention built, but rather technologies with which it competes. As such, we focus only on applicant citations, which are marked in the data set after 2001 and represent 53% of total citations. From 2002 - 2014 we have 2,548,038 patents in total, linked by 44,798,680 inventor citations. To calculate disruption and other measures (Fig. 2), we constructed a directed network that contained patents as nodes and applicant citations as links. This resulting network contains 1,288,181 nodes (patents) generated in or after 2002, creating 23,854,363 links. 68% of these patents are contributed by more than one inventor."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "The GitHub data contains 15,984,275 code bases (repositories) contributed by 2,348,085 programmers in GitHub between 2011 and 2014. To calculate disruption and other measures we construct a citation network of repositories. We add a citation link from repository A to B if a \u201ccore member\u201d of A, user i, copied and saved (\u201cforked\u201d) the code from B during the time period in which i was contributing to A (which lasts from i\u2019s first to last edit of A). For each repository, we identify its core members as those who contributed more edits, or \u201cpushes\u201d, than the average value of all contributors to a repository. The constructed network used to calculate disruption and other network measures (Fig. 2) contains 26,900 nodes (repositories) and 108,640 links."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "We acknowledge that the three large-scale datasets being used in our study\u2014Web of Science, U.S. patents and github software repositories\u2014may contain biases. Some of these are known, which allow us to account for them in our analyses. For example, Computer Science and some engineering disciplines rely more intensively on conference proceedings to communicate key results, so journals are less relevant for these communities. In other cases, the biases remain \u201cunknown unknowns\u201d. In the software case, for example, it is unknown whether free and open source software projects are uniformly represented on github, although an increasing number are indeed hosted in that environment. As with other large-scale, data-driven studies, these biases limit the scope and generalizability of our claimed findings. In the end, all we can assert within confidence is that these patterns hold across the millions of project that represented within the Web of Science, the U.S. patent database, and github public software repositories."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Law. In Figures S9-17 we plot the average disruption percentile against team size for each journal across 12 fields (results for Humanities and Law are not shown due to lack of data), 218 subfields and 10,907 journals (only journals with more than three data points are shown). We use ordinary least quare (OLS) regression to fit the relation between team size and disruption percentile. We find that among all studied journals, 86% post negative regression coefficients. If we only consider journals that publish a substantial number of articles or those for which the regression coefficient is significant, this fraction is higher: 91% journals of more than 3,000 articles show negative relationship between team size and disruption percentile, and 88% journals give significant negative regression coefficients."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "If i and j share at least one author name (the full name in WOS), we assume that it is the same scholar. From this process we obtain 3.9 million article pairs. For the 0.2 million pairs also included in the Google Scholar data, we test the accuracy of our name disambiguation approach. The rate that these pairs come from the same, self-identifying Google Scholar profile author is 92.5%. These relevant article pairs allow us to systematically compare articles contributed by different teams sharing the same author(s) across the entire WOS system (Fig. 3C)."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "We use Google Scholar data to investigate the impact of team size on disruption by comparing the effect of team size on disruption between vs. within individual scholars (see Fig. S18 for examples). To do this, we compare estimation of the influence of team size on disruption in random effects and author-fixed effects models. If different kinds of scientists and research require different sized teams, then we should see an influence on disruption from team size in the random effects model, but not the author fixed effects model. In contrast, if team size alone affects scientists and the science they perform, then variation in disruption by team size should post the same effect in both random effects and author fixed effects models."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Figure S25 reveals a temporal risk-reward trade-off in number of citations for WOS articles as a function of different levels of disruption. Figures S26 and S27 show how the negative correlation between disruption D(t) and impact C(t) in the short term (t \u226410 years) turns positive in the long term (t >10 years) for WOS articles published in a randomly selected year (1970) and for all years. Figure S28 illustrates the decline of small teams over time in WOS articles and U.S. patents. Figure S29 shows a ripple effect, whereby successful small team research becomes the basis of later, large team success."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Since 2002, citations required by examiners are noted in the USPTO dataset and allow differentiation from citations initiated by applicants. Here we construct two distinct networks using these two different citation types created 2002-2014. The applicant network has 3,709,872 nodes and 23,854,363 edges; 35% (1,288,181) of the cited patents were granted after 2001. The examiner network has 4,689,950 nodes and 12,276,780 edges; 46% (2,173,256) of the cited patents are generated after 2001. In this figure, we show results from a single year, i.e., 2009, to compare the dynamics between the two kinds of citations. (A) Disruption decreases with team size in the applicant network but increases with it in examiner network. (B) Number of citation increases with team size in both networks. (C) Average reference age decreases with team size in both networks. (D) Average popularity of references increases with team size in both networks."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Figure S4. Temporal evolution of disruption across WOS articles. (A) The distribution of disruption across six decades. A majority of arcticles have a disruption value close to zero. Earlier cohorts (blue curves) are more disruptive and developmental\u2014they exhibit thicker tails in the disruption distribution\u2014than later cohorts, which face a much deeper collection of potentially relevant prior papers on which to build or ignore. (B) A zoom-in version of the gray region of (A) revealing that later years demonstrate a higher peak at zero. (C) Average disruption across the WOS sample decrease smoothly and consistently over time. (D) The negative correlation between disruption and team size holds across time periods. Unlike the main body of the paper, which renders disruption in terms of percentile change, this is measured in the native metric of disruption to highlight the shift with time. Nevertheless, with changes in team size, each cohort traverses a majority of the total variation of disruption for that cohort."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "We select these articles based on journal title. Among the 15,146 journals in our dataset, 458 of them have the word \u201creview\u201d in the title and the remaining 14,688 do not. To exclude non-review, article journals like Physical Review E, we further select 48 journals that have both \u201cannual\u201d and \u201creview\u201d in the title. By fetching all articles published on the selected journals, we obtain 22,672 review articles and 23,435,943 non-review articles."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "We investigate the relationship of four variables with team size as in Figure 2, including disruption percentile, number of citations, average age of reference, and median popularity of references. We observe that non-review and review articles show the same dynamics in all variables investigated. Note that as there are almost always less authors in review articles than non-review articles, for reviews we only display team size from one to four as shown in Panels E-H, which covers 97% of the population, and for the nonreviews we display team size from one to ten as shown in Panels A-D, which covers 98% of the population. The range of team size in the two subsets graphed in E and G are naturally smaller than the subsets in A and C."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Figure S8. Weighted moving average technique for data smoothing. The relationship between team size and disruption may be noisy due to a lack of data when we analyze articles from the same journal or field. For example, less than 1% of articles in \u201cArtificial Intelligence\u201d (a subfield of \u201cComputer and Information Technology\u201d) have more than 6 authors, but these articles contribute to substantial variance in the data (A). We use the moving average technique to limit noise in the data. More specifically, we define parameter \\(k\\), which provides threshold value \\(m_k\\) for team size \\(m\\) such that \\(P(m>m_k) < k\\)."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Figure S9. Disruption percentile vs. team size for Medicine journals. Each curve corresponds to a journal (only journals with more than three data points are shown) and each panel corresponds to a subfield. Curves are smoothed using the technique introduced in Figure S8, by setting the smoothing parameter k=0.2. Darkness of curves is proportional to both sample size and the absolute value of the regression coefficient of disruption percentile on team size, so that journals with more articles and that display stronger (both negative and positive) relationships are more distinguishable from the background."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Figure S20. Disruption percentile vs. team size for U.S. patents across classes and recipients (assignees). We plot disruption percentile against team size for the top seven classes (A) and the top five recipients (B) against the population average using data from 2002 to 2009. It is observed that the decrease of disruption and increase in team size holds broadly across classes and assignees. The moving average technique introduced in Figure S8 is used to smooth the curve (smoothing parameter k=0.1). As sample size decreases fast with team size in the patent data, we assigned equal weights across team sizes in applying the smoothing technique."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Figure S21. Disruption percentile vs. team size for GitHub software projects across programming languages and code base sizes. We plot disruption percentile against team size for the seven most popular programming languages (A) and four scales of code base sizes (B) against the population average using data from 2011-2014. It is observed that the decrease of disruption and increase in team size holds broadly across programming languages and code base sizes."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "S24. Comparison of citation dynamics across team sizes and levels of disruption. To control the difference in temporal citation dynamics across impact levels, we selected 95,474 papers with between 200 and 300 citations from 1954-2014. For each paper we obtain a time series of the number of yearly citations. We then group these papers to calculate their average yearly citations over time. (A) Articles from small teams have a longer season of impact those from big teams. Here m=1 (blue curve, 18,532 papers), m=3 (green curve, 25,403 papers), and m=7 (red curve, 7128 papers) correspond to 10, 50, and 90 percentiles of team size, respectively. (B) Disruptive articles have a longer impact than developmental papers. Here red (37,805 papers), green (4,931 papers), and blue (26,698 papers) curves indicate 0-10, 55-65, and 90-100 percentiles of disruption, respectively. In both panels, curves are smoothed by running average with a time window of five years. Gray regions show one standard deviation of those averages."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "S26. The negative correlation between disruption and impact in the short term (t \u226410 years) turns positive in the long term (t >10 years) for articles published in 1970. (A) ~ (E) We select articles published in 1970 and calculate D(t) and C(t) with time-window width t in years, and find that they post a negative relationship for 5-year and 10-year windows, but a positive one for 20, 30, and 40 year windows. In (F) ~ (J) we present similar results to (A) ~ (E), except that we portray disruption percentile DP(t) instead of D(t). The percentile is calculated based on the distribution of disruption values of all papers over the longest time window (40 years)."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "Figure S29. The ripple effect. We select 2640 articles that published after 1953 from the WOS dataset that satisfy the following conditions 1) the number of authors is equal to or less than three; 2) the \u201csleeping beauty\u201d index is among the top 1% of all papers; and 3) the total number of citations in the dataset is among the top 1% of all papers. In other words, these are \u201csmallteam sleeping beauties\u201d that have a big impact on science. We trace the citations to these articles and find that the fraction of large teams (with more than three authors) that cite them monotonically and dramatically increases over time. (A) Fraction of citations that come from large teams over time for three example papers. (B) Fraction of large team citation over time, averaged over all the 2640 articles, which attract citations from 657,946 articles contributed by large teams in total."
+ },
+ {
+  "doc": "1709.02445v2",
+  "score": 0.0,
+  "text": "We thank Eamon Duede, Linzhuo Li, Chengjun Wang, and Yang Yang for helpful discussions and comments, Dongbo Li and Jiang Li for sharing Nobel Prize winner data. We thank Clarivate Analytics for supplying the Web of Science data. This work was supported by DARPA\u2019s Big Mechanism program grant #14145043, the John Templeton Foundation\u2019s grant to the Metaknowledge Network, National Science Foundation grant SBE1158803 and AFOSR grants FA9550-15-1-0162 and FA9550-17-1-0089."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "The \u201cofficially released\u201d date that appears near the beginning of each opinion is the date the opinion will be published in the Connecticut Law Journal or the date it was released as a slip opinion. The operative date for the beginning of all time periods for filing postopinion motions and petitions for certification is the \u201cofficially released\u201d date appearing in the opinion."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "All opinions are subject to modification and technical correction prior to official publication in the Connecticut Reports and Connecticut Appellate Reports. In the event of discrepancies between the electronic version of an opinion and the print version appearing in the Connecticut Law Journal and subsequently in the Connecticut Reports or Connecticut Appellate Reports, the latest print version is to be considered authoritative."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "The syllabus and procedural history accompanying the opinion as it appears on the Commission on Official Legal Publications Electronic Bulletin Board Service and in the Connecticut Law Journal and bound volumes of official reports are copyrighted by the Secretary of the State, State of Connecticut, and may not be reproduced and distributed without the express written permission of the Commission on Official Legal Publications, Judicial Branch, State of Connecticut."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "The jury reasonably could have found the following facts. At 10 p.m., on August 14, 2009, Cheryl Byrne was in the living room of her home in Burlington, when she heard noises outside. She walked into the kitchen to look out the window to the backyard and saw the defendant, whom she did not know, on the deck that wraps around the house. Initially, the defendant did not respond when Byrne repeatedly asked him what he was doing there, but eventually he told her he was looking for \u201cGerry.\u201d Byrne noticed that something was \u201cdefinitely not right\u201d with the defendant, that his eyes were glossy and he appeared to see with what she termed \u201ctunnel [vision].\u201d She was uncertain whether he was intoxicated or under the influence of drugs. She told him that there was no one named Gerry there, and that he had to leave. The defendant then walked around the deck and entered the house through the front door."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "When Byrne\u2019s German shepherd dog immediately began barking furiously, the defendant backed out of the home and walked to where he had parked his car. Byrne watched him drive away in an older, white Monte Carlo with a red pinstripe. She made note of the license plate number, then called 911 to report the incident, providing the description of the vehicle and the license plate number to the police."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "ington. Murak had been traveling in the opposite direction, but he turned around and drove back until he came to an intersection, where the defendant\u2019s vehicle was stopped at a stop sign. Although there were three vehicles between the defendant\u2019s vehicle and Murak\u2019s cruiser, Murak could see that the left tires on the defendant\u2019s vehicle were on the double yellow line in the middle of the road. The defendant\u2019s vehicle proceeded through the intersection, then swerved quickly to the left, crossing at least one foot over the yellow lines, then swerved back to the right. At that point, Murak turned on his lights and siren and passed the three other vehicles to pull over the defendant. As he pulled behind the defendant\u2019s vehicle, the Monte Carlo pulled to the right, its right front tire striking the curb, going over it, then coming back down, whereupon the vehicle came to a stop."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "Suspecting at this point that the defendant was under the influence of alcohol, Murak asked the defendant to step out of the vehicle. The defendant complied, and Murak began to administer three standard field sobriety tests, beginning with the horizontal gaze nystagmus test, which the defendant failed. Murak next proceeded to administer the walk and turn test, also known as the heel to toe test. Before asking the defendant to perform the test, Murak explained it verbally, then demonstrated it. The defendant failed the test. Finally, Murak administered the one leg stand test. The defendant expressed concern about the gravel on the side of the road, whereupon Murak allowed him to select a different location."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "then performed an inventory search of the defendant\u2019s vehicle, and discovered, in addition to the twenty-four ounce empty beer can he already had seen, another empty twenty-four ounce beer can, an empty eight ounce beer can, and a full eight ounce can of beer. At the precinct, the defendant was again advised of his Miranda rights and he signed a notice of rights form."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "Murak informed the defendant of Connecticut\u2019s implied consent law; General Statutes \u00a7 14-227b; and requested that the defendant submit to a breath test on a machine called an Intoxilyzer 5000, which the defendant refused to do. Murak then summoned another officer, Sean Bailey, to witness the defendant\u2019s refusal to submit to the breath test. Murak then questioned the defendant using an A-44 form. The defendant again stated that he had consumed one beer that evening, and that when Murak stopped him, he had been coming from Murphy & Scarletti\u2019s, a bar in Farmington. The defendant admitted that he took prescription medication, and Murak recovered a bottle of a generic form of Ativan from the defendant\u2019s person."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "The defendant was charged with operating a motor vehicle while under the influence of intoxicating liquor or drugs or both in violation of \u00a7 14-227a (a) (1). During the trial, the defendant testified that he was unable to perform the walk and turn and the one leg stand field sobriety tests because of a knee injury that he had sustained during an accident on his dirt bike five years earlier. In connection with that testimony, the defendant sought to perform those tests in front of the jury."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "After a hearing outside the presence of the jury during which the court heard the defendant\u2019s offer of proof, the court precluded the evidence on the basis that it was not possible to replicate in court the conditions on the night of the arrest, and because \u201c[i]t would be inappropriate to have the defendant demonstrate what he thinks occurred on that night.\u201d The court added, however, that it would give the defendant \u201cevery leeway\u201d to present his theory of the defense by other means."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "Following his conviction, the defendant was sentenced to three years incarceration, execution suspended after one year, and three years probation. The defendant appealed from the judgment of conviction to the Appellate Court, which affirmed the judgment on the basis of its conclusion that the trial court correctly determined that the proffered demonstration was unreliable. State v. Romanko, 139 Conn. App. 670, 675, 56 A.3d 995 (2012). This certified appeal followed."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "We have recognized that \u201cthe trial court has broad discretion in determining whether to admit or exclude demonstrative evidence.\u201d Barry v. Quality Steel Products, Inc., 280 Conn. 1, 20, 905 A.2d 55 (2006); see also Friedler v. Hekeler, 96 Conn. 29, 32, 112 A. 651 (1921) (holding that trial court acted within its discretion in allowing demonstration of extent to which plaintiff in personal injury action could close her eye). The general rule is that demonstrative evidence must be helpful to the fact finder in order to be admissible. C. Tait & E."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "Id., \u00a7 11.15.1, p. 736 (explaining that \u201c[b]efore demonstrative evidence is admitted, the purpose of the evidence should be clearly stated,\u201d and enumerating different foundational requirements depending on stated purpose of proffer). Where the proffered evidence, as in the present case, is a physical demonstration that is offered for the purpose of recreating the events at issue at trial, \u201cthe demonstration must be performed under substantially similar conditions so that the rendition is reasonably fair and accurate.\u201d Id., \u00a7 11.18, pp. 744\u201345; see also State v. Holota, 2 Conn."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "He could have presented the testimony of a treating physician, produced documentary evidence, and questioned his father and his friend, both of whom testified on his behalf, regarding the injury. He did not. Nor did he mention in closing argument to the jury his claim that it was his disability rather than his intoxication that prevented him from passing the two mobility based field sobriety tests. The mere fact that the trial court prevented the defendant, on the basis of the court\u2019s sound application of the rules of evidence, from relying on an unreliable demonstration to prove his claim does not support the defendant\u2019s claim that the court\u2019s ruling violated his constitutional right to present a defense."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "* This case originally was scheduled to be argued before a panel of this court consisting of Chief Justice Rogers and Justices Palmer, Zarella, Eveleigh, McDonald, Espinosa and Robinson. Although Justice Palmer was not present when the case was argued before the court, he has read the record and briefs, and listened to a recording of the oral argument prior to participating in this decision."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "The defendant appealed from the judgment of conviction to the Appellate Court, which affirmed the judgment. State v. Romanko, 139 Conn. App. 670, 675, 56 A.3d 995 (2012). We subsequently granted the defendant\u2019s petition for certification to appeal, limited to the following question: \u201cDid the Appellate Court properly determine that the trial court did not violate the defendant\u2019s constitutional right to present a defense when it precluded the defendant from introducing certain demonstrative evidence?\u201d State v."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "\u201cThe horizontal gaze nystagmus test measures the extent to which a person\u2019s eyes jerk as they follow an object moving from one side of the person\u2019s field of vision to the other. The test is premised on the understanding that, whereas everyone\u2019s eyes exhibit some jerking while turning to the side, when the subject is intoxicated the onset of the jerking occurs after fewer degrees of turning, and the jerking at more extreme angles becomes more distinct.\u201d (Internal quotation marks omitted.) State v. Morelli, 293 Conn. 147, 156 n.6, 976 A.2d 678 (2009)."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "The defendant now claims that the trial court misunderstood the purpose of his offer. He claims that he did not seek to reenact the tests, but to demonstrate to the jury that he could not have performed the mobility based field sobriety tests under any circumstances, due to his disability. Our review of the record, however, persuades us that the trial court correctly understood the defendant\u2019s explained purpose of the offer. As we explain herein, the statements that defense counsel made to the court during the offer of proof are consistent with the trial court\u2019s understanding that the defendant sought to reenact the performance of the tests."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "It would be inappropriate to have the defendant demonstrate what he thinks occurred on that night.\u201d The defendant did not make any statement suggesting that he disagreed with the court\u2019s interpretation of his proffer, nor did he later file a motion for reconsideration or articulation that would have suggested he disagreed with the court\u2019s understanding of the basis for his proffer."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "Although we agree with the defendant that the constitutional right to present a defense includes the right to testify on one\u2019s own behalf, we reiterate that the right to present a defense does not free the defendant from the bounds of the rules of evidence. State v. Bova, supra, 240 Conn. 236. As we explain in this opinion, the court adhered to the rules of evidence in precluding the demonstration. Its determination that the proffered demonstration would be unreliable, moreover, was not tied at all to a concern that the defendant may feign injury, but was premised solely on the lack of any substantial similarity between the courtroom conditions and the conditions at the scene on the night of the defendant\u2019s arrest. The defendant\u2019s argument, therefore, that the court\u2019s ruling was comparable to barring a defendant\u2019s testimony on the basis of suspected untruthfulness, is unpersuasive."
+ },
+ {
+  "doc": "court_romanko_2014",
+  "score": 0.0,
+  "text": "defense by other means did not render the court\u2019s ruling constitutionally valid. Even taking the defendant\u2019s claim that the demonstration was somehow superior to other methods of proof, the defendant\u2019s argument fails, because it ignores the fact that the evidence was inadmissible because the court found that the conditions were not substantially similar. Therefore, the demonstration would not have been reliable."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Small federal agencies\u2014generally those with 6,000 or fewer employees\u2014 are, like larger agencies, at risk from threats to information systems that support their operations and the information they contain, which can include personally identifiably information. Federal law and policy require small agencies to meet information security and privacy requirements and assign responsibilities to OMB for overseeing agencies\u2019 activities. OMB has assigned several of these duties to DHS."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "GAO was asked to review cybersecurity and privacy at small agencies. The objectives of this review were to determine the extent to which (1) small agencies are implementing federal information security and privacy laws and policies and (2) OMB and DHS are overseeing and assisting small agencies in implementing their information security and privacy programs. GAO selected six small agencies with varying characteristics for review; reviewed agency documents and selected systems; and interviewed agency, OMB, and DHS officials."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "OMB and the Department of Homeland Security (DHS) took steps to oversee and assist small agencies in implementing security and privacy requirements. For example, OMB and DHS instructed small agencies to report annually on a variety of metrics that are used to gauge implementation of information security programs and privacy requirements. In addition, OMB and DHS issued reporting guidance and provided assistance to all federal agencies on implementing security and privacy programs. However, 55 of 129 small agencies identified by OMB and DHS are not reporting on information security and privacy requirements. Further, the agencies in GAO\u2019s review have faced challenges in using the guidance and services offered. Until OMB and DHS oversee agencies\u2019 implementation of information security and privacy program requirements and provide additional assistance, small agencies will continue to face challenges in protecting their information and information systems."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "This is a work of the U.S. government and is not subject to copyright protection in the United States. The published product may be reproduced and distributed in its entirety without further permission from GAO. However, because this work may contain copyrighted images or other material, permission from the copyright holder may be necessary if you wish to reproduce this material separately."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Small agencies\u2014those with 6,000 or fewer employees\u2014like large agencies, place a great deal of sensitive information on their systems and, if not properly protected, they are at risk from the growing and evolving threats to the systems and networks that support federal operations. These growing and evolving threats can potentially affect all segments of our society, including individuals, private businesses, government agencies, and other entities. Laws such as the Privacy Act of 1974, the E-Government Act of 2002, and the Federal Information Security Management Act (FISMA) of 2002 are meant to assist agencies by creating a framework for protecting information and information systems. We have identified the protection of federal information systems as a government-wide high-risk area since 1997 and in 2003 expanded this high-risk area to include the protection of systems supporting the nation\u2019s critical infrastructures, a designation that remains in place today."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "We selected the Federal Retirement Thrift Investment Board because of a significant data breach it experienced in 2012. Then, we selected the following five additional agencies to be included in our review: the Federal Trade Commission; the International Boundary Commission, United States and Canada; the James Madison Memorial Fellowship Foundation; the National Capital Planning Commission; and the National Endowment for the Humanities. To select these five agencies, we compiled a listing of small agencies, and categorized the agencies into five primary areas, selecting one agency from each area. Because of the small number of agencies reviewed, our findings are not representative of any population of small agencies and our results only apply to the six selected agencies."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "We reviewed and analyzed documents from the selected agencies, including information security and privacy policies, plans, and procedures; reviewed the testing of controls and performed tests of selected controls over selected key systems; interviewed agency officials; and reviewed inspector general reports to determine whether selected agencies were implementing information security and privacy requirements. We also interviewed OMB and DHS officials regarding their actions in overseeing and assisting agencies in meeting information security and privacy requirements. In addition, we interviewed officials from the selected agencies regarding their interactions with OMB and DHS."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Those standards require that we plan and perform the audit to obtain sufficient, appropriate evidence to provide a reasonable basis for our findings and conclusions based on our audit objectives. We believe that the evidence obtained provides a reasonable basis for our findings and conclusions based on our audit objectives. See appendix I for additional details on our objectives, scope, and methodology."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Safeguarding government computer systems and sensitive information, including personally identifiable information (PII) that resides on them, is an ongoing challenge due to the complexity and interconnectivity of systems, the ease of obtaining and using hacking tools, the steady advances in the sophistication and effectiveness of attack technology, and the emergence of new and more destructive attacks. To help address this challenge, federal agencies, regardless of their size, must abide by federally mandated standards, guidelines, and requirements related to federal information systems."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "FISMA established a framework designed to ensure the effectiveness of security controls for information and information systems that support federal operations and assets. FISMA assigns specific responsibilities to (1) OMB, to develop and oversee the implementation of policies, principles, standards, and guidelines on information security (except with regard to national security systems); to report, at least annually, on agency compliance with the act; and to approve or disapprove agency information security programs; (2) agency heads, to provide information security protections commensurate with the risk and magnitude of the harm resulting from unauthorized access, use, disclosure, disruption, modification, or destruction of information collected or maintained by or on behalf of the agency; (3) agency heads and chief information officers, to develop, document, and implement an agency-wide information security program; (4) inspectors general, to conduct annual independent evaluations of agency efforts to effectively implement information security; and (5) the National Institute of Standards and Technology (NIST), to develop standards and guidance to agencies on information security."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Within DHS, the Federal Network Resilience Office, within the National Protection and Programs Directorate, is responsible for (1) developing and disseminating most FISMA reporting metrics, (2) managing the CyberScope web-based application, and (3) collecting and reviewing federal agencies\u2019 cybersecurity data submissions and monthly data feeds to CyberScope. In addition, the office is responsible for conducting cybersecurity reviews and assessments at federal agencies to evaluate the effectiveness of agencies\u2019 information security programs."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "maintaining any record, and instruct each such person in those rules and the requirements of the act; and (3) establish appropriate administrative, technical, and physical safeguards to ensure the security and confidentiality of records and to protect against any anticipated threats or hazards to their security or integrity that could result in substantial harm, embarrassment, inconvenience, or unfairness to any individual on whom information is maintained. Additionally, when an agency establishes or makes changes to a system of records, it must notify the public through a system of records notice in the Federal Register that includes the categories of data collected, the categories of individuals about whom information is collected, the intended \u201croutine\u201d uses of data, and procedures that individuals can use to review and correct personally identifiable information."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Specifically, the E-Government Act strives to enhance the protection of personal information in government information systems by requiring that agencies conduct privacy impact assessments (PIA) for systems or collections containing personal information. According to OMB guidance, the purpose of a PIA is to (1) ensure handling conforms to applicable legal, regulatory, and policy requirements regarding privacy; (2) determine the risks and effects of collecting, maintaining, and disseminating information in identifiable form in an electronic information system; and (3) examine and evaluate protections and alternative processes for handling information to mitigate potential privacy risks."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The Privacy Act defines a \u201csystem of records\u201d as a group of records under the control of any agency from which information is retrieved by the name of the individual or by an individual identifier. The act describes a \u201crecord\u201d as any item, collection, or grouping of information about an individual that is maintained by an agency and contains his or her name or another personal identifier."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Small federal agencies have reported a number of incidents that have placed sensitive information at risk, with potentially serious impacts on federal operations, assets, and people. According to DHS, the number of reported security incidents for small agencies from fiscal year 2009 to fiscal year 2013 ranged from 2,168 to 3,144. Incidents involving PII at small agencies increased from 258 in fiscal year 2009 to 664 in fiscal year 2013. In addition, in fiscal year 2013, small agencies reported 2,653 incidents to US-CERT. Table 2 describes the incident categories as defined by US-CERT."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "CategoryIncident definitionUnauthorized AccessAll incidents where an individual gains logical or physical access without permission to a federal agency network, system, application, data, or other resource.Denial of ServiceAll successful attacks that prevent or impair the normal authorized functionality of networks, systems, or applications by exhausting resources.Malicious CodeAll successful installations of malicious software that infect an operating system or application.Improper UsageAll incidents where a user violates acceptable computing use policies.Scans/Probes/Attempted AccessAny activity that seeks to access or identify a federal agency computer, open ports, protocols, service, or any combination for later exploit.InvestigationUnconfirmed incidents that are potentially malicious or anomalous activity deemed by the reporting entity to warrant further review."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The six small agencies we reviewed have generally developed many of the requirements of an information security program, but these programs have not been fully implemented. Specifically, four of the six agencies have developed an information security program that includes risk assessments, security policies and procedures, system security plans, security awareness training, periodic testing and evaluation, remedial action plans, incident handling, and contingency planning. However, key elements of their plans, policies, or procedures in these areas were outdated, incomplete, or did not exist. In addition, two of the six agencies did not develop an information security program with the required FISMA elements."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Four of the six selected agencies developed and conducted risk assessments. For example, one agency\u2019s risk assessment generally adhered to NIST guidance for conducting risk assessments. Specifically, it included information related to the identification of threats, vulnerabilities, and impacts, and recommended corrective actions for mitigating or eliminating the threats and vulnerabilities that were identified. However, the risk assessment did not identify the assumptions and constraints associated with the assessment. Another agency developed a risk management framework and documented a risk assessment policy but had not completed risk assessments for its systems. In addition, risk assessments at the four agencies were outdated or did not include elements outlined in NIST guidance, as the following examples illustrate."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 The remaining two agencies, which did not conduct risk assessments for their systems, cited various reasons for not completing them. One agency stated it was not aware of the requirement to conduct risk assessments. The other agency stated that it received a waiver from OMB for complying with FISMA requirements. According to OMB officials, they have not granted FISMA waivers to any federal agency and FISMA does not allow for waivers."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "A key element of an effective information security program, as required by FISMA, is to develop, document, and implement risk-based policies and procedures that govern the security over an agency\u2019s computing environment. According to NIST, an organization should develop, document, and disseminate (1) a policy that addresses purpose, scope, roles, responsibilities, management commitment, coordination among organizational entities, and compliance, and (2) procedures to facilitate the implementation of the policy and associated controls. Procedures are detailed steps to be followed by users, system operations personnel, or others to accomplish a particular task. If properly implemented, policies and procedures may be able to effectively reduce risk to the information and information systems."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Four of the six small agencies we reviewed had documented information security policies and procedures, and two did not. For example, in fiscal year 2012, one of the selected agencies documented policies that addressed each of the FISMA elements as a part of its information security program. Another agency had policies addressing risk assessments, security plans, security awareness and training, periodic testing and evaluation, remedial actions, incident response, and contingency planning. However many, but not all, of the policies and procedures documented by the six agencies were either outdated, incomplete, or did not exist (see fig. 2)."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 For instance, agency 1 had information security policies that had not been updated since 2001. During our review, the agency hired a contractor to develop a new information technology (IT) security framework based on NIST guidance, with a planned completion date of the end of 2014. According to an agency official, a new entity-wide information security policy was documented and implemented in December 2013. We reviewed a copy of the policy and determined it addressed each of the eight elements of an information security program mandated by FISMA."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "FISMA requires an agency\u2019s information security program to include plans for providing adequate information security for networks, facilities, and systems or groups of information systems, as appropriate. According to NIST, the purpose of the system security plan is to provide an overview of the security requirements of the system and describe the controls in place or planned for meeting those requirements. The first step in the system security planning process is to categorize the system based on the impact to agency operations, assets, and personnel should the confidentiality, integrity, and availability of the agency information and information systems be compromised. This categorization is then used to determine the appropriate security controls needed for each system."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The fourth plan included a completion date but did not have an approval date, and two of the four plans were outdated. One plan had not been updated since 2009, and the other had not been updated since 2011. The agency did not have a standardized template for creating security plans, which led to the inconsistencies in the various plans. The agency plans to standardize its security plans and update plans for three of the four systems selected for review by June 2014."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 A third agency divided its general support system into 21 systems and major applications. In fiscal year 2013, it completed security plans and categorizations for 1 of its systems. According to an agency official, the security plan for another system was completed in fiscal year 2014 and the security plans for the remaining 19 systems and major applications are scheduled to be completed by March 2015."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "FISMA requires agencies to provide security awareness training to personnel, including contractors and other users of information systems that support the operations and assets of the agency. Training is intended to inform agency personnel of the information security risks associated with their activities, and their responsibilities in complying with agency policies and procedures designed to reduce these risks. FISMA also requires agencies to provide specialized training to personnel with significant security responsibilities. Providing training to agency personnel is critical to securing information and information systems since people are one of the weakest links in attempts to secure systems and networks."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 One of the four agencies implemented a new web-based security awareness training program in 2013. This agency trained 100 percent of its employees. However, the agency did not have specialized security training for the individuals with significant security responsibilities. According to agency officials, the agency obtained funds and purchased specialized training and plans to complete this training in 2014."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 Another agency updated its security awareness program in fiscal year 2013, and 100 percent of its users completed annual security awareness training. The agency developed specialized training, but not all required individuals with significant security responsibilities had taken it. According to officials, the agency\u2019s tracking of specialized training is not automated and it has been difficult to get all required employees together to take the training. Specialized training was identified as an issue in the agency\u2019s fiscal year 2012 inspector general report, and the agency is working to establish goals for a more comprehensive tracking system for its specialized training."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 The remaining two selected agencies had neither conducted annual security awareness training for all of their employees nor provided specialized training for security personnel. Officials at one of the agencies stated that two of its employees received security awareness training through another federal agency, but its remaining employees had not received such training. Officials at the other agency stated that the agency does not conduct any formal security awareness training due to its small size."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Without fully developing and implementing a security awareness program, including training for users with significant security roles, the selected agencies may not have the proper assurance that their personnel have a basic awareness of information security issues and agency security policies and procedures. In addition, agencies that did not provide specialized training may not have reasonable assurance that staff with significant system security roles have the adequate knowledge, skills, and abilities consistent with their roles to protect the confidentiality, integrity, and availability of the information housed within the information systems to which they are assigned."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "FISMA requires that federal agencies periodically test and evaluate the effectiveness of their information security policies, procedures, and practices as part of implementing an agency-wide security program. This testing is to be performed with a frequency depending on risk, but no less than annually. Testing should include management, operational, and technical controls for every system identified in the agency\u2019s required inventory of major systems."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 A third agency hired an independent contractor in fiscal year 2012 to test or review management, operational, and technical controls for its general support system. However, the contractor did not test all controls for the system. According to an agency official, controls not tested were not within the contracted scope of the assessment. The agency plans to conduct a security assessment and authorization for its new system in fiscal year 2014."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "FISMA requires agencies to plan, implement, evaluate, and document remedial actions to address any deficiencies in their information security policies, procedures, and practices. In its fiscal year 2012 and 2013 FISMA reporting instructions, OMB emphasized that remedial action plans\u2014known as plans of action and milestones (POA&M)\u2014are to be the authoritative agency-wide management tool for addressing information security weaknesses. In addition, NIST guidance states that federal agencies should develop a POA&M for information systems to document the organization\u2019s planned remedial actions to correct weaknesses or deficiencies noted during the assessment of the security controls and to reduce or eliminate known vulnerabilities in the system."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "While these four agencies documented remedial action plans, plans were missing elements as required by OMB. For example, one agency\u2019s POA&Ms lacked either estimated completion dates or the actual completion date of corrective actions that remediated identified weaknesses. Another agency\u2019s POA&Ms lacked elements such as estimated funding sources, severity ratings, milestone completion dates, or changes to milestone completion dates where applicable."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "FISMA requires that agency security programs include procedures for detecting, reporting, and responding to security incidents, including reporting incidents to US-CERT. According to NIST, agencies should create an incident response policy and use it as the basis for incident response procedures. The procedures should then be tested to validate their accuracy and usefulness. The ability to identify incidents using appropriate audit and monitoring techniques enables an agency to initiate its incident response plan in a timely manner. Once an incident has been identified, an agency\u2019s incident response procedures should provide the capability to correctly log the incident, properly analyze it, and take appropriate action."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Four of the six small agencies we reviewed had taken steps to develop policies and procedures as required by FISMA and recommended by NIST guidance for incident handling. Specifically, these agencies\u2019 policies and procedures included incident response policies or plans, incident response team policy, procedures for US-CERT notification, and escalation procedures for information security incidents. One agency, for example, had documented policy and procedures for detecting, reporting, and responding to security incidents that required personnel to report incidents involving personally identifiable information to the Chief Information Officer within 1 hour, and all other types of incidents to the agency\u2019s Security Officer."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 One agency had not updated its incident response policy and plan since 2001. During the course of our review, in December 2013, the agency updated its incident response policy. According to agency officials, incident management is currently an ad hoc process. Incident management will be included in agency-wide procedures due to be completed in 2014. Between fiscal year 2011 and 2013, the agency reported one incident to US-CERT."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 Another agency has developed and documented an incident response policy but has not documented procedures for responding to security incidents. According to agency officials, the agency is in the process of developing and documenting an incident response plan with procedures. The agency has taken these actions to improve its incident detection and reporting capabilities and awarded a contract to acquire services to both improve and support these capabilities."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "FISMA requires federal agencies to develop and document plans and procedures to ensure continuity of operations for information systems that support the operations and assets of the agency. According to NIST, contingency planning is part of overall information system continuity of operations planning, which fits into a much broader security and emergency management effort that includes, among other things, organizational and business process continuity and disaster recovery planning. These plans and procedures are essential steps in ensuring that agencies are adequately prepared to cope with the loss of operational capabilities due to a service disruption such as an act of nature, fire, accident, or sabotage. According to NIST, these plans should cover all key functions, including assessing an agency\u2019s information technology and identifying resources, minimizing potential damage and interruption, developing and documenting the plan, training personnel in their contingency roles and responsibilities and providing refresher training, and testing them and making necessary adjustments."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 A third agency had documented a continuity of operations plan that contained a disaster recovery plan. However, contingency plans were not developed or tested for its three information systems. Additionally, according to one agency official, the disaster recovery plan for the agency is outdated. According to the agency\u2019s inspector general FISMA report for fiscal year 2013, the agency did not test the plan in 2013 due to competing demands (e.g., a pending office move and launch of a new software program). According to agency officials, the agency intends to reinstitute the annual test exercises in fiscal year 2014. The inspector general\u2019s report noted that the agency implemented the core policies and procedures associated with contingency planning, including the creation of a business continuity plan, disaster recovery plan, continuity of operations plan exercises, signature of an alternate processing site agreement, and data backups. According to an agency official, the plans will be updated once the agency moves to its new location in fiscal year 2014."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 Additionally, the fourth agency\u2019s inspector general identified contingency planning as a weakness in fiscal year 2012. The inspector general reported that the agency did not have a final contingency plan or disaster recovery plan. In addition, the agency lacked a disaster recovery site and did not appropriately test its contingency plan. In fiscal year 2013, the inspector general reported that the agency (1) initiated a program to establish an enterprise-wide business continuity/disaster recovery program, (2) planned to have a disaster recovery site by the end of fiscal year 2014, and (3) tested its draft contingency plan and disaster recovery. In March 2014, the agency finalized its contingency plan and disaster recovery plan."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "According to an official at one of the agencies, the data used for their work are stored on the individual\u2019s laptop and each employee is required to back up their data. If the laptop or data are lost, the employee is responsible for restoring the data from the back-up. Otherwise, the employee would have to recreate the data. Without formal back-up procedures, the agency is at risk for lost data. Officials at the other agency stated that they did not have concerns about the potential loss of operations. If they were unable to operate, they would still be able to process payments and collect data since those operations are handled by another federal agency and contractor."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The major statutory requirements for the protection of personal privacy by federal agencies are the Privacy Act of 1974 and the privacy provisions of the E-Government Act of 2002. In addition, FISMA, which is included in the E-Government Act of 2002, addresses the protection of personal information in the context of securing federal agency information and information systems. Beyond these laws, OMB and NIST have issued guidance for assisting agencies with implementing federal privacy laws."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The E-Government Act requires that agencies conduct privacy impact assessments (PIA) for systems or collections containing personal information. In addition, agencies must ensure the review of the PIA and, if practicable, make the PIA publicly available through the agency\u2019s website, publication in the Federal Register, or other means. OMB guidance elaborates on the PIA process by stating, for example, that agencies are required to conduct PIAs when a system change creates new privacy risks (e.g., changing the way in which personal information is being used). According to OMB, the PIA requirement does not apply to all systems. For example, no assessment is required when the information collected relates to internal government operations, the information has been previously assessed under an evaluation similar to a PIA, or when privacy issues are unchanged."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The Privacy Act states that agencies must establish rules of conduct for persons involved in the design, development, operation, or maintenance of any systems of records, and establish appropriate administrative, technical, and physical safeguards to ensure the security and confidentiality of records. According to NIST, privacy controls are the administrative, technical, and physical safeguards employed within organizations to protect and ensure the proper handling of PII."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "impact assessment should have been completed. An official from the second agency stated they will determine whether the systems containing PII would need a privacy impact assessment. The third agency did not conduct privacy impact assessments because officials inappropriately believed that a waiver from OMB relieved them from the requirement of preparing privacy impact assessments. However, no waivers exist for conducting privacy impact assessments, and OMB does not issue such waivers."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 Assign senior official for privacy: Most of the six selected small agencies assigned a senior agency official for privacy who is responsible for ensuring compliance with all applicable laws and regulations regarding the collection, use, maintenance, sharing, and disposal of personally identifiable information by programs and information systems. Specifically, five of the six agencies had assigned an agency official with overall agency-wide responsibility for information privacy issues, while one agency had not. One of the agencies designated a Chief Privacy Officer, while officials from three other agencies stated that other employees or officers, specifically the Chief Operating Officer, the General Counsel, or the Chief Information Officer, were designated to perform the duties of a privacy officer. The fifth agency designated its Management and Program Officer as the agency\u2019s privacy official in 2014. The sixth agency, according to an agency official, did not have many full-time employees and had not identified an agency official responsible for privacy."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "OMB and DHS have provided a variety of guidance and services to assist agencies in meeting security and privacy requirements, including a recently launched DHS initiative aimed at improving small agencies\u2019 cybersecurity. However, the agencies in our review have faced challenges in using the guidance and services, and additional efforts could better position smaller agencies to take advantage of guidance and services offered."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "FISMA requires that OMB develop and oversee the implementation of policies, standards, and guidelines on information security at executive branch agencies and annually report to Congress on agencies\u2019 compliance with the act. The Privacy Act gives OMB responsibility for developing guidelines and providing \u201ccontinuing assistance to and oversight of\u201d agencies\u2019 implementation of the act. The E-Government Act of 2002 also assigns OMB responsibility for developing PIA guidance and ensuring agency implementation of the privacy impact assessment requirement. Since 2010, DHS has assisted OMB in overseeing executive branch agencies\u2019 compliance with FISMA, overseeing cybersecurity operations, and providing related assistance. DHS cybersecurity oversight activities have also included privacy-related matters initiated by OMB in its continuing oversight of the implementation of the Privacy Act and the E-Government Act."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "report annually on a variety of metrics, which are used to gauge implementation of the information security programs and privacy requirements established by the various acts. The metrics cover areas such as risk management, security training, remediation programs, and contingency planning. Over time, these metrics have evolved to include administration priorities and baseline metrics intended to improve oversight of FISMA implementation and federal information security. To report on the annual metrics, all federal agencies use an interactive data collection tool called CyberScope."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "In its 2013 annual report to Congress on agencies\u2019 implementation of FISMA, OMB reported that small agencies improved their implementation of FISMA capabilities from fiscal year 2012 to fiscal year 2013. For example, in providing security awareness training to users, small agencies increased from 85 percent in fiscal year 2012 to 96 percent in fiscal year 2013. Another area of improvement noted was the capability for controlled incident detection: small agencies increased from 53 percent in fiscal year 2012 to 69 percent in fiscal year 2013. In addition, the number of small agencies reporting to OMB increased from 50 in fiscal year 2012 to 57 in fiscal year 2013."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "However, as of March 2013, 55 of 129 small agencies registered to use CyberScope had never reported to OMB on the implementation of their information security programs. Further, one of the agencies in our review has never registered to use CyberScope or reported to OMB. The other agency, although initially registering to use CyberScope when it was first developed, never submitted its annual report and last reported to OMB in 2008."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "According to DHS officials, they report to OMB on which agencies met or did not meet the annual reporting requirement. Further, the list of agencies DHS reports on is limited to those that have registered for CyberScope. DHS officials also stated that reminders are sent to agencies about CyberScope reporting dates. However, DHS officials stated they have no mechanism in place to force agencies to comply with the annual reporting requirement. Establishing a mechanism, such as publishing a list of agencies not meeting the annual reporting requirements, could lead to greater transparency and compliance."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "In addition to guidance, according to OMB officials, OMB regularly works with all agencies to discuss implementation of privacy requirements, both directly and through Chief Information Officer Council meetings. The Privacy Committee of the council is one mechanism used to communicate with agencies. According to OMB officials, agencies with a senior agency official for privacy are invited to attend these meetings, and small agencies may also participate. Further, OMB officials stated that they have separate meetings with small agencies, as appropriate. For example, according to OMB officials, their staff recently gave a detailed talk on privacy requirements to the Small Agency Council\u2014General Counsel Forum."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Since 2010, DHS has had responsibilities in accordance with an OMB memorandum for overseeing and assisting federal agency efforts to provide adequate, risk-based, and cost-effective cybersecurity. Its activities have also included a number of privacy-related matters that assist OMB in carrying out its privacy oversight responsibilities. In undertaking these activities, DHS offers a variety of services to assist all federal agencies with implementing aspects of their information security and privacy programs (see table 4)."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "\u2022 DHS hosted advisory events in fiscal year 2012 for chief information officers of small agencies. These events covered topics such as continuous monitoring, FISMA, and insider threat briefings, among others. According to DHS officials, two general Chief Information Security Officer (CISO) Advisory Council events were held in fiscal year 2013. Small agencies attended these events. The focus of current events has moved to the Continuous Diagnostics and Mitigation Exercise Evaluation Guide meetings. This is due to the focus on continuous monitoring mandated by OMB. According to DHS officials, this was a natural transition as departments and agencies had more interest in learning about Continuous Diagnostics and Mitigation than in some of the other initiatives."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "applying the guidance. OMB and DHS did not provide evidence that they had reached out to all small agencies. As a result, it is not clear whether the six selected agencies were notified of issued privacy guidance. According to OMB officials, due to the large decentralized nature of the federal government, the opportunities to reach out to all federal agencies, whether large or small, are limited. Consequently, OMB distributes its guidance documents to a broad group and posts them on its website for easy access."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "During the course of our review, in December 2013, DHS established the Small & Micro-Agency Cybersecurity Support initiative. The initiative is intended to provide support to small agencies for implementing and improving cybersecurity programs. Through this initiative, DHS intends to provide IT security planning assistance and cybersecurity support to small agencies within the federal civilian executive branch. The support is focused on agencies that are attempting to enhance their cybersecurity posture but currently do not have the capabilities, resources, personnel, and/or expertise to implement necessary requirements."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "As of February 2014, five agencies were participating in a pilot program for the Small and Micro-Agency Cybersecurity Support Initiative, including two of the six agencies from our review. As DHS continues with the pilot program, developing services and guidance that address the challenges discussed in this report could further assist small agencies. For example, guidance and assistance targeted to these agencies\u2019 environments could help them improve the implementation of their security programs and various privacy requirements."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "According to NIST, blue teams and red teams are typically responsible for defending (blue team) and emulating an attack (red team) on the enterprise\u2019s use of information systems. Both teams\u2019 objective is to improve enterprise information assurance by demonstrating the impacts of successful attacks and by demonstrating what works for the defenders (i.e., the blue team) in an operational environment. The term \u201cblue team\u201d is also used for a group that conducts independent operational network vulnerability evaluations and provides mitigation techniques to customers."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Moreover, while OMB and DHS have continued to oversee agencies\u2019 information security programs and implementation of privacy requirements and provide guidance and services, they have not consistently ensured that all small agencies have reported on their compliance with security and privacy requirements, making it more difficult to accurately assess the extent to which agencies are effectively securing their information and systems. Additionally, those agencies that were aware of the guidance and services have been challenged with using it. Without the additional assistance, oversight, and collection of security and privacy information for the selected small agencies, OMB and DHS may be unaware of the agencies\u2019 implementation of requirements and the assistance that is needed."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "In its written comments (reproduced in appendix II), DHS concurred with our recommendation and identified actions it has taken or plans to take to implement our recommendation. For example, as part of its fiscal year 2014 hiring plan, the National Protection and Programs Directorate\u2019s Office of Cybersecurity and Communications is establishing and expanding a new federal customer service unit within the United States Computer Emergency Readiness Team to better understand the circumstances and needs of the various federal civilian departments and agencies, including small and micro agencies. According to DHS, the customer service unit will help develop and improve services and guidance that address the particular needs of agencies with 6,000 fulltime employees or less. According to DHS, these actions will be completed by April 30, 2015."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "In its written comments (reproduced in app. IV), the James Madison Memorial Foundation reiterated that it is one of the smallest agencies in the federal government, with only three full-time employees and one halftime employee, and that it had operated since November 2010 with the understanding that the agency was granted an exemption from FISMA by OMB officials. However, the agency stated that it plans to take the necessary actions to conform to FISMA requirements."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The Acting Commissioner for the International Boundary Commission, United States and Canada, provided comments via e-mail on June 5, 2014. The Acting Commissioner stated that he disagreed with our statement that all computer equipment within the agencies reviewed contained classified or sensitive information. However, our report does not state this; rather, it discusses the selected agencies\u2019 actions to implement federal information security and privacy requirements. We believe our characterization of the weaknesses identified is accurate as of the time of our review."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Independent regulatory agencies, as defined by the Paperwork Reduction Act, include the Board of Governors of the Federal Reserve System, Commodity Futures Trading Commission, Consumer Product Safety Commission, Federal Communications Commission, Federal Deposit Insurance Corporation, Federal Energy Regulatory Commission, Federal Housing Finance Board, Federal Maritime Commission, Federal Trade Commission, Interstate Commerce Commission, Mine Enforcement Safety and Health Review Commission, National Labor Relations Board, Nuclear Regulatory Commission, Occupational Safety and Health Review Commission, Postal Rate Commission, Securities and Exchange Commission, and any other similar agency designated by statute as a federal independent regulatory agency or commission. The following agencies no longer exist: the Federal Housing Finance Board, Interstate Commerce Commission, Mine Enforcement Safety and Health Review, and Postal Rate Commission. The Federal Housing Finance Board is now the Federal Housing Finance Agency, and the Postal Rate Commission is the Postal Regulatory Commission."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The Chief Financial Officers Act agencies are the executive branch agencies listed at 31 U.S.C. \u00a7901(b). They are the Departments of Agriculture, Commerce, Defense, Education, Energy, Health and Human Services, Homeland Security, Housing and Urban Development, the Interior, Justice, Labor, State, Transportation, the Treasury, and Veterans Affairs; the Environmental Protection Agency; National Aeronautics and Space Administration; General Services Administration; National Science Foundation; Nuclear Regulatory Commission; Office of Personnel Management; Small Business Administration; Social Security Administration; and U.S. Agency for International Development."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "We selected the agencies by organizing the list of small agencies into five primary areas: (1) boards, commissions, and corporations reporting through CyberScope; (2) boards, commissions, and corporations not reporting through CyberScope; (3) independent regulatory agencies; (4) memorial, arts, foundations, and administrative agencies reporting through CyberScope; and (5) memorial, arts, foundations, and administrative agencies not reporting through CyberScope. Using a randomly generated number, we selected one agency from each area."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "To identify agency, OMB, and National Institute of Standards and Technology (NIST) responsibilities for agency information security and privacy, we reviewed and analyzed the provisions of the E-Government Act of 2002, Federal Information Security Management Act (FISMA) of 2002, and the Privacy Act of 1974. At each of the six agencies, we interviewed senior information security program and privacy staff, observed controls, and conducted technical reviews to gain an understanding of the agency, the information technology environment, and the information security and privacy programs."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "To evaluate agencies\u2019 implementation of their information security responsibilities, we reviewed and analyzed agency documentation and compared it to provisions in FISMA and NIST guidance. We reviewed information security policies and procedures, information technology security-related audit reports, CyberScope data (where available), and inspector general reports for work conducted in fiscal years 2011, 2012, and 2013. To evaluate the privacy programs at each agency, we assessed whether the six agencies had established plans for privacy protections and conducted impact assessments for systems containing personally identifiable information, as required by the E-Government Act."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "called for by the Privacy Act. We reviewed OMB memorandum M-03-22 and NIST Special Publication 800-122 to select privacy elements required of federal agencies. We then reviewed and analyzed documents from the selected agencies, including privacy policies and procedures, to determine whether they adhered to the requirements set forth in OMB and NIST guidance. We also interviewed agency officials to determine what assistance they had requested and received from OMB and areas where it would have been beneficial to receive additional assistance."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "We reviewed DHS\u2019s and OMB\u2019s fiscal years 2011, 2012, and 2013 guidance for agency reporting on FISMA and compared it to FISMA requirements. Additionally, we reviewed the six agencies\u2019 fiscal years 2011 and 2012 FISMA data submissions to determine the extent to which DHS uses data to assist agencies in effectively implementing information security program requirements. We interviewed DHS officials in the Office of Cybersecurity and Communications, U.S. Computer Emergency Readiness Team (US-CERT), Federal Network Resilience Division, and other DHS entities. We reviewed and analyzed documentation that supported agency assistance requests, technical alerts, after-action reports, and other available documentation to determine the extent to which US-CERT tracks and provides assistance to small agencies. We conducted interviews with OMB officials based on the documentation and information provided. We did not evaluate the implementation of DHS\u2019s FISMA-related responsibilities assigned to it by OMB."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "To evaluate the extent to which DHS and OMB are overseeing and assisting small agencies in implementing privacy laws and policies, we reviewed OMB-issued guidance on Privacy Impact Assessments and each selected agency\u2019s privacy notices. Additionally, we reviewed DHS\u2019s privacy guidance. We met with DHS and OMB officials to determine the actions taken to provide assistance and oversight to federal agencies."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "internal controls of the systems used to collect the data. Specifically, we analyzed data regarding access controls, incident reporting, security awareness training, change management, and remediation of weaknesses. In addition, we interviewed agency officials responsible for the collection and reporting of the data. Based on these procedures, we determined the data were sufficiently reliable for the purpose of this report."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The Department is pleased to note GAO\u2019s positive recognition of the steps DHS\u2019s National Protection and Programs Directorate (NPPD) has taken to oversee and assist small agencies in implementing security and privacy requirements. For example, the Office of Management and Budget and DHS instructed small agencies to report annually on a variety of metrics that are used to gauge implementation of information security programs and privacy requirements."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Response: Concur. DHS recognizes some of the difficulties that small and micro agencies may have in employing guidance available from the National Institute of Standards and Technology or DHS, which may often be written with large enterprises in mind. Tailoring approaches to strengthen controls and recommending practices that are more achievable for organizations with limited technical personnel and resources will require a focused approach and should be handled by dedicated personnel."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "NPPD\u2019s Office of Cybersecurity and Communications (CS&C) will continue to support small and micro-agency cybersecurity efforts by conducting targeted outreach to agencies, responding to individual support requests, and providing liaison support to the Chief Information Security Officer Council through the current Small and Micro-Agency Cybersecurity Support Program (SMCS) initiative. Starting immediately and continuing in Fiscal Year (FY) 2015, CS&C will assess and analyze the need for program expansion and additional requirements by considering the findings GAO has identified, as well as the results of the initial year and pilot period for the SMCS initiative."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "As part of its FY 2014 hiring plan and beyond, CS&C is also establishing and expanding a new Federal customer service unit within the United States Computer Emergency Readiness Team to better understand the circumstances and needs of the various federal civilian departments and agencies, including small and micro agencies. The customer service unit will help develop and improve services and guidance that address the particular needs of those agencies with 6,000 full-time employees or less. Estimated Completion Date: April 30, 2015."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "Thank you for the opportunity to review and comment on a draft version of the Government Accountability Office (GAO) report relating to small federal agencies\u2019 privacy and data security processes and procedures and the Office of Management and Budget\u2019s (OMB) and the Department of Homeland Security\u2019s (DHS) oversight and assistance. We applaud the GAO for highlighting the need for sound privacy and data security processes and procedures at government agencies. In light of the Federal Trade Commission\u2019s (FTC) efforts to promote consumer privacy and data security in the commercial sector, we are keenly aware of our own obligations to protect information from unauthorized access, use, disclosure, disruption, modification, or destruction."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The GAO report provides a snapshot of how six small agencies, including the FTC, have met certain requirements under federal privacy and information security laws and policies. More specifically, the GAO report examines selected aspects of each agency\u2019s implementation of the requirements of federal privacy laws, including the Privacy Act of 1974 and the E-Government Act of 2002, and associated guidance, as well as requirements under the Federal Information Security Management Act of 2002 (FISMA), and associated guidance, to document and implement a variety of processes and procedures related to information security."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "The FTC is deeply committed to protecting privacy and the security of its systems and network. This includes working closely with DHS to secure our systems. For example, we were one of the first small agencies to achieve Trusted Internet Connection (TIC) compliance. The FTC\u2019s internal assessments and reviews have been supplemented by annual Inspector General evaluations of compliance with FISMA and related information security policies, procedures, standards, and guidelines. Since 2004, the Inspector General has consistently found the FTC to be in substantial compliance with FISMA and other applicable privacy and security requirements, noting in its most recent report that \u201cFTC information assets are reasonably protected against threats originating from within and outside the agency,\u201d while also identifying opportunities for improvement."
+ },
+ {
+  "doc": "gov_report",
+  "score": 0.0,
+  "text": "As we stated to your staff during the audit you performed at the Foundation, we are one of the smallest federal agencies with only three full time and one half time employees. I would like to restate that this Foundation has operated, since November 18, 2010, with the understanding that we were exempt from FISMA. This exemption was granted to us by officials at the Office of Management and Budget. (A copy of this exemption is available from our office.)"
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "Although its founding statute makes no explicit mention of financial stability, the Federal Reserve was created in response to a severe financial panic, and safeguarding financial stability is deeply ingrained in the mission and culture of the Federal Reserve Board. Today, financial stability is more important than ever to the work of the Federal Reserve Board. With the lessons from the crisis still fresh, we are in the process of strengthening our financial stability capabilities."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "In carrying out the work of financial stability, the Federal Reserve is seen as the agency with the broadest sight lines across the economy and one that has some important stability tools, as well as a critical first responder when a crisis hits. But the Federal Reserve also faces limitations as a financial stability authority: It is predominantly a supervisor of banks and bank holding companies in a system with large capital markets, several independent agencies have responsibilities for regulation of nonbank financial intermediaries and markets, and no U.S. agency yet has access to complete data regarding bank and nonbank financial activities."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "In the wake of the financial crisis, the Congress and the Federal Reserve itself became more deliberate and explicit about the responsibility for safeguarding the stability of the financial system. The Dodd-Frank Act, enacted in July 2010, charged the Federal Reserve with specific authorities for the purposes of safeguarding financial stability. At the Federal Reserve, we created the Office of Financial Stability Policy and Research to strengthen our cross-disciplinary approach to the identification and analysis of potential risks to the financial system and the broader economy and to support macroprudential supervision of large financial institutions and, following its creation, participation on the Financial Stability Oversight Council (FSOC). This work is carried out by staff in that office as well as in many areas across the Board and is overseen by the Board\u2019s newly created Committee on Financial Stability. This work is proceeding in four pillars, which are in varying stages of advancement."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "The research that informs this work, by helping to identify financial patterns likely to be associated with rising risks of financial crisis, continues to grow. But its predictive power is still limited; it remains difficult to identify ahead of time credit booms that are likely to cause severe damage, such as the subprime housing crisis, from those that do not, such as the high-tech boom, in part because risk-taking by financial market participants cannot always be well-observed."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "The ultimate objective of our surveillance is to build resilience of firms and markets and to counter risks early enough to prevent disruptions to financial stability that could damage the real economy. While the macroprudential toolkit is larger than it was pre-crisis, there is a substantial amount of work remaining to implement some of these tools. In particular, as I will discuss in more detail, the ability of the available tools to counteract time-varying risks has yet to be tested in the U.S."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "First, the Federal Reserve is well along in promulgating an important system of new, through-the-cycle safeguards that together should deliver much greater structural resilience and make excessive risk-taking costly for the large, complex institutions that pose the greatest risks to the financial system. Second, the Federal Reserve is assessing the kinds of broad time-varying regulatory tools that might further buttress resilience during periods in which risks associated with rapid credit expansion are building. Third, the Federal Reserve is exploring tools that can be varied over the cycle to target specific activities, recognizing that we will have limited authorities relative to some foreign financial regulators in operating on the borrowing side and outside the regulatory perimeter of the banking system. Let\u2019s take each in turn."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "institutions to build substantial loss-absorbing buffers and to internalize the costs of undertaking activities that pose risks to the system. This framework represents a substantial improvement on structural resilience relative to the pre-crisis framework across a number of dimensions: It is forward looking in assessing risks under severely stressed conditions, and it is explicitly macroprudential in design so that bank management internalizes risks not only to the safety and soundness of their own institution, but also to the system as a whole."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "Regular stress tests of both capital and liquidity at our largest banking firms provide a key bulwark in the new supervisory architecture. Minimum capital requirements must be met under severely adverse macroeconomic conditions and, for the very largest firms, in the face of severe market shocks, including the failure of a firm\u2019s largest counterparty. By providing a forward-looking assessment that takes into account correlations among risks under stressed conditions, these stress tests on capital and liquidity are powerful tools for building resilience in our largest banking firms. But they also have some limitations. For instance, while the severity of the stresses can be varied from year to year, it is difficult to introduce entirely new scenarios each year to target specific sectoral risks without introducing excessive complexity. And while the new U.S. framework requires that capital buffers are calibrated for the riskiness of their assets and exposures, the proportion of capital required does not vary systematically to counter the cyclicality that arises through elevated asset valuations and other channels."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "The Comprehensive Liquidity Analysis and Review, or CLAR, is the Federal Reserve Board\u2019s periodic simultaneous supervisory examination of firms\u2019 liquidity buffers and risk-management policies. We use CLAR to analyze and adjust our supervisory program for emerging firm practices and risk areas not captured in the Liquidity Coverage Ratio (LCR). For example, CLAR enables monitoring of firm liquidity positions for buildups of concentrations of risk beyond the 30-day threshold. It also allows us to look more closely at risks that may emanate from areas such as intraday credit, which are not captured within the LCR but are captured by firms\u2019 internal stress-testing frameworks."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "While our efforts are far advanced in building structural resilience, progress is less advanced in developing time-varying tools that counter the buildup of excesses across the system broadly or in a particular financial sector. These efforts are in earlier stages of elaboration and more of a departure from recent practice. Here we can learn from financial authorities in other countries that have recent experience deploying a broader array of macroprudential tools."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "However, it may prove to be less effective in leaning against credit growth, since, as credit booms progress, there is greater potential for capital to be relatively cheap, asset valuations to be inflated, and risk weights to be incorrect. Moreover the countercyclical capital buffer has some practical limitations: It applies to a subset of the U.S. banking system and is designed to act with a one-year lag. It also cannot be used efficiently to target specific asset classes that appear frothy, a challenge I turn to next."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "The countercyclical buffer may be a relatively blunt tool for circumstances where the buildup of risk is highly concentrated in a particular sector. This was, of course, the challenge U.S. policymakers faced early in the recent housing bubble, with home prices rising and capital markets developing the complicated, opaque securities built on subprime mortgages that would ultimately cause damage throughout the financial system."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "In addition to time-varying broad macroprudential tools, such as countercyclical capital buffers and dynamic provisioning, many financial authorities have the authority to promulgate rules that target activity in a specific sector. For instance, Swiss authorities activated, in early 2013, a countercyclical capital buffer that added 1 percentage point of capital requirement for direct and indirect mortgage-backed positions secured by Swiss residential property, and then increased this amount in 2014 to 2 percentage points."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "For purposes of comparison, it is instructive to focus on how central banks in several advanced economies have dealt with housing booms in recent years. Financial authorities in the United Kingdom, Sweden, Switzerland, and New Zealand have recently confronted rapidly rising residential housing prices in macroeconomic environments where there were compelling reasons not to use the policy rate as the first line of defense."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "if, in the future, a mortgage-credit fueled house price bubble were to reemerge, the banking regulators could perhaps impose higher risk weights on mortgage loans with certain characteristics either directly or through expectations around stress testing. This approach would be slow, perhaps requiring upwards of a year to adjust, and narrow in its scope of application, and it may prove ineffective at times when bank regulatory capital comfortably exceeds the required thresholds."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "In some cases, foreign central banks acted in concert with other financial authorities to address the buildup of risk in their housing sectors. In the American context, the Federal Reserve\u2019s work is embedded in a larger web of efforts by other financial authorities. In parallel to the Federal Reserve\u2019s own efforts to formalize its financial stability surveillance and policy making, the network of independent financial agencies is enhancing cooperation through the formal structure and responsibilities of the FSOC as well as through joint rulemakings and joint supervisory efforts."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "The Federal Reserve Board and five other federal agencies approved risk-retention rules in October 2014 designed to ensure that securitization sponsors have an incentive to monitor and ensure the quality of the securitized assets underlying a securitization transaction. Sponsors of securities collateralized solely by \u201cqualified residential mortgages,\u201d or QRMs, as defined by the agencies, are not required to hold credit risk in their securitizations. The QRM definition rests, in part, on the debt service-to-income of the mortgage borrower, but it does not include loan-to-value ratios. The agencies have committed to review the QRM definition at five-year intervals, or earlier at the request of any agency, in order to ensure that the definition remains appropriate as mortgage and securitization market conditions and practices change. Altering the QRM definition more frequently would likely be cumbersome and time-consuming."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "Recognition of the limits to the macroprudential framework brings us to a consideration of monetary policy\u2014a powerful tool with broad reach, but also relatively blunt. Monetary policy is the only tool available to the Federal Reserve that has farreaching effects on private credit creation across the entire financial system and one of the few tools that can be changed rapidly (although its effects have famously long and variable lags)."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "These limitations should lead us to be circumspect regarding the use of monetary policy as a tool to address financial stability risks, perhaps viewing it as a second line of defense. But it is equally important to acknowledge the potential utility of monetary policy for addressing risks to financial stability and to the broader economy and to continue expanding our work on the appropriate role of financial stability in our monetary policy framework."
+ },
+ {
+  "doc": "speech_2015",
+  "score": 0.0,
+  "text": "In sum, while the Federal Reserve has an inherent responsibility for financial stability, it has an incomplete set of authorities and a limited regulatory perimeter in a financial system that has large capital markets and a fragmented regulatory structure. It is therefore important that we actively utilize the tools under our authority\u2014which place particular emphasis on building structural resilience at the largest, most complicated institutions through tougher through-the-cycle standards, along with broad countercyclical measures to limit the buildup, and potential consequences, of risks to financial stability, while exploring the design of time-varying sector-specific tools, and, at times, looking to monetary policy as a powerful tool that unlike any other operates across the entire financial system."
+ }
+]
