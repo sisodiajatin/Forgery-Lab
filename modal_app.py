@@ -82,8 +82,8 @@ def web():
         banner = ("<div id=hv style='position:sticky;top:0;z-index:9;background:#c9a24f;color:#14110d;padding:10px 18px;"
                   "font-family:Special Elite,monospace;text-align:center'>Loading humans vs detector…</div>"
                   "<script>fetch('/human/stats').then(r=>r.json()).then(s=>{document.getElementById('hv').innerHTML=s.players?"
-                  "`HUMANS vs DETECTOR (live): ${s.players} rounds played · humans caught ${s.human_caught_pct}% of forgeries · accuracy humans ${s.human_accuracy_pct}% vs Pangram ${s.lab_accuracy_pct}% · <a href=/play style='color:#14110d'>play ▸</a>`"
-                  ":`No players yet — <a href=/play style='color:#14110d'>be the first to take on the forgers ▸</a>`})</script>")
+                  "`<b>HUMANS vs DETECTOR</b> (live): ${s.players} rounds played · humans caught ${s.human_caught_pct}% of forgeries · accuracy humans ${s.human_accuracy_pct}% vs Pangram ${s.lab_accuracy_pct}% · <a href=/play style='color:#14110d'>play ▸</a>`"
+                  ":`<b>HUMANS vs DETECTOR</b> — no human players yet. Can you beat Pangram? <a href=/play style='color:#14110d'>Play the human round ▸</a>`})</script>")
         return f.read_text(encoding="utf-8").replace("<body>", "<body>" + banner, 1)
 
     @api.get("/play", response_class=HTMLResponse)
