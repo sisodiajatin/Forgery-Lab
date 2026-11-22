@@ -40,12 +40,16 @@ TRY = """<main>""" + NAV + """<h1>TRY <em>YOUR PDF</em></h1>
 const f=document.getElementById('f'),st=document.getElementById('st');f.onchange=()=>document.getElementById('fn').textContent=f.files[0]?.name||'';
 const d=document.getElementById('drop');d.ondragover=e=>e.preventDefault();d.ondrop=e=>{e.preventDefault();f.files=e.dataTransfer.files;f.onchange()};
 document.getElementById('go').onclick=async()=>{if(!f.files[0])return st.textContent='Choose a PDF first.';const fd=new FormData();fd.append('pdf',f.files[0]);
-st.textContent='Reading the document, briefing the forger... about a minute (longer if the GPU is cold).';const r=await fetch('/build',{method:'POST',body:fd});const j=await r.json();
-if(!r.ok)return st.textContent='Case failed: '+(j.detail||r.status);location.href='/case/'+j.id};</script>"""
+st.textContent='Uploading…';const t0=Date.now();const r=await fetch('/build',{method:'POST',body:fd});const j=await r.json();
+if(!r.ok)return st.textContent='Case failed: '+(j.detail||r.status);
+const tick=async()=>{const s=await (await fetch('/status/'+j.id)).json();const secs=Math.round((Date.now()-t0)/1000);
+ if(s.state==='done')return location.href='/case/'+j.id; if(s.state==='error')return st.innerHTML='Case failed: '+s.msg;
+ st.innerHTML=(s.log||[]).map(x=>'✔ '+x).join('<br>')+`<br>⏳ ${secs}s`;setTimeout(tick,700)};tick()};</script>"""
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("forgery-lab-keys")], volumes={"/data": vol},
-              timeout=900, max_containers=10, scaledown_window=600)
+              timeout=900, max_containers=1, scaledown_window=900)
+@modal.concurrent(max_inputs=100)
 @modal.asgi_app()
 def web():
     import json, sys, tempfile, time, uuid
@@ -124,27 +128,46 @@ def web():
     def try_page():
         return page(TRY)
 
+    import threading
+    jobs = {}  # in-memory job status; one container (max_containers=1) serves all requests concurrently
+
+    def run_job(cid, name, data):
+        log = []
+        def step(msg):
+            log.append(msg); jobs[cid] = {"state": "running", "log": log}
+        try:
+            with tempfile.TemporaryDirectory() as d:
+                p = Path(d) / name
+                p.write_bytes(data)
+                case = bc.build_case(p, 3, 6, None, "normal", 0, progress=step)
+            Path("/data/cases").mkdir(parents=True, exist_ok=True)
+            Path(f"/data/cases/{cid}.html").write_text(bc.render(case), encoding="utf-8")
+            vol.commit()
+            jobs[cid] = {"state": "done", "log": log}
+        except ValueError as e:
+            jobs[cid] = {"state": "error", "msg": str(e), "log": log}
+        except Exception as e:
+            jobs[cid] = {"state": "error", "msg": f"{type(e).__name__}: {str(e)[:200]}", "log": log}
+
     @api.post("/build")
-    async def build(pdf: UploadFile = File(...)):
-        data = await pdf.read()
+    def build(pdf: UploadFile = File(...)):
+        data = pdf.file.read()
         if len(data) > 25_000_000 or not data.startswith(b"%PDF"):
             raise HTTPException(400, "Please upload a PDF under 25 MB.")
-        with tempfile.TemporaryDirectory() as d:
-            p = Path(d) / Path(pdf.filename or "document.pdf").name
-            p.write_bytes(data)
-            try:
-                case = await run_in_threadpool(bc.build_case, p, 3, 6, None, "normal", 0)
-            except ValueError as e:
-                raise HTTPException(422, str(e))
         cid = uuid.uuid4().hex[:10]
-        Path("/data/cases").mkdir(parents=True, exist_ok=True)
-        Path(f"/data/cases/{cid}.html").write_text(bc.render(case), encoding="utf-8")
-        vol.commit()
+        jobs[cid] = {"state": "running", "log": ["Upload received"]}
+        threading.Thread(target=run_job, args=(cid, Path(pdf.filename or "document.pdf").name, data), daemon=True).start()
         return {"id": cid}
+
+    @api.get("/status/{cid}")
+    def status(cid: str):
+        return JSONResponse(jobs.get(cid, {"state": "unknown"}))
 
     @api.get("/case/{cid}", response_class=HTMLResponse)
     def show(cid: str):
         vol.reload()
+        if not Path(f"/data/cases/{cid}.html").exists():
+            import time as _t; _t.sleep(1.5); vol.reload()
         f = Path(f"/data/cases/{cid}.html")
         if not cid.isalnum() or not f.exists():
             raise HTTPException(404, "Case not found")

@@ -128,6 +128,43 @@ Document file: {title_hint}
 
 
 # ---------------------------------------------------------------- 3. forge
+def fast_case(title_hint, paras, real, fakes, words):
+    """Fast path for uploads: forgers pick their own new topic while writing; the case story is written in parallel."""
+    import forgers
+    from concurrent.futures import ThreadPoolExecutor
+    names = [n for n in ("GLMFLASH", "KIMI", "DEEPSEEK") if n in forgers.configured()]
+    excerpt = "\n\n".join(real[:5])
+    outline = "\n".join(p[:160] for p in paras[:25])
+    system = ("You are a master literary forger. You write a NEW paragraph that could be slipped into a real document unnoticed: "
+              "same voice, terminology, rhythm, citation habits. Never copy or paraphrase its sentences. Plain text only.")
+    def forge_one(i):
+        name = names[i % len(names)]
+        out = forgers.forge(name, system, fast=True, prompt=
+            f"Opening lines of every paragraph in the document:\n{outline}\n\nFull sample paragraphs:\n\n{excerpt}\n\n"
+            f"Pick ONE specific topic that would plausibly belong in this document but that it does NOT discuss "
+            f"(forger #{i+1}: choose a different kind of topic — e.g. #1 a practical detail, #2 an aside or anecdote, #3 a limitation or related point). "
+            f"Then write one new paragraph (~{words} words) on it.\nFormat exactly:\nTOPIC: <topic>\n\n<paragraph>")
+        m = re.match(r"\s*TOPIC:\s*(.+?)\n+(.*)", out, re.S)
+        topic, para = (m.group(1).strip(), m.group(2).strip()) if m else ("(forger's choice)", out)
+        return name, topic, para
+    def story():
+        try:
+            out = forgers.forge("DEEPSEEK", "Return ONLY JSON.", fast=True, prompt=
+                f"Document '{title_hint}'. Paragraph openings:\n{outline[:3000]}\n\nWrite JSON: "
+                f'{{"case_title": "noir-style case name", "document_name": "short name of the document", '
+                f'"briefing": "2-3 sentence hard-boiled detective briefing; there are exactly {len(real) + fakes} exhibits, {fakes} forged"}}')
+            return json_from(out)
+        except Exception:
+            return {"case_title": "The Case of the Uninvited Paragraphs", "document_name": title_hint,
+                    "briefing": "Somebody's been writing in a dead author's voice. Find the forgeries."}
+    with ThreadPoolExecutor(fakes + 1) as ex:
+        st = ex.submit(story)
+        results = list(ex.map(forge_one, range(fakes)))
+    case = st.result()
+    case["topics"] = [t for _, t, _ in results]
+    return case, [p for _, _, p in results], [forgers.FORGERS[n][0] for n, _, _ in results]
+
+
 def forge_api(context, topics, words):
     """One forgery per topic, rotating across the Modal Model API forgers (fast, no cold start)."""
     import forgers
@@ -186,7 +223,7 @@ def pangram(text: str) -> dict:
             return out
         if r.get("stage") == "STAGE_FAILED":
             raise RuntimeError("pangram task failed")
-        time.sleep(2)
+        time.sleep(0.5)
     raise TimeoutError("pangram")
 
 
@@ -223,10 +260,12 @@ YOUR FLAGGED FORGERY:
 
 
 # ---------------------------------------------------------------- main
-def build_case(pdf: Path, fakes=3, n_real=6, seed=None, difficulty="normal", rounds=3) -> dict:
+def build_case(pdf: Path, fakes=3, n_real=6, seed=None, difficulty="normal", rounds=3, progress=None) -> dict:
     """Whole pipeline. Returns the case dict. Used by the CLI and by the Modal web app."""
     rng = random.Random(seed)
     provenance = {}
+    step = progress or (lambda s: None)
+    step("Reading the document (Reducto)…")
     # 1 parse
     if os.environ.get("REDUCTO_API_KEY"):
         try:
@@ -241,18 +280,28 @@ def build_case(pdf: Path, fakes=3, n_real=6, seed=None, difficulty="normal", rou
         raise ValueError(f"Only {len(paras)} prose paragraphs found; need {n_real}. Try a text-heavy PDF.")
     pool = paras[1:] if len(paras) > n_real + 2 else paras
     real = [pool[i] for i in sorted(rng.sample(range(len(pool)), n_real))]
-    # 2 direct
+    step(f"Found {len(paras)} paragraphs. {fakes} AI forgers are writing in the author's voice…")
+    # 2 direct (+ 3 forge, in one parallel step on the fast path)
     import shutil
-    case = direct_case(pdf.stem, paras, fakes, n_real + fakes)
-    provenance["director"] = ("Hermes Agent (hermes chat -Q)" if shutil.which("hermes") and os.environ.get("FL_LLM") != "modal"
-                              else "DeepSeek V4.1 Flash on Modal" if os.environ.get("DEEPSEEK_BASE_URL") else "Hermes-3 on Modal")
+    words = int(sum(len(p.split()) for p in real) / len(real))
+    fast = os.environ.get("FL_FORGER") == "api"
+    if fast:
+        case, fast_forged, fast_names = fast_case(pdf.stem, paras, real, fakes, words)
+        provenance["director"] = "Forgers choose their own topics (fast path)"
+    else:
+        case = direct_case(pdf.stem, paras, fakes, n_real + fakes)
+    if not fast:
+        provenance["director"] = ("Hermes Agent (hermes chat -Q)" if shutil.which("hermes") and os.environ.get("FL_LLM") != "modal"
+                                  else "DeepSeek V4.1 Flash on Modal" if os.environ.get("DEEPSEEK_BASE_URL") else "Hermes-3 on Modal")
     log("hermes", f"case: {case['case_title']} | topics: {case['topics'][:fakes]}")
     # 3 forge
-    words = int(sum(len(p.split()) for p in real) / len(real))
     topics = case["topics"][:fakes]
     forger_names = None
     try:
-        if os.environ.get("FL_FORGER") == "api":
+        if fast:
+            forged, forger_names = fast_forged, fast_names
+            provenance["forger"] = "Modal Model APIs: " + ", ".join(sorted(set(forger_names)))
+        elif os.environ.get("FL_FORGER") == "api":
             forged, forger_names = forge_api(real, topics, words)
             provenance["forger"] = "Modal Model APIs: " + ", ".join(sorted(set(forger_names)))
         else:
@@ -285,6 +334,7 @@ def build_case(pdf: Path, fakes=3, n_real=6, seed=None, difficulty="normal", rou
     log("forge", f"{len(forged)} forgeries via {provenance['forger']}")
     exhibits = [{"text": t, "forged": False} for t in real] + [{"text": t, "forged": True, "topic": (f"{who[tp]} — {tp}" if tp in who else tp)} for t, tp in zip(forged, topics)]
     rng.shuffle(exhibits)
+    step("Forensics lab (Pangram) is examining all exhibits…")
     # 4 forensics (parallel)
     if os.environ.get("PANGRAM_API_KEY"):
         from concurrent.futures import ThreadPoolExecutor

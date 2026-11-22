@@ -17,11 +17,17 @@ FORGERS = {  # name -> human label, Modal model id (the id can be overridden in 
 }
 
 
+# Per-model settings that skip hidden "thinking" (measured: GLM 18.7s->3.5s, Kimi 10.0s->1.8s, DeepSeek 2.6s->1.3s).
+FAST = {"GLMFLASH": {"reasoning_effort": "low"},
+        "KIMI": {"chat_template_kwargs": {"thinking": False, "enable_thinking": False}},
+        "DEEPSEEK": {"chat_template_kwargs": {"thinking": False, "enable_thinking": False}}}
+
+
 def configured() -> list[str]:
     return [n for n in FORGERS if os.environ.get(f"{n}_BASE_URL") and os.environ.get(f"{n}_AUTH")]
 
 
-def chat(name: str, messages: list[dict], max_tokens=1500, temperature=0.85, retries=3) -> dict:
+def chat(name: str, messages: list[dict], max_tokens=1500, temperature=0.85, retries=3, fast=False) -> dict:
     base = os.environ[f"{name}_BASE_URL"].rstrip("/")
     if not base.endswith("/v1") and "/v1/" not in base:
         base += "/v1"
@@ -33,7 +39,7 @@ def chat(name: str, messages: list[dict], max_tokens=1500, temperature=0.85, ret
         headers["Modal-Key"] = os.environ[f"{name}_MODAL_KEY"]
         headers["Modal-Secret"] = os.environ.get(f"{name}_MODAL_SECRET", "")
     body = {"model": os.environ.get(f"{name}_MODEL") or FORGERS[name][1], "messages": messages,
-            "max_tokens": max_tokens, "temperature": temperature}
+            "max_tokens": max_tokens, "temperature": temperature, **(FAST.get(name, {}) if fast else {})}
     for attempt in range(retries):
         t0 = time.time()
         r = requests.post(f"{base}/chat/completions", headers=headers, json=body, timeout=180)
@@ -49,10 +55,10 @@ def chat(name: str, messages: list[dict], max_tokens=1500, temperature=0.85, ret
                 "model": j.get("model", body["model"])}
 
 
-def forge(name: str, system: str, prompt: str, max_tokens=4000) -> str:
+def forge(name: str, system: str, prompt: str, max_tokens=4000, fast=False) -> str:
     msgs = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]
     for budget in (max_tokens, max_tokens * 2):      # reasoning models can spend the whole budget thinking
-        text = chat(name, msgs, budget)["text"]
+        text = chat(name, msgs, budget, fast=fast)["text"]
         if len(text.split()) >= 20:
             return text
     return text
