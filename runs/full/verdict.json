@@ -1,18 +1,17 @@
 {
   "verdict": {
-    "headline": "Pangram caught most fakes overall, but one forger model slipped past it 4 times out of 5, and government-report rewrites fooled it half the time.",
+    "headline": "Pangram caught 86.6% of 112 forged paragraphs on the first try, but after forgers revised their work past the detector, evasion jumped to 33.9% overall and as high as 81.8% for one model.",
     "verdict": "USE WITH CAUTION",
     "findings": [
-      "Across all 112 attack attempts, Pangram caught 86.6% on the first pass, but 33.9% eventually evaded detection.",
-      "GLM 5.3 Flash (n=22) evaded detection 81.8% of the time overall, and evaded on 100.0% of its gov_report attempts.",
-      "Hermes-3 8B (n=30) was caught_first 100.0% of the time, with 0.0% evaded across all three document types.",
-      "DeepSeek V4.1 Flash 1017 (n=30) evaded only 13.3% overall, but by-document results varied: 0.0% on 1709.02445v2 vs 20.0% on both court_romanko_2014 and gov_report.",
-      "False alarms on real human text were rare (1 of 30 genuine documents flagged, 3.3% false_alarm_pct overall), but evasion itself varied sharply by document: 11.8% for the science paper (1709.02445v2) vs 50.0% for the government report."
+      "Across all 112 attack attempts, Pangram's first-pass catch rate was 86.6%, but once forger models rewrote rejected text, overall evasion rose to 33.9%.",
+      "GLM 5.3 Flash (n=22) evaded Pangram on 81.8% of its attempts after rewrites, including 100.0% evasion on the gov_report document specifically.",
+      "Hermes-3 8B (n=30) was caught 100.0% of the time with 0.0% evasion across all three document types, the opposite end of the spectrum from GLM 5.3 Flash.",
+      "False alarms on real human writing were uncommon but present: 1 of 30 genuine paragraphs (3.3%) was flagged as AI-written, with that single false alarm occurring on the 1709.02445v2 science paper (1 of 10 genuine samples there)."
     ],
     "advice": [
-      "Don't treat one detector's score as proof either way: GLM 5.3 Flash (n=22) evaded Pangram 81.8% of the time, while Hermes-3 8B (n=30) evaded it 0.0% of the time -- results depend heavily on which model wrote the text.",
-      "Weigh results by document type, not just an average: evaded ranged from 11.8% on the science paper to 50.0% on the government report in this test.",
-      "Note sample sizes before trusting a leaderboard row: GLM 5.3 Flash's figures come from only 22 attempts versus 30 for the other three models, so its numbers are less stable."
+      "Treat a 'not AI' result as provisional, not proof: evasion after rewriting reached 81.8% for GLM 5.3 Flash (n=22) even though Pangram's first-pass catch rate was 86.6% overall.",
+      "Factor in document type before trusting a score: evasion ranged from 11.8% on the science paper (1709.02445v2) to 50.0% on the gov_report document.",
+      "Don't use a single detector flag to accuse someone of cheating: 3.3% of genuine human samples (1 of 30) were false-flagged as AI in this test, so pair any 'AI-written' verdict with other evidence."
     ]
   },
   "source": "Hermes Agent",

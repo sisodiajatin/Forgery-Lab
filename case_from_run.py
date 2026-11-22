@@ -43,8 +43,9 @@ def main():
         reals = rng.sample(reals, min(a.real, len(reals)))
         if len(reals) < 3 or not picked:
             print("skip", doc); continue
-        exhibits = ([{"text": g["text"], "forged": False, "lab": lab(g["score"])} for g in reals] +
-                    [{"text": bc.re.sub(r"</?[a-zA-Z][^>]*>", "", x["final_text"]), "forged": True, "lab": lab(x["best_score"]),
+        detag = lambda t: bc.re.sub(r"\s+", " ", bc.re.sub(r"</?[a-zA-Z][^>]*>", "", bc.re.sub(r"<sup>.*?</sup>", "", t))).strip()
+        exhibits = ([{"text": detag(g["text"]), "forged": False, "lab": lab(g["score"])} for g in reals] +
+                    [{"text": detag(x["final_text"]), "forged": True, "lab": lab(x["best_score"]),
                       "topic": f"{x['model_label']} — {x['topic']}", "evasion": [r["score"] for r in x["rounds"]]} for x in picked])
         rng.shuffle(exhibits)
         name = DOC_LABELS.get(doc, doc)

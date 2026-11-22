@@ -73,12 +73,17 @@ Use only numbers that appear in the data, and attribute each number to the exact
             "verdict": "USE WITH CAUTION", "findings": [], "advice": []}, "template"
 
 
+def detag(t):
+    import re
+    return re.sub(r"\s+", " ", re.sub(r"</?[a-zA-Z][^>]*>", "", re.sub(r"<sup>.*?</sup>", "", t or ""))).strip()
+
+
 def html(board, overall, docs, done, genuine, v, v_src, meta):
     data = {"board": board, "overall": overall, "docs": docs, "labels": DOC_LABELS, "verdict": v, "vsrc": v_src, "meta": meta,
             "paths": [{"m": a["model_label"], "d": a["doc"], "s": [r["score"] for r in a["rounds"]]} for a in done],
             "evasions": sorted([{"m": a["model_label"], "d": a["doc"], "topic": a["topic"], "s": [r["score"] for r in a["rounds"]],
-                                 "text": a["final_text"]} for a in done if a["evaded"]], key=lambda x: x["s"][0] - x["s"][-1], reverse=True)[:6],
-            "false": [g for g in genuine if g.get("score", 0) >= THRESH]}
+                                 "text": detag(a["final_text"])} for a in done if a["evaded"]], key=lambda x: x["s"][0] - x["s"][-1], reverse=True)[:6],
+            "false": [dict(g, text=detag(g["text"])) for g in genuine if g.get("score", 0) >= THRESH]}
     tpl = (Path(__file__).parent / "game" / "report_template.html").read_text(encoding="utf-8")
     return tpl.replace("/*__DATA__*/null", json.dumps(data).replace("</", "<\\/"))
 

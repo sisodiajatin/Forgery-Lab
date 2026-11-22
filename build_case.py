@@ -57,6 +57,8 @@ def parse_local(pdf: Path) -> str:
 def paragraphs(text: str, lo=60, hi=170) -> list[str]:
     import unicodedata
     text = unicodedata.normalize("NFKC", text)        # kill ligatures (a dead giveaway)
+    text = re.sub(r"<sup>.*?</sup>", "", text)          # footnote markers from Reducto's HTML-ish output
+    text = re.sub(r"</?[a-zA-Z][^>]*>", "", text)       # other tags (<i>, <b>...) would also be giveaways
     text = re.sub(r"-\n(\w)", r"\1", text)           # de-hyphenate
     blocks = re.split(r"\n\s*\n|(?<=[.!?])\n(?=[A-Z])", text)
     out = []
