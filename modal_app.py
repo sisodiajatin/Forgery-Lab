@@ -74,7 +74,7 @@ const tick=async()=>{const s=await (await fetch('/status/'+j.id)).json();const s
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("forgery-lab-keys")], volumes={"/data": vol},
-              timeout=900, max_containers=1, scaledown_window=900)
+              timeout=900, min_containers=1, max_containers=1, scaledown_window=900)  # always warm: no cold start
 @modal.concurrent(max_inputs=100)
 @modal.asgi_app()
 def web():
@@ -93,8 +93,15 @@ def web():
         return HTMLResponse("<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
                             f"<title>FORGERY LAB</title>{STYLE}</head><body>{body}</body></html>")
 
+    # Single always-on container that is the only writer, so the volume never needs reloading per request.
+    # Published files only change on redeploy (publish.py), which starts a fresh container, so cache them in memory.
+    _cache = {}
+    def cached(f):
+        if f not in _cache:
+            _cache[f] = f.read_text(encoding="utf-8") if f.exists() else None
+        return _cache[f]
+
     def human_stats():
-        vol.reload()
         f = Path("/data/human.jsonl")
         rows = [json.loads(l) for l in f.read_text().splitlines() if l.strip()] if f.exists() else []
         forged = [x for r in rows for x in (r.get("forged") or []) if x.get("forged")]
@@ -106,15 +113,13 @@ def web():
 
     @api.get("/", response_class=HTMLResponse)
     def home():
-        vol.reload()
-        f = site / "report.html"
-        if not f.exists():
+        html = cached(site / "report.html")
+        if html is None:
             return page(NAV("r") + "<main><h1>Forgery Lab</h1><p class=lede>The report hasn't been published yet.</p></main>")
-        return f.read_text(encoding="utf-8")
+        return html
 
     @api.get("/play", response_class=HTMLResponse)
     def play():
-        vol.reload()
         boards = sorted(p.stem.removeprefix("human_") for p in site.glob("human_*.html")) if site.exists() else []
         links = "".join(f"<a class=case href='/play/{b}'><span>Case {i+1:02d}</span><b>{LABELS.get(b, (b, ''))[0]}</b><small>{LABELS.get(b, ('', ''))[1]}</small></a>"
                         for i, b in enumerate(boards))
@@ -125,15 +130,12 @@ def web():
 
     @api.get("/play/{doc}", response_class=HTMLResponse)
     def play_doc(doc: str):
-        vol.reload()
-        f = site / f"human_{doc}.html"
-        if not doc.replace("_", "").replace(".", "").isalnum() or not f.exists():
+        if not doc.replace("_", "").isalnum() or (html := cached(site / f"human_{doc}.html")) is None:
             raise HTTPException(404)
-        return f.read_text(encoding="utf-8")
+        return html
 
     @api.post("/human")
-    async def human(req: Request):
-        rec = await req.json()
+    def human(rec: dict):  # sync: runs in a worker thread, so the blocking volume commit can't freeze other requests
         rec = {k: rec.get(k) for k in ("source", "total", "correct", "lab_correct", "forged")}
         rec["at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
         with open("/data/human.jsonl", "a") as fh:
@@ -186,9 +188,6 @@ def web():
 
     @api.get("/case/{cid}", response_class=HTMLResponse)
     def show(cid: str):
-        vol.reload()
-        if not Path(f"/data/cases/{cid}.html").exists():
-            import time as _t; _t.sleep(1.5); vol.reload()
         f = Path(f"/data/cases/{cid}.html")
         if not cid.isalnum() or not f.exists():
             raise HTTPException(404, "Case not found")
