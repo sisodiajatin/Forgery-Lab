@@ -21,31 +21,56 @@ image = (
 )
 vol = modal.Volume.from_name("forgery-lab-cases", create_if_missing=True)
 
-STYLE = """<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Playfair+Display:wght@700&display=swap" rel=stylesheet>
-<style>body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -10%,#3a2f22,#14110d 60%);color:#efe6d2;font-family:'Special Elite',monospace}
-main{max-width:760px;margin:0 auto;padding:40px 24px}h1{font-family:'Playfair Display';font-size:48px;margin:0}h1 em{color:#c9a24f;font-style:normal}
-a.case{display:block;margin:16px 0;padding:20px 22px;background:#efe6d2;color:#1b1712;text-decoration:none;font-size:19px;box-shadow:0 10px 24px rgba(0,0,0,.5)}
-a.case small{display:block;font-size:13px;color:#6b5c40;margin-top:4px}a{color:#c9a24f}.nav{margin-bottom:20px;font-size:14px}
-.drop{margin:22px 0;border:2px dashed #c9a24f;padding:36px;text-align:center;cursor:pointer;display:block}
-button{font-family:inherit;font-size:16px;background:#c9a24f;color:#14110d;border:0;padding:12px 22px;cursor:pointer}#st{margin-top:16px;color:#a89a7d}</style>"""
-NAV = '<div class=nav><a href="/">Report</a> · <a href="/play">Play the human round</a> · <a href="/try">📄 Upload your own PDF</a></div>'
+STYLE = """<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400&display=swap" rel=stylesheet>
+<style>:root{--deep:#12110f;--bg:#161513;--card:#1c1a18;--raised:#262421;--text:#efe9de;--text2:#aaa398;--mute:#8a847a;--line:rgba(239,233,222,.08);--ink:#e5674f;--paper:#f2ece0;--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:400 15px/22px 'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--text);text-underline-offset:3px}
+nav{height:56px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+nav .in{max-width:1200px;margin:0 auto;padding:0 32px;width:100%;display:flex;align-items:center;gap:24px}
+nav .logo{font-weight:500;font-size:16px;margin-right:auto;text-decoration:none;display:flex;align-items:center;gap:8px}
+nav .logo i{width:8px;height:8px;background:var(--ink);display:inline-block}
+nav a{font-size:14px;color:var(--text2);text-decoration:none}nav a:hover,nav a.on{color:var(--text)}
+nav .btn{color:var(--deep);background:var(--text);padding:6px 14px;border-radius:8px;font-weight:500}nav .btn:hover{color:var(--deep);background:#fff}
+main{max-width:1200px;margin:0 auto;padding:64px 32px 96px}
+.eyebrow{font:400 12px/16px 'IBM Plex Mono',monospace;color:var(--mute)}
+h1{font:400 48px/1.05 'Newsreader',serif;letter-spacing:-.025em;margin:12px 0 16px;max-width:16em}
+.lede{font-size:18px;line-height:28px;color:var(--text2);max-width:36rem;margin:0 0 40px}
+.cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:880px}
+a.case{display:block;padding:24px;background:var(--paper);color:#1f1b16;text-decoration:none;border-radius:4px;transition:transform .15s var(--ease)}
+a.case:hover{transform:translateY(-2px)}
+a.case span{font:400 12px/16px 'IBM Plex Mono',monospace;color:#6b6156}
+a.case b{display:block;font:400 24px/1.2 'Newsreader',serif;margin:8px 0 4px}
+a.case small{color:#5e554a;font-size:14px}
+.drop{display:block;max-width:640px;border:1px dashed rgba(239,233,222,.24);border-radius:12px;padding:40px 24px;text-align:center;cursor:pointer;color:var(--text2);transition:border-color .15s var(--ease),background-color .15s var(--ease)}
+.drop:hover,.drop.on{border-color:var(--ink);background:rgba(229,103,79,.05)}
+.drop b{display:block;color:var(--text);font-weight:500;margin-bottom:4px}
+button{font:500 15px 'IBM Plex Sans',sans-serif;background:var(--text);color:var(--deep);border:0;height:44px;padding:0 20px;border-radius:8px;cursor:pointer;margin-top:16px;transition:background-color .15s var(--ease),transform .12s var(--ease)}
+button:hover{background:#fff}button:active{transform:scale(.98)}
+#st{margin-top:24px;max-width:640px;font:400 13px/22px 'IBM Plex Mono',monospace;color:var(--text2)}
+.tips{max-width:640px;margin-top:40px;padding-top:24px;border-top:1px solid var(--line);color:var(--mute);font-size:14px;line-height:22px}
+@media(max-width:900px){main{padding:40px 20px 64px}nav .in{padding:0 20px}h1{font-size:36px}.cases{grid-template-columns:1fr}nav .hide{display:none}}</style>"""
+def NAV(on=""):
+    c = lambda k: " on" if k == on else ""
+    return (f'<nav><div class="in"><a class="logo" href="/"><i></i>Forgery Lab</a><a class="hide{c("r")}" href="/">Report</a>'
+            f'<a class="hide{c("p")}" href="/play">Human round</a><a class="btn" href="/try">Test your own PDF</a></div></nav>')
 LABELS = {"1709.02445v2": ("Science paper", "Wu, Wang & Evans (2017) — team size & disruption"),
           "court_romanko_2014": ("Court opinion", "State of Connecticut v. Romanko (2014)"),
           "gov_report": ("Government report", "GAO-14-344, information security at small agencies (2014)"),
           "speech_2015": ("Policy speech", "Lael Brainard, Federal Reserve, financial stability (Dec 2014)")}
 
-TRY = """<main>""" + NAV + """<h1>TRY <em>YOUR PDF</em></h1>
-<p>Upload a document written by a human. A forger will slip AI paragraphs into it; you try to find them.</p>
-<label class=drop id=drop><input type=file id=f accept=application/pdf hidden><span id=fn>Drop a PDF here, or click to choose</span></label>
-<button id=go>OPEN THE CASE ▸</button><div id=st></div></main><script>
-const f=document.getElementById('f'),st=document.getElementById('st');f.onchange=()=>document.getElementById('fn').textContent=f.files[0]?.name||'';
-const d=document.getElementById('drop');d.ondragover=e=>e.preventDefault();d.ondrop=e=>{e.preventDefault();f.files=e.dataTransfer.files;f.onchange()};
-document.getElementById('go').onclick=async()=>{if(!f.files[0])return st.textContent='Choose a PDF first.';const fd=new FormData();fd.append('pdf',f.files[0]);
-st.textContent='Uploading…';const t0=Date.now();const r=await fetch('/build',{method:'POST',body:fd});const j=await r.json();
-if(!r.ok)return st.textContent='Case failed: '+(j.detail||r.status);
+TRY = """<main><div class=eyebrow>Your own document</div><h1>Plant forgeries in a PDF you trust</h1>
+<p class=lede>Upload something a person wrote. Three AI forgers each write a paragraph in its voice, Pangram scores every exhibit, and you get a board to play in about 15 seconds.</p>
+<label class=drop id=drop><input type=file id=f accept=application/pdf hidden><b id=fn>Choose a PDF</b>or drop it here · text PDFs up to 25 MB</label>
+<button id=go>Build the case board</button><div id=st></div>
+<div class=tips>Works best with human-written text from before 2022, at least two pages of paragraphs. Scanned images have no text to read. Uploaded boards don't change the stress-test report.</div></main><script>
+const f=document.getElementById('f'),st=document.getElementById('st');f.onchange=()=>document.getElementById('fn').textContent=f.files[0]?.name||'Choose a PDF';
+const d=document.getElementById('drop');d.ondragover=e=>{e.preventDefault();d.classList.add('on')};d.ondragleave=()=>d.classList.remove('on');d.ondrop=e=>{e.preventDefault();d.classList.remove('on');f.files=e.dataTransfer.files;f.onchange()};
+document.getElementById('go').onclick=async()=>{if(!f.files[0])return st.textContent='Choose a PDF first';const fd=new FormData();fd.append('pdf',f.files[0]);
+st.textContent='Uploading';const t0=Date.now();const r=await fetch('/build',{method:'POST',body:fd});const j=await r.json();
+if(!r.ok)return st.textContent='Could not build the case: '+(j.detail||r.status);
 const tick=async()=>{const s=await (await fetch('/status/'+j.id)).json();const secs=Math.round((Date.now()-t0)/1000);
- if(s.state==='done')return location.href='/case/'+j.id; if(s.state==='error')return st.innerHTML='Case failed: '+s.msg;
- st.innerHTML=(s.log||[]).map(x=>'✔ '+x).join('<br>')+`<br>⏳ ${secs}s`;setTimeout(tick,700)};tick()};</script>"""
+ if(s.state==='done')return location.href='/case/'+j.id; if(s.state==='error')return st.innerHTML='Could not build the case: '+s.msg;
+ st.innerHTML=(s.log||[]).map(x=>'— '+x.replace(/…$/,'')).join('<br>')+`<br><span style="color:var(--mute)">${secs}s</span>`;setTimeout(tick,700)};tick()};</script>"""
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("forgery-lab-keys")], volumes={"/data": vol},
@@ -84,24 +109,19 @@ def web():
         vol.reload()
         f = site / "report.html"
         if not f.exists():
-            return page("<main>" + NAV + "<h1>FORGERY <em>LAB</em></h1><p>Report not published yet.</p></main>")
-        banner = ("<div id=hv style='position:sticky;top:0;z-index:9;background:#c9a24f;color:#14110d;padding:10px 18px;"
-                  "font-family:Special Elite,monospace;text-align:center'>Loading humans vs detector…</div>"
-                  "<a href=/try style='position:fixed;right:22px;bottom:22px;z-index:10;background:#efe6d2;color:#14110d;border:3px solid #c9a24f;"
-                  "padding:14px 20px;font-family:Special Elite,monospace;font-size:17px;text-decoration:none;box-shadow:0 10px 26px rgba(0,0,0,.6)'>"
-                  "📄 Upload your own PDF ▸</a>"
-                  "<script>fetch('/human/stats').then(r=>r.json()).then(s=>{document.getElementById('hv').innerHTML=s.players?"
-                  "`<b>HUMANS vs DETECTOR</b> (live): ${s.players} rounds played · humans caught ${s.human_caught_pct}% of forgeries · accuracy humans ${s.human_accuracy_pct}% vs Pangram ${s.lab_accuracy_pct}% · <a href=/play style='color:#14110d'>play ▸</a>`"
-                  ":`<b>HUMANS vs DETECTOR</b> — no human players yet. Can you beat Pangram? <a href=/play style='color:#14110d'>Play the human round ▸</a>`})</script>")
-        return f.read_text(encoding="utf-8").replace("<body>", "<body>" + banner, 1)
+            return page(NAV("r") + "<main><h1>Forgery Lab</h1><p class=lede>The report hasn't been published yet.</p></main>")
+        return f.read_text(encoding="utf-8")
 
     @api.get("/play", response_class=HTMLResponse)
     def play():
         vol.reload()
         boards = sorted(p.stem.removeprefix("human_") for p in site.glob("human_*.html")) if site.exists() else []
-        links = "".join(f"<a class=case href='/play/{b}'>{LABELS.get(b, (b, ''))[0]}<small>{LABELS.get(b, ('', ''))[1]}</small></a>" for b in boards)
-        return page("<main>" + NAV + "<h1>THE <em>HUMAN ROUND</em></h1><p>Each board hides AI forgeries among real human paragraphs — "
-                    "the same forgeries that fooled the detector. Can you beat it?</p>" + (links or "<p>No boards published yet.</p>") + "</main>")
+        links = "".join(f"<a class=case href='/play/{b}'><span>Case {i+1:02d}</span><b>{LABELS.get(b, (b, ''))[0]}</b><small>{LABELS.get(b, ('', ''))[1]}</small></a>"
+                        for i, b in enumerate(boards))
+        return page(NAV("p") + "<main><div class=eyebrow>Human round</div><h1>Spot the forgeries that fooled the detector</h1>"
+                    "<p class=lede>Each board mixes real paragraphs with AI forgeries, mostly ones Pangram scored as human. "
+                    "Pick the fakes, then compare your calls with the detector's.</p><div class=cases>"
+                    + (links or "<p>No boards published yet.</p>") + "</div></main>")
 
     @api.get("/play/{doc}", response_class=HTMLResponse)
     def play_doc(doc: str):
@@ -127,7 +147,7 @@ def web():
 
     @api.get("/try", response_class=HTMLResponse)
     def try_page():
-        return page(TRY)
+        return page(NAV() + TRY)
 
     import threading
     jobs = {}  # in-memory job status; one container (max_containers=1) serves all requests concurrently

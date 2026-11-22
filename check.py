@@ -95,11 +95,11 @@ def main():
     bc.load_env()
     print("Forger endpoints"); [check(f"forger {n}", forger_ok(n)) for n in forgers.configured()]
     print("Live site")
-    check("GET /  (report + banner)", route("/", "HUMANS vs DETECTOR"))
-    check("GET /play", route("/play", "HUMAN ROUND"))
+    check("GET /  (report + banner)", route("/", "Humans vs the detector"))
+    check("GET /play", route("/play", "Human round"))
     for d in ("1709.02445v2", "court_romanko_2014", "gov_report", "speech_2015"):
         check(f"GET /play/{d}", route(f"/play/{d}", "const CASE"))
-    check("GET /try  (upload button page)", route("/try", "Upload"))
+    check("GET /try  (upload button page)", route("/try", "Test your own PDF"))
     check("GET /human/stats", lambda: requests.get(SITE + "/human/stats", timeout=60).json())
     if not a.quick:
         print("End-to-end upload"); check("upload PDF -> case board", upload)

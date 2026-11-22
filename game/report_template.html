@@ -1,105 +1,154 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FORGERY LAB — Detector Stress Test</title>
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<title>Forgery Lab · AI detector stress test</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#1b1712;--paper:#efe6d2;--red:#c0392b;--green:#3f8f52;--brass:#c9a24f;--desk:#14110d;--line:#3a3226;--mut:#a89a7d}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#3a2f22 0%,var(--desk) 55%) fixed;color:var(--paper);font-family:'IBM Plex Mono',monospace}
-.wrap{max-width:1120px;margin:0 auto;padding:36px 24px 70px}
-.stamp{display:inline-block;border:3px solid var(--red);color:var(--red);padding:3px 12px;font-family:'Special Elite';letter-spacing:3px;transform:rotate(-2deg);font-size:12px}
-h1{font-family:'Playfair Display';font-size:clamp(32px,5vw,54px);margin:10px 0 0}h1 em{color:var(--brass);font-style:normal}
-h2{font-family:'Special Elite';letter-spacing:2px;color:var(--brass);font-size:15px;margin:40px 0 12px;border-bottom:1px solid var(--line);padding-bottom:8px}
-.sub{color:var(--mut);font-size:13px}
-.verdict{margin-top:24px;background:var(--paper);color:var(--ink);padding:22px 26px;border-left:8px solid var(--brass);box-shadow:0 12px 30px rgba(0,0,0,.5)}
-.verdict .tag{display:inline-block;font-family:'Special Elite';letter-spacing:2px;padding:3px 10px;color:#fff;font-size:13px}
-.verdict h3{font-family:'Playfair Display';font-size:24px;margin:10px 0 6px;line-height:1.3}
-.verdict ul{margin:8px 0 0 18px;padding:0;line-height:1.6;font-size:14px}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:800px){.cols{grid-template-columns:1fr}}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:22px}
-.kpi{border:1px solid var(--line);padding:14px 16px;background:rgba(0,0,0,.25)}.kpi b{display:block;font-size:30px;font-family:'Playfair Display';color:var(--paper)}.kpi span{font-size:12px;color:var(--mut)}
-table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:400}
-.bar{height:10px;background:#2a241b;position:relative;min-width:120px}.bar i{position:absolute;left:0;top:3px;bottom:3px}.bar u{position:absolute;top:0;bottom:0;background:rgba(192,57,43,.35)}.ci{color:var(--mut);font-size:11px;white-space:nowrap}
-.card{border:1px solid var(--line);background:rgba(0,0,0,.25);padding:16px}
-canvas{width:100%;height:280px;display:block}
-.ev{background:var(--paper);color:var(--ink);padding:16px 18px;font-family:'Playfair Display';font-weight:400;font-size:14.5px;line-height:1.55;box-shadow:0 10px 24px rgba(0,0,0,.5)}
-.ev .meta{font-family:'IBM Plex Mono';font-size:11.5px;color:#6b5c40;margin-bottom:8px}
-.legend span{display:inline-block;margin-right:14px;font-size:12px}.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:middle}
-footer{margin-top:40px;color:var(--mut);font-size:11.5px;line-height:1.7}
-</style></head><body><div class="wrap" id="app"></div>
+/* unslop direction: forensic document lab — exact, sober, a little noir. Warm neutral ramp, one red-ink accent. */
+:root{
+  --deep:#12110f;--bg:#161513;--card:#1c1a18;--raised:#262421;
+  --text:#efe9de;--text2:#aaa398;--mute:#8a847a;--line:rgba(239,233,222,.08);--line2:rgba(239,233,222,.14);
+  --ink:#e5674f;               /* red-ink accent: the 50% line, evasion, the one number that matters */
+  --ink-soft:rgba(229,103,79,.16);
+  --paper:#f2ece0;--paper-text:#1f1b16;--paper-2:#5e554a;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:400 15px/22px 'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--text);text-decoration-color:var(--line2);text-underline-offset:3px;transition:text-decoration-color .15s var(--ease)}
+a:hover{text-decoration-color:var(--ink)}
+.num,.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+nav{height:56px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+nav .in{max-width:1200px;margin:0 auto;padding:0 32px;width:100%;display:flex;align-items:center;gap:24px}
+nav .logo{font-weight:500;font-size:16px;margin-right:auto;text-decoration:none;display:flex;align-items:center;gap:8px}
+nav .logo i{width:8px;height:8px;background:var(--ink);display:inline-block}
+nav a{font-size:14px;color:var(--text2);text-decoration:none}nav a:hover{color:var(--text)}
+nav .btn{color:var(--deep);background:var(--text);padding:6px 14px;border-radius:8px;font-weight:500}
+nav .btn:hover{color:var(--deep);background:#fff}
+.wrap{max-width:1200px;margin:0 auto;padding:64px 32px 96px}
+.eyebrow{font:400 12px/16px 'IBM Plex Mono',monospace;color:var(--mute)}
+h1{font:400 56px/1.05 'Newsreader',serif;letter-spacing:-.03em;margin:12px 0 16px;max-width:15em}
+.lede{font-size:18px;line-height:28px;color:var(--text2);max-width:38rem;margin:0}
+h2{font:500 20px/28px 'IBM Plex Sans',sans-serif;margin:64px 0 4px}
+.h2sub{color:var(--mute);font-size:14px;margin:0 0 20px}
+.verdict{margin-top:40px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;border-top:1px solid var(--line2);padding-top:32px}
+.verdict .tag{font:500 12px/16px 'IBM Plex Mono',monospace;color:var(--ink);display:inline-flex;align-items:center;gap:8px}
+.verdict .tag::before{content:"";width:16px;height:2px;background:var(--ink)}
+.verdict h3{font:400 28px/1.25 'Newsreader',serif;margin:12px 0 0;letter-spacing:-.01em}
+.verdict ul{margin:0;padding:0;list-style:none}.verdict li{padding:10px 0;border-bottom:1px solid var(--line);color:var(--text2);font-size:14px;line-height:21px}
+.verdict li:first-child{padding-top:0}
+.verdict .rules{margin-top:16px;font-size:13px;color:var(--mute)}
+.checked{font:400 12px/16px 'IBM Plex Mono',monospace;color:var(--mute);margin-top:16px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:40px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+.kpi .v{font:500 32px/1 'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{color:var(--text2);font-size:14px;margin-top:12px}
+.kpi .c{font:400 12px/16px 'IBM Plex Mono',monospace;color:var(--mute);margin-top:4px}
+.kpi.key .v{color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-weight:400;color:var(--mute);font-size:12px;text-align:left;padding:0 12px 10px 0;border-bottom:1px solid var(--line)}
+td{padding:12px 12px 12px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+.ci{font:400 12px/16px 'IBM Plex Mono',monospace;color:var(--mute);white-space:nowrap}
+.bar{height:8px;background:var(--raised);border-radius:4px;position:relative;min-width:160px}
+.bar u{position:absolute;top:0;bottom:0;background:var(--ink-soft);border-radius:4px}
+.bar i{position:absolute;left:0;top:2px;bottom:2px;background:var(--ink);border-radius:2px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px}
+.grid2b{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+canvas{width:100%;height:320px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-size:13px;color:var(--text2)}
+.legend i{display:inline-block;width:12px;height:2px;margin-right:8px;vertical-align:middle}
+.pattern{padding:16px 0;border-bottom:1px solid var(--line)}.pattern:first-of-type{padding-top:0}.pattern:last-child{border-bottom:0}
+.pattern b{font-weight:500}.pattern p{margin:4px 0 0;color:var(--text2);font-size:14px;line-height:21px}
+.pattern .ev{font:400 12px/16px 'IBM Plex Mono',monospace;color:var(--mute);margin-top:8px}
+.heat td{font-family:'IBM Plex Mono',monospace;font-size:13px}
+.exhibits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.exhibit{background:var(--paper);color:var(--paper-text);border-radius:4px;padding:24px;font:400 17px/1.55 'Newsreader',serif}
+.exhibit .meta{font:400 12px/18px 'IBM Plex Mono',monospace;color:var(--paper-2);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(31,27,22,.12)}
+.exhibit .meta b{color:#b3412f;font-weight:500}
+.humans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);color:var(--mute);font-size:13px;line-height:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+footer b{display:block;color:var(--text2);font-weight:500;margin-bottom:4px}
+@media(max-width:900px){.kpis,.humans{grid-template-columns:repeat(2,minmax(0,1fr))}.verdict,.grid2,.grid2b,.exhibits,footer{grid-template-columns:1fr}h1{font-size:40px}.wrap{padding:40px 20px 64px}nav .in{padding:0 20px}nav .hide{display:none}}
+</style></head><body>
+<nav><div class="in"><a class="logo" href="/"><i></i>Forgery Lab</a><a class="hide" href="/">Report</a><a class="hide" href="/play">Human round</a><a class="btn" href="/try">Test your own PDF</a></div></nav>
+<div class="wrap" id="app"></div>
 <script>
 const D=/*__DATA__*/null;const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const COLORS=['#e0703a','#c9a24f','#5fa8d3','#9b7fd1','#3f8f52','#d35f8d'];
 const lbl=d=>D.labels[d]||d; const O=D.overall, V=D.verdict;
-const vcol=/DO NOT/.test(V.verdict)?'#c0392b':/CAUTION/.test(V.verdict)?'#b9770e':'#3f8f52';
-const P=r=>r&&r.pct!=null?`${r.pct}%`:'–';
-const CI=r=>r&&r.n?`<span class="ci">${r.k}/${r.n} · 95% CI ${r.lo}–${r.hi}%</span>`:'';
-const ciBar=(r,col)=>r&&r.n?`<div class="bar"><u style="left:${r.lo}%;width:${Math.max(1,r.hi-r.lo)}%"></u><i style="width:${r.pct}%;background:${col}"></i></div>`:'';
+const P=r=>r&&r.pct!=null?`${r.pct.toFixed(1)}%`:'–';
+const CI=r=>r&&r.n?`${r.k}/${r.n} · CI ${r.lo}–${r.hi}%`:'';
+const ciBar=r=>r&&r.n?`<div class="bar"><u style="left:${r.lo}%;width:${Math.max(1,r.hi-r.lo)}%"></u><i style="width:${r.pct}%"></i></div>`:'';
 const A=D.analysis||{}, F=A.features||{}, CK=D.checks||{};
-const fk=[['words','words'],['mean_sentence_len','avg sentence length'],['sentence_len_sd','sentence-length variation (burstiness)'],['digits_per_100w','numbers per 100 words'],['citations_per_100w','citations per 100 words'],['parens_per_100w','parentheses per 100 words'],['first_person_per_100w','"we/our/I" per 100 words']];
-const fcols=Object.keys(F);
+// one accent: the forger that fools the detector most leads in red ink; the rest are neutral steps
+const LINE=['#efe9de','#a39c90','#6f6a62','#4a463f','#3a3631'];  // red is reserved for the 50% line
+const fk=[['words','Words'],['mean_sentence_len','Average sentence length'],['sentence_len_sd','Sentence-length variation'],['digits_per_100w','Numbers per 100 words'],['citations_per_100w','Citations per 100 words'],['parens_per_100w','Parentheses per 100 words'],['first_person_per_100w','"We / our / I" per 100 words']];
+const fcols=Object.keys(F), fnames={'evaded (final text)':'Evaded','caught (final text)':'Caught',"evaders' first drafts":'Evaders, first draft'};
 $('#app').innerHTML=`
-<span class="stamp">DETECTOR STRESS TEST</span><h1>FORGERY <em>LAB</em></h1>
-<div class="sub">Can an AI detector be trusted on <i>your</i> kind of documents? ${D.board.length} AI forgers attacked Pangram using real human documents: ${D.docs.map(lbl).join(', ')}.</div>
-<div class="verdict"><span class="tag" style="background:${vcol}">${esc(V.verdict)}</span>
-<h3>${esc(V.headline)}</h3>${(V.findings||[]).length?`<ul>${V.findings.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}
-${(V.advice||[]).length?`<div style="margin-top:12px;font-family:'Special Elite'">Rules of thumb</div><ul>${V.advice.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}
-<div style="font-size:11px;color:#6b5c40;margin-top:10px">Verdict written by ${esc(D.vsrc)} from the measured numbers below.
-${(CK.verdict_unverified||[]).length?`<b style="color:#c0392b">⚠ ${CK.verdict_unverified.length} number(s) in this verdict could not be matched to the data.</b>`:'✔ Every number in this verdict was automatically checked against the measured data.'}</div></div>
+<div class="eyebrow">AI detector stress test · ${D.board.length} forgers · ${D.docs.length} human-written documents</div>
+<h1>How far can you trust an AI detector on your own documents?</h1>
+<p class="lede">AI forgers wrote fake paragraphs in the voice of real documents — ${D.docs.map(lbl).join(', ').toLowerCase()} — and rewrote them each time Pangram caught them. This is what held, and what slipped through.</p>
+<section class="verdict">
+ <div><span class="tag">Verdict · ${esc((V.verdict||'').toLowerCase().replace(/^./,c=>c.toUpperCase()))}</span><h3>${esc(V.headline)}</h3>
+ ${(V.advice||[]).length?`<div class="rules">Rules of thumb</div><ul>${V.advice.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}</div>
+ <div>${(V.findings||[]).length?`<ul>${V.findings.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}
+ <div class="checked">Written by ${esc(D.vsrc)} · ${(CK.verdict_unverified||[]).length?`${CK.verdict_unverified.length} number(s) could not be matched to the data`:'every number checked against the data by code'}</div></div>
+</section>
 <div class="kpis">
-<div class="kpi"><b>${O.attacks}</b><span>valid forgery attacks (${O.attempted} attempted, ${O.errors} errors)</span></div>
-<div class="kpi"><b>${P(O.caught_first)}</b><span>caught on the first try<br>${CI(O.caught_first)}</span></div>
-<div class="kpi"><b style="color:var(--red)">${P(O.evaded)}</b><span>slipped past after ≤${D.meta.rounds} rewrites<br>${CI(O.evaded)}</span></div>
-<div class="kpi"><b>${P(O.false_alarms)}</b><span>real human paragraphs wrongly flagged<br>${CI(O.false_alarms)}</span></div>
-<div class="kpi"><b>${O.rejected}</b><span>forgeries thrown out for copying / paraphrasing the source</span></div></div>
-<h2>FORGER LEADERBOARD — WHO FOOLS THE DETECTOR?</h2>
-<div class="card"><table><tr><th>Forger</th><th>Attacks</th><th>Caught 1st try</th><th>Evaded after rewrites (bar = 95% CI)</th><th>Avg AI score: first → best</th></tr>
-${D.board.map((b,i)=>`<tr><td><b>${esc(b.model)}</b></td><td>${b.n}</td><td>${P(b.caught_first)}</td>
-<td>${ciBar(b.evaded,'var(--red)')}<span class="sub">${P(b.evaded)}</span> ${CI(b.evaded)}</td>
-<td>${Math.round(b.first*100)}% → ${Math.round(b.best*100)}%</td></tr>`).join('')}</table>
-<div class="sub" style="margin-top:8px">Shaded band = 95% confidence interval. Where two bands overlap, the difference between those forgers is not statistically clear.</div></div>
-<div class="cols">
-<div><h2>FORGER VS DETECTOR — EVERY ATTACK</h2><div class="card"><canvas id="paths"></canvas>
-<div class="legend">${D.board.map((b,i)=>`<span><i style="background:${COLORS[i%6]}"></i>${esc(b.model)}</span>`).join('')}</div>
-<div class="sub" style="margin-top:6px">AI score of each forgery across rewrite rounds. Below the dashed line = detector fooled.</div></div></div>
-<div><h2>WHERE IS THE DETECTOR WEAKEST?</h2><div class="card"><table><tr><th>Document type</th><th>Evaded</th><th>False alarms</th></tr>
-${D.docs.map(d=>{const x=O.by_doc[d];return `<tr><td>${esc(lbl(d))}</td><td>${P(x.evaded)}<br>${CI(x.evaded)}</td><td>${P(x.false_alarms)}<br>${CI(x.false_alarms)}</td></tr>`}).join('')}</table>
-<table style="margin-top:14px"><tr><th>Evasion by forger × document</th>${D.docs.map(d=>`<th>${esc(lbl(d))}</th>`).join('')}</tr>
-${D.board.map(b=>`<tr><td>${esc(b.model)}</td>${D.docs.map(d=>{const v=b.by_doc[d];return `<td style="background:rgba(192,57,43,${(v.pct||0)/100*0.8})">${P(v)} <span class="ci">${v.k}/${v.n}</span></td>`}).join('')}</tr>`).join('')}</table></div></div></div>
-<h2>WHAT FOOLED THE DETECTOR? — ANALYSIS BY ${esc((D.asrc||'').toUpperCase())}</h2>
-<div class="cols"><div class="card">${A.summary?`<p style="margin-top:0;line-height:1.6">${esc(A.summary)}</p>`:''}
-${(A.patterns||[]).map(p=>`<div style="margin:12px 0"><b style="color:var(--brass)">${esc(p.pattern)}</b><div style="font-size:13px;line-height:1.55">${esc(p.explanation)}</div><div class="sub" style="font-size:12px">evidence: ${esc(p.evidence)}</div></div>`).join('')}
-${(CK.analysis_unverified||[]).length?`<div class="sub" style="color:#e0703a">⚠ ${CK.analysis_unverified.length} cited number(s) could not be matched to measured data.</div>`:(A.patterns||[]).length?'<div class="sub">✔ cited numbers checked against measured data</div>':''}</div>
-<div class="card"><table><tr><th>Measured style (averages)</th>${fcols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>
-${fk.map(([k,l])=>`<tr><td>${l}</td>${fcols.map(c=>`<td>${F[c][k]??'–'}</td>`).join('')}</tr>`).join('')}</table>
-<div class="sub" style="margin-top:8px">${A.n_evaded} forgeries evaded, ${A.n_caught} were caught. Features computed by code, not by a model.</div></div></div>
-<h2>HUMANS VS DETECTOR — THE HUMAN ROUND</h2>
-<div class="card" id="humans"><div class="sub">The human round runs on the live site: players face the same forgeries that fooled Pangram.
-${location.protocol.startsWith('http')?'Loading live results…':'Open the live site to see live results.'}</div></div>
-<h2>FORGERIES THAT FOOLED THE DETECTOR</h2>
-<div class="cols">${D.evasions.length?D.evasions.map(e=>`<div class="ev"><div class="meta">${esc(e.m)} · ${esc(lbl(e.d))} · AI score ${e.s.map(x=>Math.round(x*100)+'%').join(' → ')}<br>brief: ${esc(e.topic)}</div>${esc(e.text)}</div>`).join(''):'<div class="sub">None — the detector held.</div>'}</div>
-${D.false.length?`<h2>REAL HUMAN WRITING WRONGLY FLAGGED AS AI</h2><div class="cols">${D.false.map(g=>`<div class="ev"><div class="meta">${esc(lbl(g.doc))} · Pangram AI score ${Math.round(g.score*100)}% · written by a human before 2018</div>${esc(g.text)}</div>`).join('')}</div>`:''}
-<footer>Method: genuine paragraphs parsed from each PDF (Reducto). Hermes Agent proposes topics the document does not cover; a judge model rejects topics already covered.
-Forgers write in the author's voice; forgeries copying &gt;10% verbatim or paraphrasing source content are discarded. Pangram scores each forgery; if AI score ≥ 50% the same forger
-sees the flagged passages and rewrites (up to ${D.meta.rounds} rounds). "Evaded" = best score &lt; 50%. Genuine paragraphs are de-duplicated across runs.
-Intervals are 95% Wilson score intervals. Runs: ${esc(D.meta.run)} (${D.meta.seconds}s of attack time on Modal).</footer>`;
+ <div class="kpi"><div class="v">${O.attacks}</div><div class="l">Valid forgery attacks</div><div class="c">${O.attempted} attempted · ${O.errors} errors</div></div>
+ <div class="kpi"><div class="v">${P(O.caught_first)}</div><div class="l">Caught on the first try</div><div class="c">${CI(O.caught_first)}</div></div>
+ <div class="kpi key"><div class="v">${P(O.evaded)}</div><div class="l">Slipped past after ≤${D.meta.rounds} rewrites</div><div class="c">${CI(O.evaded)}</div></div>
+ <div class="kpi"><div class="v">${P(O.false_alarms)}</div><div class="l">Real paragraphs wrongly flagged</div><div class="c">${CI(O.false_alarms)}</div></div>
+</div>
+<h2>Every attack, round by round</h2><p class="h2sub">AI score of each forgery from first try through each rewrite. Below the red line, the detector was fooled.</p>
+<div class="grid2"><div class="card"><canvas id="paths"></canvas>
+ <div class="legend">${D.board.map((b,i)=>`<span><i style="background:${LINE[i]}"></i>${esc(b.model)}</span>`).join('')}</div></div>
+ <div class="card"><table><tr><th>Forger</th><th class="r">Evaded</th></tr>
+ ${D.board.map((b,i)=>`<tr><td>${esc(b.model)}<div class="ci">${b.n} attacks · first try ${Math.round(b.first*100)}% → best ${Math.round(b.best*100)}% AI</div></td><td class="r"><span class="num">${P(b.evaded)}</span><div class="ci">${b.evaded.k}/${b.evaded.n}</div></td></tr>`).join('')}</table></div></div>
+<h2>Forger leaderboard</h2><p class="h2sub">The shaded band is the 95% confidence interval. Where two bands overlap, the difference isn't statistically clear.</p>
+<div class="card"><table><tr><th>Forger</th><th class="r">Attacks</th><th class="r">Caught first try</th><th>Evaded after rewrites</th><th></th></tr>
+ ${D.board.map(b=>`<tr><td>${esc(b.model)}</td><td class="r num">${b.n}</td><td class="r num">${P(b.caught_first)}</td><td style="width:34%">${ciBar(b.evaded)}</td><td><span class="num">${P(b.evaded)}</span> <span class="ci">CI ${b.evaded.lo}–${b.evaded.hi}%</span></td></tr>`).join('')}</table></div>
+<h2>Where the detector is weakest</h2><p class="h2sub">By kind of document. False alarms measured on every usable real paragraph.</p>
+<div class="grid2b"><div class="card"><table><tr><th>Document</th><th class="r">Evaded</th><th class="r">False alarms</th></tr>
+ ${D.docs.map(d=>{const x=O.by_doc[d];return `<tr><td>${esc(lbl(d))}</td><td class="r"><span class="num">${P(x.evaded)}</span><div class="ci">${x.evaded.k}/${x.evaded.n}</div></td><td class="r"><span class="num">${x.false_alarms.k}/${x.false_alarms.n}</span><div class="ci">CI ${x.false_alarms.lo}–${x.false_alarms.hi}%</div></td></tr>`}).join('')}</table></div>
+ <div class="card"><table class="heat"><tr><th>Evaded, forger × document</th>${D.docs.map(d=>`<th class="r">${esc(lbl(d))}</th>`).join('')}</tr>
+ ${D.board.map(b=>`<tr><td style="font-family:'IBM Plex Sans';font-size:14px">${esc(b.model)}</td>${D.docs.map(d=>{const v=b.by_doc[d];return `<td class="r" style="background:rgba(229,103,79,${(v.pct||0)/100*0.35})">${v.pct!=null?Math.round(v.pct)+'%':'–'}</td>`}).join('')}</tr>`).join('')}</table></div></div>
+<h2>What fooled the detector</h2><p class="h2sub">${esc(D.asrc)} compared forgeries that slipped through with ones that were caught. Style features are measured by code; ${(CK.analysis_unverified||[]).length?`${CK.analysis_unverified.length} cited number(s) are derived and couldn't be matched directly`:'every cited number was checked'}.</p>
+<div class="grid2b"><div class="card">${A.summary?`<p style="margin:0 0 20px;font:400 18px/1.45 'Newsreader',serif">${esc(A.summary)}</p>`:''}
+ ${(A.patterns||[]).map(p=>`<div class="pattern"><b>${esc(p.pattern)}</b><p>${esc(p.explanation)}</p><div class="ev">${esc(p.evidence)}</div></div>`).join('')}</div>
+ <div class="card"><table><tr><th>Average, per forgery</th>${fcols.map(c=>`<th class="r">${esc(fnames[c]||c)}</th>`).join('')}</tr>
+ ${fk.map(([k,l])=>`<tr><td>${l}</td>${fcols.map(c=>`<td class="r num">${F[c][k]??'–'}</td>`).join('')}</tr>`).join('')}</table>
+ <div class="ci" style="margin-top:12px">${A.n_evaded} evaded · ${A.n_caught} caught</div></div></div>
+<h2>Humans vs the detector</h2><p class="h2sub">In the human round, players face the same forgeries — mostly ones that already fooled Pangram.</p>
+<div id="humans" class="card"><div class="ci">${location.protocol.startsWith('http')?'Loading live results':'Live results appear on the published site'}</div></div>
+<h2>Forgeries that fooled the detector</h2><p class="h2sub">Written by AI, scored as human. The trail shows the AI score after each rewrite.</p>
+<div class="exhibits">${D.evasions.length?D.evasions.map((e,i)=>`<div class="exhibit"><div class="meta">Exhibit ${String.fromCharCode(65+i)} · ${esc(e.m)} · ${esc(lbl(e.d))}<br>AI score <b>${e.s.map(x=>Math.round(x*100)+'%').join(' → ')}</b></div>${esc(e.text)}</div>`).join(''):'<p class="h2sub">None. The detector held.</p>'}</div>
+${D.false.length?`<h2>Real writing wrongly flagged as AI</h2><div class="exhibits">${D.false.map(g=>`<div class="exhibit"><div class="meta">${esc(lbl(g.doc))} · AI score <b>${Math.round(g.score*100)}%</b> · written by a person</div>${esc(g.text)}</div>`).join('')}</div>`:''}
+<footer>
+ <div><b>Method</b>Real paragraphs parsed from each PDF with Reducto. Hermes Agent picks topics a document doesn't cover; a judge model rejects covered topics and forgeries that copy or paraphrase the source.</div>
+ <div><b>Scoring</b>Pangram scores every forgery. At 50% AI or more the same forger sees the flagged passages and rewrites, up to ${D.meta.rounds} times. Evaded means the best score stayed under 50%. ${O.rejected} forgeries were rejected for copying.</div>
+ <div><b>Statistics</b>95% Wilson intervals. Real paragraphs de-duplicated across runs. Runs: <span class="mono">${esc(D.meta.run)}</span>, ${Math.round(D.meta.seconds/60)} min of attacks on Modal.</div>
+</footer>`;
 function draw(){const c=$('#paths'),w=c.clientWidth,h=c.clientHeight,r=devicePixelRatio||1;c.width=w*r;c.height=h*r;const g=c.getContext('2d');g.scale(r,r);
- const L=36,B=24,T=10,R=10,maxR=Math.max(...D.paths.map(p=>p.s.length))-1||1;const X=i=>L+(w-L-R)*i/maxR,Y=s=>T+(h-T-B)*(1-s);
- g.strokeStyle='#3a3226';g.fillStyle='#a89a7d';g.font='11px IBM Plex Mono';
- [0,.5,1].forEach(s=>{g.beginPath();g.moveTo(L,Y(s));g.lineTo(w-R,Y(s));g.stroke();g.fillText(Math.round(s*100)+'%',2,Y(s)+4)});
- for(let i=0;i<=maxR;i++)g.fillText(i?'rewrite '+i:'first try',X(i)-(i?28:0),h-6);
- g.setLineDash([5,4]);g.strokeStyle='#c0392b';g.beginPath();g.moveTo(L,Y(.5));g.lineTo(w-R,Y(.5));g.stroke();g.setLineDash([]);
+ const L=40,B=28,T=8,R=12,maxR=Math.max(...D.paths.map(p=>p.s.length))-1||1;const X=i=>L+(w-L-R)*i/maxR,Y=s=>T+(h-T-B)*(1-s);
+ g.font='12px "IBM Plex Mono", monospace';g.fillStyle='#8a847a';g.strokeStyle='rgba(239,233,222,.08)';g.lineWidth=1;
+ [0,.25,.5,.75,1].forEach(s=>{g.beginPath();g.moveTo(L,Y(s));g.lineTo(w-R,Y(s));g.stroke();g.fillText(Math.round(s*100)+'%',0,Y(s)+4)});
+ for(let i=0;i<=maxR;i++){const t=i?'rewrite '+i:'first try';g.fillText(t,Math.min(w-R-g.measureText(t).width,Math.max(L,X(i)-g.measureText(t).width/2)),h-6)}
  const idx=Object.fromEntries(D.board.map((b,i)=>[b.model,i]));
- D.paths.forEach((p,k)=>{const col=COLORS[idx[p.m]%6];g.strokeStyle=col;g.globalAlpha=.75;g.lineWidth=1.6;g.beginPath();
-  const j=(k%7-3)*0.004;p.s.forEach((s,i)=>{const y=Y(Math.min(1,Math.max(0,s+j)));i?g.lineTo(X(i),y):g.moveTo(X(i),y)});g.stroke();
-  g.fillStyle=col;p.s.forEach((s,i)=>{g.beginPath();g.arc(X(i),Y(Math.min(1,Math.max(0,s+j))),2.4,0,7);g.fill()})});g.globalAlpha=1;}
+ [...D.paths].sort((a,b)=>idx[b.m]-idx[a.m]).forEach((p,k)=>{const lead=idx[p.m]===0;g.strokeStyle=LINE[idx[p.m]];g.globalAlpha=lead?.55:.4;g.lineWidth=lead?1.25:1;g.beginPath();
+  const j=(k%9-4)*0.004;p.s.forEach((s,i)=>{const y=Y(Math.min(1,Math.max(0,s+j)));i?g.lineTo(X(i),y):g.moveTo(X(i),y)});g.stroke()});
+ g.globalAlpha=1;g.strokeStyle='#e5674f';g.lineWidth=2;g.beginPath();g.moveTo(L,Y(.5));g.lineTo(w-R,Y(.5));g.stroke();
+ const lab='detector fooled below 50%',tw=g.measureText(lab).width;g.fillStyle='#1c1a18';g.fillRect(w-R-tw-12,Y(.5)+6,tw+12,20);
+ g.fillStyle='#e5674f';g.fillText(lab,w-R-tw-6,Y(.5)+20);}
 draw();addEventListener('resize',draw);
 if(location.protocol.startsWith('http'))fetch('/human/stats').then(r=>r.json()).then(s=>{const el=document.getElementById('humans');
- if(!s.players){el.innerHTML='<div class="sub">No human rounds played yet. <a href="/play" style="color:var(--brass)">Be the first ▸</a></div>';return;}
- el.innerHTML=`<div class="kpis" style="margin-top:0"><div class="kpi"><b>${s.players}</b><span>human rounds played</span></div>
- <div class="kpi"><b>${s.human_caught_pct}%</b><span>of forgeries caught by humans</span></div>
- <div class="kpi"><b>${s.human_accuracy_pct}%</b><span>human accuracy (all exhibits)</span></div>
- <div class="kpi"><b>${s.lab_accuracy_pct}%</b><span>Pangram accuracy on the same boards</span></div></div>
- <div class="sub" style="margin-top:8px">Boards use the hardest forgeries (mostly ones that already fooled Pangram), so this is a stress test for humans too.
- <a href="/play" style="color:var(--brass)">Play a round ▸</a></div>`}).catch(()=>{});
-</script></body></html>
+ if(!s.players){el.innerHTML='<span style="color:var(--text2)">No rounds played yet.</span> <a href="/play">Play the human round</a>';return;}
+ el.outerHTML=`<div class="humans"><div class="kpi"><div class="v">${s.players}</div><div class="l">Rounds played</div></div>
+ <div class="kpi"><div class="v">${s.human_caught_pct}%</div><div class="l">Forgeries caught by people</div></div>
+ <div class="kpi"><div class="v">${s.human_accuracy_pct}%</div><div class="l">Human accuracy</div></div>
+ <div class="kpi"><div class="v">${s.lab_accuracy_pct}%</div><div class="l">Pangram accuracy, same boards</div></div></div>`}).catch(()=>{});
+</script>
+<!-- design pass: unslop by @heydamir (CC BY 4.0) -->
+</body></html>
