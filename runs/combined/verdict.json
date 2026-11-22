@@ -1,0 +1,361 @@
+{
+  "verdict": {
+    "headline": "Pangram catches most first-draft AI text but nearly 4 in 10 attacks slip through after a rewrite, so it should not be anyone's only check.",
+    "verdict": "USE WITH CAUTION",
+    "findings": [
+      "Caught on first try: 283/350 = 80.9% (95% CI 76.4-84.6%), but evaded after rewrites: 139/350 = 39.7% (95% CI 34.7-44.9%) -- a single rewrite pass roughly doubles the escape rate.",
+      "Forger Hermes-3 8B was evaded only 3/90 = 3.3% (95% CI 1.1-9.3%) and GLM 5.3 Flash evaded 68/80 = 85.0% (95% CI 75.6-91.2%) -- these two do not overlap, so GLM 5.3 Flash reliably evades far more than Hermes-3 8B.",
+      "Kimi K3.1 Pro (evaded 52/90 = 57.8%, 95% CI 47.5-67.5%) and DeepSeek V4.1 Flash 1017 (evaded 16/90 = 17.8%, 95% CI 11.2-26.9%) have non-overlapping CIs too, so DeepSeek V4.1 Flash 1017's text was caught much more reliably.",
+      "Genuine human paragraphs wrongly flagged: 3/58 = 5.2% (95% CI 1.8-14.1%), and the Science paper's false-alarm rate (3/27 = 11.1%, 95% CI 3.9-28.1%) overlaps the Court opinion and Government report rates (0/18 and 0/13), so no real difference between documents is established."
+    ],
+    "advice": [
+      "Treat a 'clean' Pangram score as weak evidence, not proof -- a motivated person who revises a flagged draft has roughly a 39.7% chance of getting past it.",
+      "Expect occasional false alarms on genuine human writing (3/58 = 5.2% in this test) and always allow the accused person to explain or show drafts/history before acting on a flag.",
+      "Never use the detector as the sole basis for a grade, hire, or publication decision -- pair it with a human review of context, sourcing, and the writer's own process."
+    ]
+  },
+  "source": "Hermes Agent",
+  "analysis": {
+    "features": {
+      "evaded (final text)": {
+        "words": 97.8,
+        "sentences": 5.7,
+        "mean_sentence_len": 19.2,
+        "sentence_len_sd": 8.9,
+        "digits_per_100w": 4.8,
+        "citations_per_100w": 1.3,
+        "parens_per_100w": 0.9,
+        "first_person_per_100w": 0.4
+      },
+      "caught (final text)": {
+        "words": 120.9,
+        "sentences": 5.8,
+        "mean_sentence_len": 22.6,
+        "sentence_len_sd": 7.5,
+        "digits_per_100w": 2.5,
+        "citations_per_100w": 0.5,
+        "parens_per_100w": 0.6,
+        "first_person_per_100w": 0.7
+      },
+      "evaders' first drafts": {
+        "words": 98.5,
+        "sentences": 5.2,
+        "mean_sentence_len": 21.0,
+        "sentence_len_sd": 8.7,
+        "digits_per_100w": 4.3,
+        "citations_per_100w": 1.3,
+        "parens_per_100w": 0.9,
+        "first_person_per_100w": 0.4
+      }
+    },
+    "n_evaded": 139,
+    "n_caught": 211,
+    "patterns": [
+      {
+        "pattern": "Heavier use of hard numbers and citations",
+        "explanation": "Evading text leans on concrete figures, statutes, and case cites almost twice as often as caught text, which reads as more generic/abstract.",
+        "evidence": "digits_per_100w 4.8 (evaded) vs 2.5 (caught); citations_per_100w 1.3 vs 0.5 (e.g. 'Conn. App. 640, 646, 700 A.2d 1151 (1997)')"
+      },
+      {
+        "pattern": "Shorter overall responses",
+        "explanation": "Detector-evading forgeries say less; caught forgeries run noticeably longer, giving the detector more text to find AI patterns in.",
+        "evidence": "words 97.8 (evaded) vs 120.9 (caught), a ~24% length gap"
+      },
+      {
+        "pattern": "Punchier, more variable sentence rhythm vs uniform length",
+        "explanation": "Evading text mixes short and long sentences (higher variance, lower average length); caught text sentences run longer and more uniform, closer to typical AI cadence.",
+        "evidence": "mean_sentence_len 19.2/sd 8.9 (evaded) vs 22.6/sd 7.5 (caught)"
+      },
+      {
+        "pattern": "Flourish-y verbs and self-narration flag as AI",
+        "explanation": "Caught examples repeatedly use ornate phrasing and 'we did X' framing ('we delved into', 'honed in on', 'unveiled') that reads as stylistically inflated; evaders stick closer to flat, matter-of-fact reporting language. This is suggestive from the quotes, not confirmed by a clean numeric split since first_person_per_100w differs only slightly (0.4 vs 0.7).",
+        "evidence": "quote: 'we delved into the affiliations' / 'honed in on three significant funders'"
+      }
+    ],
+    "summary": "Forgeries that fooled the detector were shorter, blunter, and packed with concrete numbers and legal/report citations, while caught forgeries were longer and used more flowery, narrator-ish language. The successful ones also went through editing that trimmed sentence length even further after the first draft."
+  },
+  "analysis_source": "Hermes Agent",
+  "checks": {
+    "verdict_unverified": [],
+    "analysis_unverified": [
+      "words 97.8 (evaded) vs 120.9 (caught), a ~24% length gap \u2192 24.0"
+    ]
+  },
+  "overall": {
+    "attacks": 350,
+    "attempted": 360,
+    "rejected": 0,
+    "errors": 10,
+    "caught_first": {
+      "k": 283,
+      "n": 350,
+      "pct": 80.9,
+      "lo": 76.4,
+      "hi": 84.6
+    },
+    "evaded": {
+      "k": 139,
+      "n": 350,
+      "pct": 39.7,
+      "lo": 34.7,
+      "hi": 44.9
+    },
+    "false_alarms": {
+      "k": 3,
+      "n": 58,
+      "pct": 5.2,
+      "lo": 1.8,
+      "hi": 14.1
+    },
+    "by_doc": {
+      "1709.02445v2": {
+        "evaded": {
+          "k": 29,
+          "n": 114,
+          "pct": 25.4,
+          "lo": 18.3,
+          "hi": 34.1
+        },
+        "caught_first": {
+          "k": 98,
+          "n": 114,
+          "pct": 86.0,
+          "lo": 78.4,
+          "hi": 91.2
+        },
+        "false_alarms": {
+          "k": 3,
+          "n": 27,
+          "pct": 11.1,
+          "lo": 3.9,
+          "hi": 28.1
+        }
+      },
+      "court_romanko_2014": {
+        "evaded": {
+          "k": 51,
+          "n": 116,
+          "pct": 44.0,
+          "lo": 35.3,
+          "hi": 53.0
+        },
+        "caught_first": {
+          "k": 88,
+          "n": 116,
+          "pct": 75.9,
+          "lo": 67.3,
+          "hi": 82.7
+        },
+        "false_alarms": {
+          "k": 0,
+          "n": 18,
+          "pct": 0.0,
+          "lo": 0.0,
+          "hi": 17.6
+        }
+      },
+      "gov_report": {
+        "evaded": {
+          "k": 59,
+          "n": 120,
+          "pct": 49.2,
+          "lo": 40.4,
+          "hi": 58.0
+        },
+        "caught_first": {
+          "k": 97,
+          "n": 120,
+          "pct": 80.8,
+          "lo": 72.9,
+          "hi": 86.9
+        },
+        "false_alarms": {
+          "k": 0,
+          "n": 13,
+          "pct": 0.0,
+          "lo": 0.0,
+          "hi": 22.8
+        }
+      }
+    }
+  },
+  "board": [
+    {
+      "model": "GLM 5.3 Flash",
+      "n": 80,
+      "caught_first": {
+        "k": 36,
+        "n": 80,
+        "pct": 45.0,
+        "lo": 34.6,
+        "hi": 55.9
+      },
+      "evaded": {
+        "k": 68,
+        "n": 80,
+        "pct": 85.0,
+        "lo": 75.6,
+        "hi": 91.2
+      },
+      "errors": 10,
+      "first": 0.455,
+      "best": 0.202,
+      "by_doc": {
+        "1709.02445v2": {
+          "k": 14,
+          "n": 24,
+          "pct": 58.3,
+          "lo": 38.8,
+          "hi": 75.5
+        },
+        "court_romanko_2014": {
+          "k": 25,
+          "n": 26,
+          "pct": 96.2,
+          "lo": 81.1,
+          "hi": 99.3
+        },
+        "gov_report": {
+          "k": 29,
+          "n": 30,
+          "pct": 96.7,
+          "lo": 83.3,
+          "hi": 99.4
+        }
+      }
+    },
+    {
+      "model": "Kimi K3.1 Pro",
+      "n": 90,
+      "caught_first": {
+        "k": 74,
+        "n": 90,
+        "pct": 82.2,
+        "lo": 73.1,
+        "hi": 88.8
+      },
+      "evaded": {
+        "k": 52,
+        "n": 90,
+        "pct": 57.8,
+        "lo": 47.5,
+        "hi": 67.5
+      },
+      "errors": 0,
+      "first": 0.812,
+      "best": 0.434,
+      "by_doc": {
+        "1709.02445v2": {
+          "k": 15,
+          "n": 30,
+          "pct": 50.0,
+          "lo": 33.2,
+          "hi": 66.8
+        },
+        "court_romanko_2014": {
+          "k": 15,
+          "n": 30,
+          "pct": 50.0,
+          "lo": 33.2,
+          "hi": 66.8
+        },
+        "gov_report": {
+          "k": 22,
+          "n": 30,
+          "pct": 73.3,
+          "lo": 55.6,
+          "hi": 85.8
+        }
+      }
+    },
+    {
+      "model": "DeepSeek V4.1 Flash 1017",
+      "n": 90,
+      "caught_first": {
+        "k": 84,
+        "n": 90,
+        "pct": 93.3,
+        "lo": 86.2,
+        "hi": 96.9
+      },
+      "evaded": {
+        "k": 16,
+        "n": 90,
+        "pct": 17.8,
+        "lo": 11.2,
+        "hi": 26.9
+      },
+      "errors": 0,
+      "first": 0.913,
+      "best": 0.774,
+      "by_doc": {
+        "1709.02445v2": {
+          "k": 0,
+          "n": 30,
+          "pct": 0.0,
+          "lo": 0.0,
+          "hi": 11.4
+        },
+        "court_romanko_2014": {
+          "k": 10,
+          "n": 30,
+          "pct": 33.3,
+          "lo": 19.2,
+          "hi": 51.2
+        },
+        "gov_report": {
+          "k": 6,
+          "n": 30,
+          "pct": 20.0,
+          "lo": 9.5,
+          "hi": 37.3
+        }
+      }
+    },
+    {
+      "model": "Hermes-3 8B (own Modal GPU)",
+      "n": 90,
+      "caught_first": {
+        "k": 89,
+        "n": 90,
+        "pct": 98.9,
+        "lo": 94.0,
+        "hi": 99.8
+      },
+      "evaded": {
+        "k": 3,
+        "n": 90,
+        "pct": 3.3,
+        "lo": 1.1,
+        "hi": 9.3
+      },
+      "errors": 0,
+      "first": 0.978,
+      "best": 0.92,
+      "by_doc": {
+        "1709.02445v2": {
+          "k": 0,
+          "n": 30,
+          "pct": 0.0,
+          "lo": 0.0,
+          "hi": 11.4
+        },
+        "court_romanko_2014": {
+          "k": 1,
+          "n": 30,
+          "pct": 3.3,
+          "lo": 0.6,
+          "hi": 16.7
+        },
+        "gov_report": {
+          "k": 2,
+          "n": 30,
+          "pct": 6.7,
+          "lo": 1.8,
+          "hi": 21.3
+        }
+      }
+    }
+  ],
+  "facts": "Valid attacks: 350 (attempted 360, errors 10, rejected 0)\nCaught on first try: 283/350 = 80.9% (95% CI 76.4\u201384.6%)\nEvaded after rewrites: 139/350 = 39.7% (95% CI 34.7\u201344.9%)\nGenuine human paragraphs wrongly flagged: 3/58 = 5.2% (95% CI 1.8\u201314.1%)\nForger GLM 5.3 Flash: evaded 68/80 = 85.0% (95% CI 75.6\u201391.2%); caught first 36/80 = 45.0% (95% CI 34.6\u201355.9%); avg AI score first 46% -> best 20%\nForger Kimi K3.1 Pro: evaded 52/90 = 57.8% (95% CI 47.5\u201367.5%); caught first 74/90 = 82.2% (95% CI 73.1\u201388.8%); avg AI score first 81% -> best 43%\nForger DeepSeek V4.1 Flash 1017: evaded 16/90 = 17.8% (95% CI 11.2\u201326.9%); caught first 84/90 = 93.3% (95% CI 86.2\u201396.9%); avg AI score first 91% -> best 77%\nForger Hermes-3 8B (own Modal GPU): evaded 3/90 = 3.3% (95% CI 1.1\u20139.3%); caught first 89/90 = 98.9% (95% CI 94.0\u201399.8%); avg AI score first 98% -> best 92%\nDocument Science paper: evaded 29/114 = 25.4% (95% CI 18.3\u201334.1%); false alarms 3/27 = 11.1% (95% CI 3.9\u201328.1%)\nDocument Court opinion: evaded 51/116 = 44.0% (95% CI 35.3\u201353.0%); false alarms 0/18 = 0.0% (95% CI 0.0\u201317.6%)\nDocument Government report: evaded 59/120 = 49.2% (95% CI 40.4\u201358.0%); false alarms 0/13 = 0.0% (95% CI 0.0\u201322.8%)"
+}

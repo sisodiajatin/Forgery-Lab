@@ -18,11 +18,12 @@ Show the README table, or say it:
 
 **1:00 — The results (50s)**
 Open the live site and scroll the report.
-> "112 attacks. Pangram caught **86.6%** on the first try, which is strong. But after rewrites, **33.9%** got through.
-> Point at the leaderboard: one forger, GLM Flash, evaded it **82%** of the time. The model we hosted ourselves never got through once.
+> "350 attacks. Pangram caught **81%** on the first try, which is strong. But after rewrites, **40%** got through (95% confidence: 35–45%).
+> Point at the leaderboard: one forger, GLM Flash, evaded it **85%** of the time. The model we hosted ourselves got through only **3%** of the time. The error bars don't overlap, so that's a real difference.
 > Point at the chart: every line is one forgery's AI score, round by round. Watch them fall below the dashed line.
-> Point at the document table: government reports were the weakest, with **50%** getting through. The science paper was the strongest, at **12%**.
-> It also wrongly flagged **1 real human paragraph out of 30**."
+> Point at the document table: government reports were the weakest, with **49%** getting through. The science paper was the strongest, at **25%**.
+> It also wrongly flagged **3 of 58 real human paragraphs**, or 5%."
+Then point at **What fooled the detector**: "Hermes Agent compared the forgeries that got through with the ones that were caught. Every number it cites is fact-checked by code.""
 
 **1:50 — Hand it to the judges (40s)**
 > "Your turn. Open `/play` on your phone. These are the exact forgeries that fooled the detector, mixed with real paragraphs. Find them."
@@ -42,10 +43,11 @@ Every result feeds the live "Humans vs Detector" banner on the home page.
 | **Pangram** | The detector under test: scores forgeries and human text, and feeds flagged passages back to the forgers |
 
 ## Honesty notes (be ready for these questions)
-- **Sample sizes are small.** That's 22–30 attacks per forger, so the percentages are indicative. GLM has 22 valid attacks because Pangram rejected 8 of its texts.
+- **Is the sample big enough?** It's 350 attacks, 80–90 per forger, and every rate has a 95% confidence interval. The forger differences are significant. The document-level false-alarm differences are not, and we say so.
+- **Did you test it?** Yes: 10 offline tests run in CI on every push, and `check.py` gives 12 of 12 live checks, including a calibration of the paraphrase judge.
 - **Why not famous documents?** Models have memorised them. Our first run on "Attention Is All You Need" looked like a 100% evasion, but the forger was just recalling the paper. So we added topic checks, a verbatim check and a paraphrase check, and we use obscure documents.
 - **Is the forger allowed to lie?** Yes, that's the attack. GLM's court "forgeries" invent breath-test results and case citations that aren't in the record.
-- **Is this anti-Pangram?** No. It caught 86.6% on the first try with only 3.3% false alarms. The point is knowing where any detector is weak.
+- **Is this anti-Pangram?** No. It caught 81% on the first try with a 5% false-alarm rate. The point is knowing where any detector is weak.
 
 ## Demo-day checklist
 - [ ] 10 min before: open the live site once, so the web app warms up

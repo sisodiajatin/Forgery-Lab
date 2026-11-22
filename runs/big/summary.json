@@ -1,0 +1,58 @@
+{
+  "leaderboard": [
+    {
+      "model": "DEEPSEEK",
+      "label": "DeepSeek V4.1 Flash 1017",
+      "attacks": 60,
+      "rejected": 0,
+      "errors": 0,
+      "caught_first_pct": 91.7,
+      "evaded_after_rewrites_pct": 20.0,
+      "avg_first_score": 0.908,
+      "avg_best_score": 0.78
+    },
+    {
+      "model": "GLMFLASH",
+      "label": "GLM 5.3 Flash",
+      "attacks": 58,
+      "rejected": 0,
+      "errors": 2,
+      "caught_first_pct": 41.4,
+      "evaded_after_rewrites_pct": 86.2,
+      "avg_first_score": 0.423,
+      "avg_best_score": 0.179
+    },
+    {
+      "model": "KIMI",
+      "label": "Kimi K3.1 Pro",
+      "attacks": 60,
+      "rejected": 0,
+      "errors": 0,
+      "caught_first_pct": 80.0,
+      "evaded_after_rewrites_pct": 60.0,
+      "avg_first_score": 0.793,
+      "avg_best_score": 0.408
+    },
+    {
+      "model": "HERMES3",
+      "label": "Hermes-3 8B (own Modal GPU)",
+      "attacks": 60,
+      "rejected": 0,
+      "errors": 0,
+      "caught_first_pct": 98.3,
+      "evaded_after_rewrites_pct": 5.0,
+      "avg_first_score": 0.979,
+      "avg_best_score": 0.924
+    }
+  ],
+  "genuine_scored": 38,
+  "false_alarms": 2,
+  "false_alarm_pct": 5.3,
+  "seconds": 950.9,
+  "rounds": 3,
+  "docs": [
+    "1709.02445v2",
+    "court_romanko_2014",
+    "gov_report"
+  ]
+}

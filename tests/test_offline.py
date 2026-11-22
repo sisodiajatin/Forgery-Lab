@@ -63,6 +63,10 @@ def test_unverified_numbers_catches_hallucinated_stats():
     bad = ["After rewrites 41.2% evaded."]
     assert unverified_numbers(good, facts) == []
     assert unverified_numbers(bad, facts) and unverified_numbers(bad, facts)[0][1] == 41.2
+    quoted = ['citations 33.9 vs 25.8; quote: "State v. Cormier, 46 Conn. App. 640"']
+    assert unverified_numbers(quoted, facts) == []              # numbers inside quotes are example text, not stats
+    assert unverified_numbers(["nearly 34% slipped through"], facts) == []     # whole-number rounding of 33.9 is fine
+    assert unverified_numbers(["37% slipped through"], facts)                   # but 37 is not near any measured value
 
 
 # ---------------------------------------------------------------- report pipeline (pure parts)
@@ -107,7 +111,7 @@ def test_report_renders_without_agent(tmp_path):
 def test_published_run_is_consistent():
     """The committed benchmark must add up: valid + errors + rejected == attempted, and the leaderboard sums to the total."""
     import report
-    run = ROOT / "runs" / "full"
+    run = ROOT / "runs" / "big"
     if not run.exists():
         pytest.skip("no published run")
     attacks, genuine, _ = report.load_many([run])

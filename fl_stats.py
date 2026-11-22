@@ -73,9 +73,11 @@ def unverified_numbers(claims, facts_text: str, tol: float = 0.06):
     known = numbers_in(facts_text)
     bad = []
     for c in claims:
+        c = re.sub(r"[\"“'‘][^\"”'’]{0,200}[\"”'’]", " ", c or "")   # quoted example text isn't a statistic
         for x in numbers_in(c):
             if x in (1, 2, 3, 4, 5, 95, 100) or 1990 <= x <= 2030:
                 continue
-            if not any(abs(x - y) <= tol for y in known):
+            t = 0.5 if x == int(x) else tol                          # "nearly 40%" is a fair rounding of 39.7%
+            if not any(abs(x - y) <= t for y in known):
                 bad.append((c, x))
     return bad
