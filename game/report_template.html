@@ -18,7 +18,7 @@ h2{font-family:'Special Elite';letter-spacing:2px;color:var(--brass);font-size:1
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:22px}
 .kpi{border:1px solid var(--line);padding:14px 16px;background:rgba(0,0,0,.25)}.kpi b{display:block;font-size:30px;font-family:'Playfair Display';color:var(--paper)}.kpi span{font-size:12px;color:var(--mut)}
 table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:400}
-.bar{height:10px;background:#2a241b;position:relative;min-width:120px}.bar i{position:absolute;left:0;top:0;bottom:0}
+.bar{height:10px;background:#2a241b;position:relative;min-width:120px}.bar i{position:absolute;left:0;top:3px;bottom:3px}.bar u{position:absolute;top:0;bottom:0;background:rgba(192,57,43,.35)}.ci{color:var(--mut);font-size:11px;white-space:nowrap}
 .card{border:1px solid var(--line);background:rgba(0,0,0,.25);padding:16px}
 canvas{width:100%;height:280px;display:block}
 .ev{background:var(--paper);color:var(--ink);padding:16px 18px;font-family:'Playfair Display';font-weight:400;font-size:14.5px;line-height:1.55;box-shadow:0 10px 24px rgba(0,0,0,.5)}
@@ -32,39 +32,54 @@ const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt
 const COLORS=['#e0703a','#c9a24f','#5fa8d3','#9b7fd1','#3f8f52','#d35f8d'];
 const lbl=d=>D.labels[d]||d; const O=D.overall, V=D.verdict;
 const vcol=/DO NOT/.test(V.verdict)?'#c0392b':/CAUTION/.test(V.verdict)?'#b9770e':'#3f8f52';
+const P=r=>r&&r.pct!=null?`${r.pct}%`:'–';
+const CI=r=>r&&r.n?`<span class="ci">${r.k}/${r.n} · 95% CI ${r.lo}–${r.hi}%</span>`:'';
+const ciBar=(r,col)=>r&&r.n?`<div class="bar"><u style="left:${r.lo}%;width:${Math.max(1,r.hi-r.lo)}%"></u><i style="width:${r.pct}%;background:${col}"></i></div>`:'';
+const A=D.analysis||{}, F=A.features||{}, CK=D.checks||{};
+const fk=[['words','words'],['mean_sentence_len','avg sentence length'],['sentence_len_sd','sentence-length variation (burstiness)'],['digits_per_100w','numbers per 100 words'],['citations_per_100w','citations per 100 words'],['parens_per_100w','parentheses per 100 words'],['first_person_per_100w','"we/our/I" per 100 words']];
+const fcols=Object.keys(F);
 $('#app').innerHTML=`
 <span class="stamp">DETECTOR STRESS TEST</span><h1>FORGERY <em>LAB</em></h1>
 <div class="sub">Can an AI detector be trusted on <i>your</i> kind of documents? ${D.board.length} AI forgers attacked Pangram using real human documents: ${D.docs.map(lbl).join(', ')}.</div>
 <div class="verdict"><span class="tag" style="background:${vcol}">${esc(V.verdict)}</span>
 <h3>${esc(V.headline)}</h3>${(V.findings||[]).length?`<ul>${V.findings.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}
 ${(V.advice||[]).length?`<div style="margin-top:12px;font-family:'Special Elite'">Rules of thumb</div><ul>${V.advice.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}
-<div style="font-size:11px;color:#6b5c40;margin-top:10px">Verdict written by ${esc(D.vsrc)} from the measured numbers below.</div></div>
+<div style="font-size:11px;color:#6b5c40;margin-top:10px">Verdict written by ${esc(D.vsrc)} from the measured numbers below.
+${(CK.verdict_unverified||[]).length?`<b style="color:#c0392b">⚠ ${CK.verdict_unverified.length} number(s) in this verdict could not be matched to the data.</b>`:'✔ Every number in this verdict was automatically checked against the measured data.'}</div></div>
 <div class="kpis">
-<div class="kpi"><b>${O.attacks}</b><span>valid forgery attacks</span></div>
-<div class="kpi"><b>${O.caught_first}%</b><span>caught on the first try</span></div>
-<div class="kpi"><b style="color:var(--red)">${O.evaded}%</b><span>slipped past after ≤${D.meta.rounds} rewrites</span></div>
-<div class="kpi"><b>${O.false_alarms}/${O.genuine}</b><span>real human paragraphs wrongly flagged (${O.false_alarm_pct}%)</span></div>
-<div class="kpi"><b>${O.rejected}</b><span>forgeries thrown out for copying the source</span></div></div>
+<div class="kpi"><b>${O.attacks}</b><span>valid forgery attacks (${O.attempted} attempted, ${O.errors} errors)</span></div>
+<div class="kpi"><b>${P(O.caught_first)}</b><span>caught on the first try<br>${CI(O.caught_first)}</span></div>
+<div class="kpi"><b style="color:var(--red)">${P(O.evaded)}</b><span>slipped past after ≤${D.meta.rounds} rewrites<br>${CI(O.evaded)}</span></div>
+<div class="kpi"><b>${P(O.false_alarms)}</b><span>real human paragraphs wrongly flagged<br>${CI(O.false_alarms)}</span></div>
+<div class="kpi"><b>${O.rejected}</b><span>forgeries thrown out for copying / paraphrasing the source</span></div></div>
 <h2>FORGER LEADERBOARD — WHO FOOLS THE DETECTOR?</h2>
-<div class="card"><table><tr><th>Forger</th><th>Attacks</th><th>Caught 1st try</th><th>Evaded after rewrites</th><th>Avg AI score: first → best</th></tr>
-${D.board.map((b,i)=>`<tr><td><b>${esc(b.model)}</b></td><td>${b.n}</td><td>${b.caught_first}%</td>
-<td><div class="bar"><i style="width:${b.evaded}%;background:var(--red)"></i></div><span class="sub">${b.evaded}%</span></td>
-<td>${Math.round(b.first*100)}% → ${Math.round(b.best*100)}%</td></tr>`).join('')}</table></div>
+<div class="card"><table><tr><th>Forger</th><th>Attacks</th><th>Caught 1st try</th><th>Evaded after rewrites (bar = 95% CI)</th><th>Avg AI score: first → best</th></tr>
+${D.board.map((b,i)=>`<tr><td><b>${esc(b.model)}</b></td><td>${b.n}</td><td>${P(b.caught_first)}</td>
+<td>${ciBar(b.evaded,'var(--red)')}<span class="sub">${P(b.evaded)}</span> ${CI(b.evaded)}</td>
+<td>${Math.round(b.first*100)}% → ${Math.round(b.best*100)}%</td></tr>`).join('')}</table>
+<div class="sub" style="margin-top:8px">Shaded band = 95% confidence interval. Where two bands overlap, the difference between those forgers is not statistically clear.</div></div>
 <div class="cols">
 <div><h2>FORGER VS DETECTOR — EVERY ATTACK</h2><div class="card"><canvas id="paths"></canvas>
 <div class="legend">${D.board.map((b,i)=>`<span><i style="background:${COLORS[i%6]}"></i>${esc(b.model)}</span>`).join('')}</div>
 <div class="sub" style="margin-top:6px">AI score of each forgery across rewrite rounds. Below the dashed line = detector fooled.</div></div></div>
-<div><h2>WHERE IS THE DETECTOR WEAKEST?</h2><div class="card"><table><tr><th>Document type</th><th>Caught 1st try</th><th>Evaded</th><th>False alarms</th></tr>
-${D.docs.map(d=>{const x=O.by_doc[d];return `<tr><td>${esc(lbl(d))}</td><td>${x.caught_first}%</td><td>${x.evaded}%</td><td>${x.false_alarms}/${x.genuine}</td></tr>`}).join('')}</table>
+<div><h2>WHERE IS THE DETECTOR WEAKEST?</h2><div class="card"><table><tr><th>Document type</th><th>Evaded</th><th>False alarms</th></tr>
+${D.docs.map(d=>{const x=O.by_doc[d];return `<tr><td>${esc(lbl(d))}</td><td>${P(x.evaded)}<br>${CI(x.evaded)}</td><td>${P(x.false_alarms)}<br>${CI(x.false_alarms)}</td></tr>`}).join('')}</table>
 <table style="margin-top:14px"><tr><th>Evasion by forger × document</th>${D.docs.map(d=>`<th>${esc(lbl(d))}</th>`).join('')}</tr>
-${D.board.map(b=>`<tr><td>${esc(b.model)}</td>${D.docs.map(d=>{const v=b.by_doc[d];return `<td style="background:rgba(192,57,43,${(v||0)/100*0.8})">${v??'–'}%</td>`}).join('')}</tr>`).join('')}</table></div></div></div>
+${D.board.map(b=>`<tr><td>${esc(b.model)}</td>${D.docs.map(d=>{const v=b.by_doc[d];return `<td style="background:rgba(192,57,43,${(v.pct||0)/100*0.8})">${P(v)} <span class="ci">${v.k}/${v.n}</span></td>`}).join('')}</tr>`).join('')}</table></div></div></div>
+<h2>WHAT FOOLED THE DETECTOR? — ANALYSIS BY ${esc((D.asrc||'').toUpperCase())}</h2>
+<div class="cols"><div class="card">${A.summary?`<p style="margin-top:0;line-height:1.6">${esc(A.summary)}</p>`:''}
+${(A.patterns||[]).map(p=>`<div style="margin:12px 0"><b style="color:var(--brass)">${esc(p.pattern)}</b><div style="font-size:13px;line-height:1.55">${esc(p.explanation)}</div><div class="sub" style="font-size:12px">evidence: ${esc(p.evidence)}</div></div>`).join('')}
+${(CK.analysis_unverified||[]).length?`<div class="sub" style="color:#e0703a">⚠ ${CK.analysis_unverified.length} cited number(s) could not be matched to measured data.</div>`:(A.patterns||[]).length?'<div class="sub">✔ cited numbers checked against measured data</div>':''}</div>
+<div class="card"><table><tr><th>Measured style (averages)</th>${fcols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>
+${fk.map(([k,l])=>`<tr><td>${l}</td>${fcols.map(c=>`<td>${F[c][k]??'–'}</td>`).join('')}</tr>`).join('')}</table>
+<div class="sub" style="margin-top:8px">${A.n_evaded} forgeries evaded, ${A.n_caught} were caught. Features computed by code, not by a model.</div></div></div>
 <h2>FORGERIES THAT FOOLED THE DETECTOR</h2>
 <div class="cols">${D.evasions.length?D.evasions.map(e=>`<div class="ev"><div class="meta">${esc(e.m)} · ${esc(lbl(e.d))} · AI score ${e.s.map(x=>Math.round(x*100)+'%').join(' → ')}<br>brief: ${esc(e.topic)}</div>${esc(e.text)}</div>`).join(''):'<div class="sub">None — the detector held.</div>'}</div>
-${D.false.length?`<h2>REAL HUMAN WRITING WRONGLY FLAGGED AS AI</h2><div class="cols">${D.false.map(g=>`<div class="ev"><div class="meta">${esc(lbl(g.doc))} · Pangram AI score ${Math.round(g.score*100)}% · written by a human before 2015</div>${esc(g.text)}</div>`).join('')}</div>`:''}
+${D.false.length?`<h2>REAL HUMAN WRITING WRONGLY FLAGGED AS AI</h2><div class="cols">${D.false.map(g=>`<div class="ev"><div class="meta">${esc(lbl(g.doc))} · Pangram AI score ${Math.round(g.score*100)}% · written by a human before 2018</div>${esc(g.text)}</div>`).join('')}</div>`:''}
 <footer>Method: genuine paragraphs parsed from each PDF (Reducto). Hermes Agent proposes topics the document does not cover; a judge model rejects topics already covered.
 Forgers write in the author's voice; forgeries copying &gt;10% verbatim or paraphrasing source content are discarded. Pangram scores each forgery; if AI score ≥ 50% the same forger
-sees the flagged passages and rewrites (up to ${D.meta.rounds} rounds). "Evaded" = best score &lt; 50%. Run "${esc(D.meta.run)}" took ${D.meta.seconds}s on Modal.
-Small samples: treat percentages as indicative.</footer>`;
+sees the flagged passages and rewrites (up to ${D.meta.rounds} rounds). "Evaded" = best score &lt; 50%. Genuine paragraphs are de-duplicated across runs.
+Intervals are 95% Wilson score intervals. Runs: ${esc(D.meta.run)} (${D.meta.seconds}s of attack time on Modal).</footer>`;
 function draw(){const c=$('#paths'),w=c.clientWidth,h=c.clientHeight,r=devicePixelRatio||1;c.width=w*r;c.height=h*r;const g=c.getContext('2d');g.scale(r,r);
  const L=36,B=24,T=10,R=10,maxR=Math.max(...D.paths.map(p=>p.s.length))-1||1;const X=i=>L+(w-L-R)*i/maxR,Y=s=>T+(h-T-B)*(1-s);
  g.strokeStyle='#3a3226';g.fillStyle='#a89a7d';g.font='11px IBM Plex Mono';

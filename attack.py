@@ -65,7 +65,17 @@ def attack(model, doc, context, topic, words, rounds):
     if ov > 0.10 or len(text.split()) < 30:
         rec.update(status="rejected", reason=f"overlap {ov:.0%}" if ov > 0.10 else "too short", text=text)
         return rec
-    lab = bc.pangram(text)
+    try:
+        lab = bc.pangram(text)
+    except Exception as e:                       # e.g. Pangram 422 on odd output: re-forge once, then give up cleanly
+        bc.log("pangram", f"{model}: {str(e)[:60]} — re-forging once")
+        text = clean(call_forger(model, base + "\nWrite plain prose sentences only."))
+        rec["retried"] = True
+        try:
+            lab = bc.pangram(text)
+        except Exception as e2:
+            rec.update(status="error", error=str(e2)[:300], text=text, words=len(text.split()))
+            return rec
     rec["rounds"].append({"score": round(bc.ai_score(lab), 3), "text": text, "headline": lab.get("headline")})
     for _ in range(rounds):
         if bc.ai_score(lab) < THRESH:
