@@ -9,3 +9,5 @@ gpu_test.log
 .hermes_prompt.txt
 runs/report_v2_test/
 .pytest_cache/
+PITCH.md
+qr_play.png
