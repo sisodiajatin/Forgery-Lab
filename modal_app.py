@@ -107,7 +107,7 @@ def build_job(cid: str, name: str, data: bytes):
 def web():
     import json, time, uuid
     from pathlib import Path
-    from fastapi import FastAPI, File, HTTPException, UploadFile
+    from fastapi import FastAPI, File, HTTPException, Request, UploadFile
     from fastapi.responses import HTMLResponse, JSONResponse
 
     api = FastAPI()
@@ -170,11 +170,24 @@ def web():
     def try_page():
         return page(NAV() + TRY)
 
+    PER_IP_HOUR, PER_DAY = 5, 200  # protects the API credits behind uploads
+
+    def allow_upload(ip: str):
+        hour, day = time.strftime("%Y%m%d%H"), time.strftime("%Y%m%d")
+        if state.get(f"rl:day:{day}", 0) >= PER_DAY:
+            raise HTTPException(429, "The lab has reached today's upload limit. Please come back tomorrow, or play the human round in the meantime.")
+        if state.get(f"rl:ip:{ip}:{hour}", 0) >= PER_IP_HOUR:
+            raise HTTPException(429, f"You've built {PER_IP_HOUR} boards this hour. Please try again later, or play the human round in the meantime.")
+        state[f"rl:ip:{ip}:{hour}"] = state.get(f"rl:ip:{ip}:{hour}", 0) + 1
+        state[f"rl:day:{day}"] = state.get(f"rl:day:{day}", 0) + 1
+
     @api.post("/build")
-    def build(pdf: UploadFile = File(...)):
+    def build(request: Request, pdf: UploadFile = File(...)):
         data = pdf.file.read()
         if len(data) > 25_000_000 or not data.startswith(b"%PDF"):
             raise HTTPException(400, "Please upload a PDF under 25 MB.")
+        fwd = request.headers.get("x-forwarded-for", "")
+        allow_upload(fwd.split(",")[0].strip() or (request.client.host if request.client else "unknown"))
         cid = uuid.uuid4().hex[:10]
         state[f"job:{cid}"] = {"state": "running", "log": ["Upload received"]}
         build_job.spawn(cid, Path(pdf.filename or "document.pdf").name, data)

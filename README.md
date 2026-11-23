@@ -135,6 +135,7 @@ false alarms. In our tests, a 2022 paper scored 9/9 for Pangram, and a 2026 pape
 ## Web app architecture (Modal)
 - **Web servers:** 2 always-warm containers that scale out to 10, plus 1 spare kept ready, so there are no cold starts. Each container handles up to 50 requests at once.
 - **Published pages:** the report and the boards are loaded into memory when a container starts. `publish.py` redeploys, so updates appear immediately.
+- **Upload limits:** 5 boards per visitor per hour and 200 per day in total, which protects the API credits behind uploads.
 - **Uploads:** each upload runs in **its own container** (`build_job`, up to 30 at once), so uploads never slow the site or each other down.
 - **Shared state:** upload progress, uploaded boards and human-round results live in a shared `modal.Dict` (`forgery-lab-state`), so every container sees the same data.
 - **Load test on the live site:** 200 page requests, 40 at a time, all succeeded with a median of 0.5s and a maximum of 1.1s. Three uploads at the same time each finished in 17–19 seconds.
