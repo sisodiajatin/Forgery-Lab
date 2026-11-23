@@ -141,6 +141,18 @@ false alarms. In our tests, a 2022 paper scored 9/9 for Pangram, and a 2026 pape
 - **Load test on the live site:** 200 page requests, 40 at a time, all succeeded with a median of 0.5s and a maximum of 1.1s. Three uploads at the same time each finished in 17–19 seconds.
 - **To pause costs completely:** set `min_containers=0` in `modal_app.py` and redeploy. The URL stays the same, but the first visit after a quiet period takes about 20–30 seconds.
 
+## Security
+The live site was tested against common attacks after deployment:
+- **No secrets in the browser or the repo.** API keys live only in a gitignored `.env` and a Modal Secret, and are used server-side. Every served page and all git history were scanned for the real key values, and none were found.
+- **No admin or API-explorer pages.** FastAPI's `/docs`, `/redoc` and `/openapi.json` are disabled. Unknown paths, path traversal (`../`) and tampered IDs return 404.
+- **Uploads:** the server checks the file's real contents, so only actual PDFs up to 25 MB are accepted. Uploads are rate-limited to 5 per visitor per hour and 200 per day; spoofed IP headers are ignored.
+- **No script injection.** All text shown on boards, including text from uploaded PDFs, is escaped before display. Board data is embedded as escaped JSON.
+- **Game results are validated.** Only well-formed results are accepted, results are rate-limited, and invalid entries are ignored by the stats.
+- **Prompt injection:** on the server the models only return text. There is no tool-using agent, so a malicious PDF can at worst produce an odd board on its own private link. Uploaded boards aren't listed publicly and are marked `noindex`.
+- **Headers:** `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` and a strict referrer policy.
+
+This is a focused check of common attacks, not a professional penetration test. There are no logins, no user accounts and no personal data.
+
 ## Testing
 - `python -m pytest -q tests`: 12 offline tests covering the statistics, the integrity checks, the number fact-checker, report consistency and the figure-caption regression. They run in GitHub Actions on every push.
 - `python check.py`: 13 live checks covering every forger endpoint, every page of the site, a real PDF upload and the paraphrase-judge calibration.
@@ -170,7 +182,7 @@ python reset_counter.py                                         # clear the live
 - `genuine_all.py`: scores every real paragraph to measure false alarms
 - `report.py` + `game/report_template.html`: the trust-report dashboard
 - `case_from_run.py` + `game/template.html`: the human-round case boards
-- `modal_app.py` + `publish.py`: the public web app on Modal (autoscaling web containers, one container per upload, live progress)
+- `modal_app.py` + `publish.py`: the public web app on Modal (autoscaling web containers, one container per upload, live progress, rate limits, input validation)
 - `reset_counter.py`: clears the live humans-vs-detector results
 - `fl_stats.py`: Wilson intervals, integrity checks, style features and the number fact-checker (pure, tested)
 - `build_case.py`: the single-PDF pipeline (Reducto parse, Hermes director, Pangram) behind `/try`
