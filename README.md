@@ -13,7 +13,7 @@ and they rewrite every time they get caught. The results become a plain-English 
 |---|---|
 | `/` | The stress-test report: verdict, forger leaderboard, round-by-round chart, what fooled the detector |
 | `/play` | The human round: spot the forgeries yourself, then compare your calls with the detector's |
-| `/try` | Test your own PDF: three AI forgers plant paragraphs in it, and you get a playable board in about 15 seconds |
+| `/try` | Test your own PDF: three AI forgers plant paragraphs in it, and you get a playable board in about 15–20 seconds (limited to 5 uploads per visitor per hour) |
 
 ## What it solves
 A wrong AI-detector verdict can hurt someone either way:
@@ -150,7 +150,7 @@ false alarms. In our tests, a 2022 paper scored 9/9 for Pangram, and a 2026 pape
 uv venv .venv -p 3.13 && uv pip install -p .venv modal pypdf requests pytest
 cp .env.example .env            # fill in Reducto, Pangram and the Modal Model API endpoints
 .venv/Scripts/modal token new
-.venv/Scripts/modal secret create forgery-lab-keys REDUCTO_API_KEY=... PANGRAM_API_KEY=...
+.venv/Scripts/modal secret create forgery-lab-keys --from-dotenv .env --force   # all keys + forger endpoints for the web app
 .venv/Scripts/modal deploy modal_forger.py                      # Hermes-3 GPU forger
 python forgers.py                                               # smoke-test every forger endpoint
 python attack.py samples/*.pdf --per-model 10 --rounds 3 --genuine 10 --out runs/full
@@ -165,7 +165,7 @@ python reset_counter.py                                         # clear the live
 
 ## Files
 - `attack.py`: the parallel attack runner (forge → integrity checks → Pangram → rewrite loop)
-- `forgers.py`: OpenAI-compatible client for Modal Model APIs
+- `forgers.py`: OpenAI-compatible client for Modal Model APIs (fast no-thinking mode for uploads)
 - `modal_forger.py`: Hermes-3 8B on a Modal GPU (vLLM)
 - `genuine_all.py`: scores every real paragraph to measure false alarms
 - `report.py` + `game/report_template.html`: the trust-report dashboard
