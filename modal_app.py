@@ -101,7 +101,7 @@ def build_job(cid: str, name: str, data: bytes):
 
 
 @app.function(image=image, secrets=SECRETS, volumes={"/data": vol}, timeout=900,
-              min_containers=2, max_containers=10, buffer_containers=1, scaledown_window=1200)  # always warm, scales out under load
+              min_containers=1, max_containers=10, scaledown_window=600)  # one always-warm server for showcase traffic; scales out under load
 @modal.concurrent(max_inputs=50)
 @modal.asgi_app()
 def web():

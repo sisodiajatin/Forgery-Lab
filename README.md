@@ -133,13 +133,13 @@ false alarms. In our tests, a 2022 paper scored 9/9 for Pangram, and a 2026 pape
 - **The figure-caption trap:** Reducto's `summarize_figures` option is on by default and inserts **AI-written figure descriptions** into the parsed text. In our first runs these were counted as "human" paragraphs, so Pangram's correct flags on them looked like false alarms (3/58). We now turn the option off, drop figure blocks and keep a regression test for it. If you build human-vs-AI datasets from parsed PDFs, check for this.
 
 ## Web app architecture (Modal)
-- **Web servers:** 2 always-warm containers that scale out to 10, plus 1 spare kept ready, so there are no cold starts. Each container handles up to 50 requests at once.
+- **Web servers:** 1 always-warm container that scales out to 10 under load, so there are no cold starts. Each container handles up to 50 requests at once.
 - **Published pages:** the report and the boards are loaded into memory when a container starts. `publish.py` redeploys, so updates appear immediately.
 - **Upload limits:** 5 boards per visitor per hour and 200 per day in total, which protects the API credits behind uploads.
 - **Uploads:** each upload runs in **its own container** (`build_job`, up to 30 at once), so uploads never slow the site or each other down.
 - **Shared state:** upload progress, uploaded boards and human-round results live in a shared `modal.Dict` (`forgery-lab-state`), so every container sees the same data.
 - **Load test on the live site:** 200 page requests, 40 at a time, all succeeded with a median of 0.5s and a maximum of 1.1s. Three uploads at the same time each finished in 17–19 seconds.
-- **After the event:** set `min_containers=0` in `modal_app.py` and redeploy so the app scales to zero.
+- **To pause costs completely:** set `min_containers=0` in `modal_app.py` and redeploy. The URL stays the same, but the first visit after a quiet period takes about 20–30 seconds.
 
 ## Testing
 - `python -m pytest -q tests`: 12 offline tests covering the statistics, the integrity checks, the number fact-checker, report consistency and the figure-caption regression. They run in GitHub Actions on every push.
