@@ -110,7 +110,17 @@ def web():
     from fastapi import FastAPI, File, HTTPException, Request, UploadFile
     from fastapi.responses import HTMLResponse, JSONResponse
 
-    api = FastAPI()
+    api = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)  # no public API explorer
+
+    @api.middleware("http")
+    async def security_headers(request, call_next):
+        resp = await call_next(request)
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        resp.headers["X-Frame-Options"] = "DENY"
+        resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        if request.url.path.startswith(("/case/", "/status/")):
+            resp.headers["X-Robots-Tag"] = "noindex"  # visitor uploads aren't indexed by search engines
+        return resp
     site = Path("/data/site")
     # Published files only change on redeploy (publish.py), which starts fresh containers, so load them once.
     pages = {f.name: f.read_text(encoding="utf-8") for f in site.glob("*.html")} if site.exists() else {}
@@ -123,7 +133,7 @@ def web():
     def human_stats():
         if time.time() - stats_cache["t"] < 2 and stats_cache["v"]:
             return stats_cache["v"]
-        rows = [v for k, v in state.items() if k.startswith("human:")]
+        rows = [v for k, v in state.items() if k.startswith("human:") and valid(v)]
         forged = [x for r in rows for x in (r.get("forged") or []) if x.get("forged")]
         lab = [r for r in rows if r.get("lab_correct") is not None]
         v = {"players": len(rows),
@@ -154,9 +164,24 @@ def web():
             raise HTTPException(404)
         return html
 
+    def valid(r):
+        try:
+            t, c, l, f = r["total"], r["correct"], r.get("lab_correct"), r.get("forged") or []
+            return (type(t) is int and 1 <= t <= 20 and type(c) is int and 0 <= c <= t
+                    and (l is None or (type(l) is int and 0 <= l <= t)) and isinstance(f, list) and len(f) <= t
+                    and all(isinstance(x, dict) and set(x) <= {"forged", "accused"}
+                            and all(isinstance(v, bool) for v in x.values()) for x in f))
+        except Exception:
+            return False
+
     @api.post("/human")
     def human(rec: dict):
-        rec = {k: rec.get(k) for k in ("source", "total", "correct", "lab_correct", "forged")}
+        rec = {k: rec.get(k) for k in ("total", "correct", "lab_correct", "forged")}
+        if not valid(rec):
+            raise HTTPException(400, "Invalid result")
+        if state.get(f"rl:human:{time.strftime('%Y%m%d%H')}", 0) >= 2000:
+            raise HTTPException(429, "Too many results this hour")
+        state[f"rl:human:{time.strftime('%Y%m%d%H')}"] = state.get(f"rl:human:{time.strftime('%Y%m%d%H')}", 0) + 1
         rec["at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
         state[f"human:{uuid.uuid4().hex}"] = rec
         stats_cache["t"] = 0
